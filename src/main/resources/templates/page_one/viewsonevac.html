@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/styleviewsone.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+
+<body>
+
+<script th:inline="javascript">
+    window.currentUser = {
+        id: [[${currentUser?.id}]],
+        role: [[${currentUser?.role}]],
+        nameuse: [[${currentUser?.nameuse}]]
+    };
+    window.csrfTokenName = [[${_csrf?.parameterName}]];
+    window.csrfTokenValue = [[${_csrf?.token}]];
+</script>
+
+<div class="container-wrapper">
+    <div th:replace="~{block/header :: headerhtml}"></div>
+
+    <div class="container mt-4" style="padding-left: 0; padding-right: 0; max-width: 100%;">
+        <h2 class="text-center mb-4" style="color:black;">Поиск и просмотр вакансий</h2>
+
+        <!-- Результаты поиска -->
+        <div th:if="${searchQuery}" class="search-results-info mb-4">
+            <h3>Результаты поиска вакансий: "<span th:text="${searchQuery}"></span>"</h3>
+            <p>Найдено вакансий: <span th:text="${totalItems}"></span></p>
+            <a th:href="@{/page_one/viewsonevac}" class="btn btn-primary">Показать все вакансии</a>
+        </div>
+
+        <!-- Блок фильтров-->
+        <div class="filters-container">
+            <div class="row">
+                <div class="col-12 col-md-6 mb-3">
+                    <h3>Категория</h3>
+                    <div class="category-dropdown" id="categoryDropdown">
+                        <div class="category-select" id="categorySelect">
+                            <span id="selectedCategoryText" th:text="${categories['all']}">Все вакансии</span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="category-options" id="categoryOptions">
+                            <div th:each="category : ${categories}" class="category-option" th:attr="data-category=${category.key}" th:text="${category.value}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6 col-md-6 mb-3">
+                    <h3>Сортировка по дате</h3>
+                    <div class="sort-dropdown" id="sortDropdown">
+                        <input type="hidden" id="currentSort" th:value="${currentSort}">
+                        <div class="sort-select" id="sortSelect">
+                            <span id="selectedSortText"><span th:if="${param.sort != null and param.sort[0] == 'oldest'}">Сначала старые</span><span th:if="${param.sort == null or param.sort[0] == 'newest'}">Сначала свежие</span></span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="sort-options" id="sortOptions"><div class="sort-option" data-sort="newest">Сначала свежие</div><div class="sort-option" data-sort="oldest">Сначала старые</div></div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-6 mb-3">
+                    <h3>Сортировка по зарплате</h3>
+                    <div class="sort-dropdown" id="priceSortDropdown">
+                        <input type="hidden" id="currentPriceSort" th:value="${currentPriceSort}">
+                        <div class="sort-select" id="priceSortSelect">
+                            <span id="selectedPriceSortText"><span th:if="${param.priceSort != null}"><span th:if="${param.priceSort[0] == 'price_asc'}">По возрастанию</span><span th:if="${param.priceSort[0] == 'price_desc'}">По убыванию</span></span><span th:if="${param.priceSort == null}">По умолчанию</span></span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="sort-options" id="priceSortOptions"><div class="sort-option" data-price-sort="none">По умолчанию</div><div class="sort-option" data-price-sort="price_asc">По возрастанию</div><div class="sort-option" data-price-sort="price_desc">По убыванию</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-6 col-md-6 mb-3">
+                    <h3>Регион</h3>
+                    <div class="region-dropdown" id="regionDropdown">
+                        <div class="region-select" id="regionSelect"><span id="selectedRegionText" th:text="${regions['all']}">Все регионы</span><span class="dropdown-arrow">▼</span></div>
+                        <div class="region-options" id="regionOptions"><div th:each="region : ${regions}" class="region-option" th:attr="data-region=${region.key}" th:text="${region.value}"></div></div>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-6 mb-3">
+                    <h3>Населенный пункт</h3>
+                    <div class="city-dropdown" id="cityDropdown">
+                        <div class="city-select" id="citySelect"><span id="selectedCityText"><span th:if="${selectedCity == 'all' or selectedCity == null}">Все населенные пункты</span><span th:if="${selectedCity == 'other_none'}">Другие населенные пункты</span><span th:if="${selectedCity == 'none'}">Город не указан</span><span th:if="${selectedCity != 'all' and selectedCity != 'other_none' and selectedCity != 'none' and selectedCity != null}"><span th:text="${@regionsConfig.getCityDisplayName(selectedRegion, selectedCity)}"></span></span></span><span class="dropdown-arrow">▼</span></div>
+                        <div class="city-options" id="cityOptions"><div class="city-option" data-city="all">Все населенные пункты</div><div th:if="${citiesByGroup != null and citiesByGroup.containsKey('standard') and not citiesByGroup['standard'].isEmpty()}"><div class="dropdown-divider"></div><div class="city-group-header">Основные города</div><div th:each="city : ${citiesByGroup['standard']}" class="city-option" th:attr="data-city=${city}" th:text="${city}"></div></div><div th:if="${citiesByGroup != null and (citiesByGroup.containsKey('other') or citiesByGroup.containsKey('none'))}"><div class="dropdown-divider"></div><div class="city-group-header">Другие варианты</div><div th:if="${citiesByGroup.containsKey('other')}"><div class="city-option" data-city="other_none">Другие населенные пункты</div></div><div th:if="${citiesByGroup.containsKey('none')}"><div class="city-option" data-city="none">Город не указан</div></div></div></div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-6 col-md-6 mb-3">
+                    <h3>Опыт работы</h3>
+                    <div class="experience-dropdown" id="experienceDropdown">
+                        <div class="experience-select" id="experienceSelect">
+                            <span id="selectedExperienceText"><span th:if="${selectedExperience == null or selectedExperience == 'all'}">Не имеет значение</span><span th:if="${selectedExperience != null and selectedExperience != 'all'}"><span th:text="${experienceConfig.getExperienDisplayName(selectedExperience)}"></span></span></span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="experience-options" id="experienceOptions">
+                            <div th:each="exp : ${experience}" class="experience-option" th:attr="data-experience=${exp.key}" th:text="${exp.value}"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-6 col-md-6 mb-3"><h3>Формат работы</h3>
+                    <div class="workformat-dropdown" id="workformatDropdown">
+                        <div class="workformat-select" id="workformatSelect">
+                            <span id="selectedWorkformatText">
+                                    <span th:if="${selectedWorkformat == null or selectedWorkformat == 'all'}">Все</span>
+                                            <span th:if="${selectedWorkformat != null and selectedWorkformat != 'all'}">
+                                            <span th:text="${workFormatVacancyConfig.getWorkformatDisplayName(selectedWorkformat)}"></span>
+                                    </span>
+                            </span>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                        <div class="workformat-options" id="workformatOptions">
+                            <div th:each="wor : ${workformat}" class="workformat-option" th:attr="data-workformat=${wor.key}" th:text="${wor.value}"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Бейджи фильтров -->
+            <div class="row">
+                <div th:if="${selectedCategory != 'all' or selectedRegion != 'all' or selectedCity != 'all' or selectedExperience != 'all'}" class="current-filters-badge col-12">
+                    <div th:if="${selectedCategory != 'all'}" class="mb-2"><span class="badge bg-success fs-6">Категория: <span th:text="${@postVacancyCategoryConfig.getCategoryDisplayName(selectedCategory)}"></span></span></div>
+                    <div th:if="${selectedRegion != 'all'}"><span class="badge bg-info fs-6">Регион: <span th:text="${@regionsConfig.getRegionDisplayName(selectedRegion)}"></span></span></div>
+                    <div th:if="${selectedCity != 'all' and selectedCity != null and selectedCity != 'none' and selectedCity != 'other_none'}" class="mb-2"><span class="badge bg-warning fs-6">Город: <span th:text="${@regionsConfig.getCityDisplayName(selectedRegion, selectedCity)}"></span></span></div>
+                    <div th:if="${selectedCity == 'none'}" class="mb-2"><span class="badge bg-warning fs-6">Город: Не указан</span></div>
+                    <div th:if="${selectedCity == 'other_none'}" class="mb-2"><span class="badge bg-warning fs-6">Город: Другие населенные пункты</span></div>
+                    <div th:if="${selectedExperience != null and selectedExperience != 'all'}" class="mb-2"><span class="badge bg-success fs-6">Опыт: <span th:text="${@experienceVacancyCategoryConfig.getExperienDisplayName(selectedExperience)}"></span></span></div>
+
+                    <div th:if="${selectedWorkformat != null and selectedWorkformat != 'all'}" class="mb-2">
+                            <span class="badge bg-success fs-6">Формат:
+                                 <span th:text="${workFormatVacancyConfig.getWorkformatDisplayName(selectedWorkformat)}"></span>
+                            </span>
+                    </div>
+
+                </div>
+                <div th:if="${selectedCategory != 'all' or selectedRegion != 'all' or selectedCity != 'all' or selectedExperience != 'all' or selectedWorkformat != 'all'}" class="col-12 mb-3">
+                    <a th:href="@{/page_one/viewsonevac}" class="btn btn-warning"><i class="fas fa-times-circle me-2"></i>Сбросить все фильтры</a>
+                </div>
+            </div>
+
+            <!-- Поиск -->
+            <div class="row"><div class="col-12 col-md-6"><h3>Поиск по вакансиям</h3><div class="input-group"><input type="text" id="searchInput" class="form-control" placeholder="Поиск..."><button class="btn btn-outline-secondary" type="button" id="searchButton"><i class="fas fa-search"></i><span class="search-btn-text" style="display: none;">Найти</span></button><button class="btn btn-outline-danger" type="button" id="clearSearchButton"><i class="fas fa-times"></i><span class="clear-btn-text" style="display: none;">Отмена</span></button></div></div></div>
+        </div>
+
+        <!-- Контейнер для постов -->
+
+        <div id="postsContainer" class="row">
+            <div th:each="el : ${vacvac}" class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                <!-- Динамический класс для карточки в зависимости от статуса -->
+                <div th:class="${el.premium} ? 'post-card-premium' : (${el.donate} ? 'post-card-donate' : 'post-card')">
+                    <div th:if="${el.firstImagePath} != null">
+                        <img th:src="${el.firstImagePath}" class="post-image img-fluid" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='/images/no-image.jpg'; this.classList.add('image-error');" th:alt="${el.title}">
+                    </div>
+                    <div th:unless="${el.firstImagePath}" class="post-image-placeholder d-flex align-items-center justify-content-center bg-light">
+                        <i class="fas fa-image fa-3x text-muted"></i>
+                    </div>
+
+                    <div class="post-content">
+                        <h5 class="post-title" th:text="${el.title}"></h5>
+                        <strong>Зарплата:</strong>
+                        <p class="post-anons" th:text="${el.cash}"></p>
+
+                        <a th:href="'/postidviewsvac/' + ${el.hashId}" class="btn btn-edit w-100 mb-2">
+                            <i class="fas fa-eye me-1"></i> Детальнее
+                        </a>
+
+                        <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')') or #authorization.expression('hasRole(''ROLE_SUPER'')')}" class="post-buttons">
+                            <form th:action="'/viewsonevac/vacancy/' + ${el.hashId} + '/toggle-block'" method="post" class="d-inline w-50">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button class="btn btn-mod w-100 toggle-block-btn" type="button" th:classappend="${el.blocked} ? 'btn-success' : 'btn-secondary'" th:attr="data-post-type='вакансию'" th:title="${el.blocked} ? 'Разблокировать' : 'Заблокировать'">
+                                    <i th:class="${el.blocked} ? 'fas fa-unlock' : 'fas fa-ban'"></i>
+                                    <span class="d-none d-md-inline" th:text="${el.blocked} ? ' Разблок.' : ' Блок.'"></span>
+                                </button>
+                            </form>
+                            <form th:action="'/viewsonevac/vacancy/' + ${el.hashId} + '/remove'" method="post" class="d-inline w-50">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button class="btn btn-mod btn-danger w-100 delete-post-btn" type="button" data-post-type="вакансию" title="Удалить">
+                                    <i class="fas fa-trash"></i>
+                                    <span class="d-none d-md-inline"> Удалить</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${vacvac.isEmpty()}" class="text-center mt-5"><h4 style="color: #6c757d;">Вакансии не найдены</h4><p class="text-muted">Попробуйте изменить параметры поиска или выбрать другую категорию</p></div>
+
+        <div th:if="${hasMore and not vacvac.isEmpty()}" class="text-center mt-4 mb-5" id="loadMoreContainer"><button id="loadMoreBtn" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Показать еще</button><div id="loadingSpinner" class="mt-2" style="display: none;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Загрузка...</span></div><p class="text-muted mt-2">Загружаем еще вакансии...</p></div></div>
+        <div th:if="${not hasMore and not vacvac.isEmpty()}" class="text-center mt-4 mb-5" id="allLoadedMessage"><p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все вакансии загружены</p></div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/functions/menu_cat.js"></script>
+<script type="text/javascript" src="/js/functions/vacancy_search.js"></script>
+<script type="text/javascript" src="/js/functions/sort_date.js"></script>
+<script type="text/javascript" src="/js/functions/rating.js"></script>
+<script type="text/javascript" src="/js/functions/sort_price.js"></script>
+<script type="text/javascript" src="/js/functions/menu_region.js"></script>
+<script type="text/javascript" src="/js/functions/city_config.js"></script>
+<script type="text/javascript" src="/js/functions/menu_city.js"></script>
+<script type="text/javascript" src="/js/functions/menu_experience_vac.js"></script>
+<script type="text/javascript" src="/js/paginationPost/load-more-vacancies.js"></script>
+<script type="text/javascript" src="/js/functions/menu_work_vac_format.js"></script>
+
+<!-- Модальные окна -->
+<div class="modal fade" id="toggleBlockModal" tabindex="-1" aria-labelledby="toggleBlockModalLabel" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Подтверждение действия</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="toggleBlockModalBody"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button><form id="toggleBlockForm" method="post"><input type="hidden" name="_csrf" th:value="${_csrf.token}"/><button type="submit" class="btn" id="toggleBlockConfirmBtn">Подтвердить</button></form></div></div></div></div>
+<div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header bg-danger text-white"><h5 class="modal-title">Подтверждение удаления</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="deletePostModalBody"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button><form id="deletePostForm" method="post"><input type="hidden" name="_csrf" th:value="${_csrf.token}"/><button type="submit" class="btn btn-danger">Удалить</button></form></div></div></div></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(e) {
+            if (e.target.closest('.toggle-block-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.toggle-block-btn');
+                const form = button.closest('form');
+                const action = form.getAttribute('action');
+                const isBlocked = button.classList.contains('btn-success') ? false : true;
+                const postType = button.getAttribute('data-post-type') || 'вакансию';
+                const actionText = isBlocked ? 'заблокировать' : 'разблокировать';
+                document.getElementById('toggleBlockModalBody').innerHTML = `Вы уверены, что хотите <strong>${actionText}</strong> эту ${postType}?`;
+                const confirmBtn = document.getElementById('toggleBlockConfirmBtn');
+                confirmBtn.className = isBlocked ? 'btn btn-warning' : 'btn btn-success';
+                confirmBtn.textContent = isBlocked ? 'Заблокировать' : 'Разблокировать';
+                const modalForm = document.getElementById('toggleBlockForm');
+                modalForm.setAttribute('action', action);
+                const csrfInput = form.querySelector('input[name="_csrf"]');
+                if (csrfInput) { const modalCsrfInput = modalForm.querySelector('input[name="_csrf"]'); modalCsrfInput.value = csrfInput.value; }
+                new bootstrap.Modal(document.getElementById('toggleBlockModal')).show();
+            }
+            if (e.target.closest('.delete-post-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.delete-post-btn');
+                const form = button.closest('form');
+                const action = form.getAttribute('action');
+                const postType = button.getAttribute('data-post-type') || 'вакансию';
+                document.getElementById('deletePostModalBody').innerHTML = `Вы уверены, что хотите <strong>удалить</strong> эту ${postType}? Это действие нельзя отменить!`;
+                const modalForm = document.getElementById('deletePostForm');
+                modalForm.setAttribute('action', action);
+                const csrfInput = form.querySelector('input[name="_csrf"]');
+                if (csrfInput) { const modalCsrfInput = modalForm.querySelector('input[name="_csrf"]'); modalCsrfInput.value = csrfInput.value; }
+                new bootstrap.Modal(document.getElementById('deletePostModal')).show();
+            }
+        });
+    });
+</script>
+</body>
+</html>

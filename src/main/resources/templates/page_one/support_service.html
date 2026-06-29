@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Служба поддержки</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <!-- Используем обновленный CSS для поддержки -->
+    <link rel="stylesheet" th:href="@{/css/support_service.css}">
+</head>
+
+<!-- Добавляем data-атрибуты как в reviews.html для единой системы -->
+<body th:attr="data-is-super=${#authorization.expression('hasRole(''SUPER'')') ? 'true' : 'false'},
+             data-is-admin=${#authorization.expression('hasRole(''ADMIN'')') ? 'true' : 'false'},
+             data-user-role=${currentUser != null ? currentUser.role : ''},
+             data-current-user-id=${currentUser != null ? currentUser.id : ''}">
+
+<script type="text/javascript" src="/js/supports/support_person.js"></script>
+
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="about-content">
+        <h2 class="about-title mb-4">Служба поддержки</h2>
+
+        <!-- Навигация по категориям -->
+        <div class="row g-4 mb-5">
+            <div th:each="entry : ${categories}" class="col-md-6 col-lg-4">
+                <div class="card category-card h-100 shadow-sm border-0 rounded-3
+                            text-center transition-all"
+                     th:classappend="${unreadCategories.contains(entry.key)} ? 'border-warning border-2' : ''"
+                     th:attr="data-category=${entry.key}"
+                     onclick="selectCategoryFromCard(this)">
+                    <div class="card-body p-4 d-flex flex-column align-items-center">
+                        <i class="fas fa-folder-open fa-2x text-primary mb-3"></i>
+                        <h5 class="card-title fw-bold mb-0">
+                            <span th:text="${entry.value}"></span>
+                        </h5>
+                        <i th:if="${unreadCategories.contains(entry.key)}"
+                           class="fas fa-bell text-warning mt-2 fs-6"
+                           title="Есть непрочитанные или нераспределенные тикеты"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок выбранной категории -->
+        <div th:if="${selectedCategory}" class="selected-category-section mt-4">
+
+            <!-- Скрытые поля для JS -->
+            <input type="hidden" id="selectedCategory" th:value="${selectedCategory}">
+            <input type="hidden" id="currentUserId" th:value="${currentUser.id}">
+            <input type="hidden" id="currentUserData"
+                   th:attr="data-user-id=${currentUser.id},
+                            data-user-nameuse=${currentUser.nameuse},
+                            data-user-role=${currentUser.role}">
+
+            <!-- Заголовок выбранной категории -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h3 class="text-primary mb-2 mb-md-0" th:text="${categories.get(selectedCategory)}"></h3>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="/support_service" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> К категориям
+                    </a>
+                    <button class="btn btn-outline-primary btn-sm" onclick="collapseAll()">
+                        <i class="fas fa-chevron-up me-1"></i> Свернуть все
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" onclick="expandAll()">
+                        <i class="fas fa-chevron-down me-1"></i> Развернуть все
+                    </button>
+                </div>
+            </div>
+
+            <!-- Форма добавления комментария -->
+            <div class="comment-form mb-5">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-header bg-primary bg-opacity-10 border-0 rounded-top-4 py-3">
+                        <h5 class="mb-0 text-primary">
+                            <i class="fas fa-edit me-2"></i>Ваше сообщение
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{|/support_service/${selectedCategory}/comment|}"
+                              method="post" id="support-comment-form">
+                            <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="parentCommentId" id="parentCommentId" value="">
+                            <input type="hidden" name="replyId" id="replyId" value="">
+
+                            <!-- Блок ответа на комментарий -->
+                            <div id="replyTo" class="alert alert-info mb-3" style="display: none;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-reply me-2"></i>
+                                        <strong>Ответ на комментарий:</strong> <span id="replyToText"></span>
+                                    </div>
+                                    <button type="button" class="btn-close btn-sm" onclick="cancelReply()"></button>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="commentText" class="form-label fw-bold">Текст сообщения</label>
+                                <textarea name="text" class="form-control" id="commentText" rows="4" required
+                                          placeholder="Опишите вашу проблему или вопрос..."></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success px-4">
+                                    <i class="fas fa-paper-plane me-2"></i>Отправить
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="cancelReply()"
+                                        style="display: none;" id="cancelReplyBtn">
+                                    <i class="fas fa-times me-2"></i>Отменить ответ
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция комментариев -->
+            <div class="reviews-section">
+                <h3 class="mb-4">
+                    <i class="fas fa-comments me-2 text-primary"></i>Обсуждение
+                </h3>
+                <div id="commentsContainer">
+                    <!-- Сюда динамически подгружаются комментарии через JS -->
+                </div>
+
+                <div id="loadMoreCommentsContainer" class="text-center mt-4" style="display: none;">
+                    <button id="loadMoreCommentsBtn" class="btn btn-primary px-4">
+                        <i class="fas fa-plus-circle me-2"></i>Показать еще сообщения
+                    </button>
+                </div>
+
+                <div id="allLoadedCommentsMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>Все сообщения загружены
+                    </p>
+                </div>
+
+                <div id="noCommentsMessage" class="text-center py-5" style="display: none;">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body py-5">
+                            <i class="fas fa-comments fa-4x text-muted mb-4"></i>
+                            <h4 class="text-muted mb-3">Сообщений пока нет</h4>
+                            <p class="text-muted mb-0">Будьте первым, кто оставит сообщение в этой категории</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Сообщение когда категория не выбрана -->
+        <div th:unless="${selectedCategory}" class="text-center py-5 mt-4 bg-light rounded-4">
+            <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+            <p class="text-muted fs-5">Выберите категорию для просмотра обращений</p>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/supportAndfavor/load-more-support.js"></script>
+<script type="text/javascript" src="/js/supports/support_notifications.js"></script>
+<script type="text/javascript" src="/js/supports/support-permissions.js"></script>
+
+<script>
+    // --- FIX для STICKY HEADER (как на странице отзывов) ---
+    // Добавляем класс body, когда хедер становится липким, чтобы контент не прилипал к шапке
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.querySelector('header');
+        if (!header) return;
+
+        const observer = new ResizeObserver(() => {
+            const isSticky = window.getComputedStyle(header).position === 'sticky';
+            if (isSticky) {
+                document.body.classList.add('has-sticky-header');
+                // Выставляем отступ равный высоте хедера
+                document.querySelector('.container-wrapper').style.paddingTop = header.offsetHeight + 'px';
+            } else {
+                document.body.classList.remove('has-sticky-header');
+                document.querySelector('.container-wrapper').style.paddingTop = '0px';
+            }
+        });
+        observer.observe(header);
+
+        // Первоначальная проверка
+        if (window.getComputedStyle(header).position === 'sticky') {
+            document.body.classList.add('has-sticky-header');
+            document.querySelector('.container-wrapper').style.paddingTop = header.offsetHeight + 'px';
+        }
+    });
+    // --- Конец FIX ---
+
+    // Автоматическое обновление при удалении тикета
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageType = /*[[${messageType}]]*/ null;
+        const messageTitle = /*[[${messageTitle}]]*/ null;
+        const messageText = /*[[${messageText}]]*/ null;
+
+        if (messageType === 'error' &&
+            (messageTitle === 'Тикет не найден' ||
+                messageTitle === 'Пользователь не найден' ||
+                (messageText && messageText.includes('удален')))) {
+
+            setTimeout(function() {
+                window.location.reload();
+            }, 2000);
+        }
+    });
+</script>
+
+<!-- Модальное окно подтверждения действий -->
+<div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="confirmActionModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Подтверждение
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0" id="confirmActionModalBody">
+                Вы уверены, что хотите выполнить это действие?
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-danger" id="confirmActionButton">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Детальный просмотр</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylepostidviews.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+
+    <!-- Переключение между типами комментариев -->
+    <div class="comments-tabs mb-4">
+        <ul class="nav nav-tabs" id="commentsTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" th:classappend="${!isPrivateTabActive} ? 'active' : ''"
+                        id="public-tab" data-bs-toggle="tab" data-bs-target="#public-comments" type="button" role="tab">
+                    Общие комментарии
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" th:classappend="${isPrivateTabActive} ? 'active' : ''"
+                        id="private-tab" data-bs-toggle="tab" data-bs-target="#private-comments" type="button" role="tab">
+                    Личные комментарии
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Содержимое вкладок -->
+    <div class="tab-content" id="commentsTabContent">
+
+        <!-- Вкладка личных комментариев -->
+        <div class="tab-pane fade" th:classappend="${isPrivateTabActive} ? 'show active' : ''"
+             id="private-comments" role="tabpanel">
+            <div class="comments-section">
+                <h3>Личные комментарии</h3>
+
+                <!-- Форма для личных комментариев с ответами -->
+                <div th:if="${#authentication.isAuthenticated()}" class="comment-form">
+                    <form th:action="@{/postidviews/{id}/commentPersonal(id=${postwo[0].id})}" method="post" id="private-comment-form">
+                        <input type="hidden" name="parentCommentId" id="parentCommentId" value="">
+
+                        <!-- Блок отображения ответа на комментарий -->
+                        <div id="replyTo" class="alert alert-info mb-2" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small><strong>Ответ на комментарий:</strong> <span id="replyToText"></span></small>
+                                <button type="button" class="btn-close btn-sm" onclick="cancelReply()" aria-label="Отменить ответ"></button>
+                            </div>
+                        </div>
+
+                        <textarea name="text" class="form-control mb-3" rows="3" required
+                                  placeholder="Ваш личный комментарий..." id="commentText"></textarea>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelReply()"
+                                    style="display: none;" id="cancelReplyBtn">Отменить ответ</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Древовидный список личных комментариев -->
+                <div class="comments-tree">
+                    <div th:each="comment : ${commentsPersonal}"
+                         th:if="${comment.parentComment == null}"
+                         class="comment-item">
+                        <!-- Основной комментарий -->
+                        <div class="comment-card private-comment mb-3">
+                            <div class="comment-header">
+                                <span class="comment-user" th:text="${comment.user.username}"></span>
+                                <span class="comment-user" th:text="${comment.user.nameuse}"></span>
+                                <small class="comment-date" th:text="${#temporals.format(comment.createdAt, 'dd.MM.yyyy HH:mm')}"></small>
+                            </div>
+                            <p th:text="${comment.text}"></p>
+
+                            <div class="comment-actions">
+                                <button class="btn btn-sm btn-outline-primary reply-btn"
+                                        th:attr="data-comment-id=${comment.id},
+                 data-username=${comment.user.username},
+                 data-nameuse=${comment.user.nameuse},
+                 data-comment-text=${comment.text}">
+                                    Ответить
+                                </button>
+
+                                <!-- кнопка удаления комментариев - ТОЛЬКО ДЛЯ SUPER -->
+                                <div th:if="${#authorization.expression('hasRole(''SUPER'')')}" class="d-inline-block ms-2">
+                                    <form th:action="@{/postidviews/{postId}/commentPersonal/{commentPersonalId}/delete(postId=${postwo[0].id}, commentPersonalId=${comment.id})}"
+                                          method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Удалить этот комментарий?')">Удалить</button>
+                                    </form>
+
+                                    <!-- НОВАЯ КНОПКА: Удалить всю ветку -->
+                                    <form th:action="@{/postidviews/{postId}/commentPersonal/{commentPersonalId}/deleteBranch(postId=${postwo[0].id}, commentPersonalId=${comment.id})}"
+                                          method="post" class="d-inline ms-1">
+                                        <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Удалить ВСЮ ветку переписки? Это действие нельзя отменить!')">
+                                            Удалить ветку
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ответы на этот комментарий -->
+                        <div class="comment-replies ms-4">
+                            <div th:each="reply : ${commentRepoPersonal.findByParentCommentIdOrderByCreatedAtAsc(comment.id)}"
+                                 class="comment-card private-comment reply-comment mb-2">
+                                <div class="comment-header">
+                                    <span class="comment-user" th:text="${reply.user.username}"></span>
+                                    <span class="comment-user" th:text="${reply.user.nameuse}"></span>
+                                    <small class="comment-date" th:text="${#temporals.format(reply.createdAt, 'dd.MM.yyyy HH:mm')}"></small>
+                                </div>
+                                <p th:text="${reply.text}"></p>
+
+                                <div class="comment-actions">
+                                    <button class="btn btn-sm btn-outline-primary reply-btn"
+                                            th:attr="data-comment-id=${comment.id},
+                           data-username=${reply.user.username},
+                           data-nameuse=${reply.user.nameuse},
+                           data-comment-text=${reply.text}">
+                                        Ответить
+                                    </button>
+
+                                    <!-- кнопка удаления для ответа - ТОЛЬКО ДЛЯ SUPER -->
+                                    <div th:if="${#authorization.expression('hasRole(''SUPER'')')}" class="d-inline-block ms-2">
+                                        <form th:action="@{/postidviews/{postId}/commentPersonal/{commentPersonalId}/delete(postId=${postwo[0].id}, commentPersonalId=${reply.id})}"
+                                              method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Удалить этот комментарий?')">Удалить</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Сообщение если нет комментариев -->
+                <div th:if="${#lists.isEmpty(commentsPersonal)}" class="no-comments">
+                    <p class="text-muted">Пока нет личных комментариев</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/comment-post/respons_comment.js"></script>
+</body>
+</html>

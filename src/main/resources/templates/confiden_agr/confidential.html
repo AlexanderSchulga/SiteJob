@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Политика конфиденциальности</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/css/styleconfideagr.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="about-content">
+        <div class="about-title-wrapper">
+            <h1 class="about-title">
+                <i class="bi bi-shield-lock"></i> Политика конфиденциальности
+            </h1>
+        </div>
+
+        <div th:each="el : ${conf}" class="content-block">
+            <p class="post-full-text" th:text="${el.confiden}"></p>
+        </div>
+
+        <div class="text-center mt-4">
+            <a th:href="@{/}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Вернуться на главную
+            </a>
+        </div>
+    </div>
+</div>
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

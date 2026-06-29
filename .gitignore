@@ -1,0 +1,68 @@
+# ===== APPLICATION CONFIGS =====
+# Полностью исключаем все конфиги с секретами
+application*.properties
+application*.yml
+application*.yaml
+
+# НО разрешаем шаблоны (без секретов)
+!application-template.properties
+!application-dev-template.properties
+!application-example.yml
+
+# ===== ОСТАЛЬНЫЕ ПРАВИЛА =====
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### Logs ###
+*.log
+logs/
+
+### OS files ###
+.DS_Store
+Thumbs.db
+*.tmp
+
+### Uploads ###
+uploads/
+/var/www/sitejob/uploads/
+
+### SSL Certificates ###
+*.p12
+*.jks
+*.keystore
+*.truststore
+*.crt
+*.key
+*.pem
+
+### Backups ###
+*.sql
+*.bak
+*.backup
+/opt/backups/
+
+### System files ###
+*.swp
+*.swo
+*~

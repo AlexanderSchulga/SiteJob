@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- ============================================ -->
+    <!-- SiteJob - Конфигурация логирования           -->
+    <!-- Ротация: ежедневно или при 100MB             -->
+    <!-- Хранение: 30 дней                            -->
+    <!-- Сжатие: старые логи в .gz                    -->
+    <!-- ============================================ -->
+
+    <!-- Переменные окружения -->
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path" defaultValue="./logs"/>
+    <springProperty scope="context" name="LOG_LEVEL_ROOT" source="logging.level.root" defaultValue="INFO"/>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="SiteJob"/>
+
+    <!-- Формат вывода логов -->
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+    <property name="LOG_PATTERN_CONSOLE" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{36}) - %msg%n"/>
+
+    <!-- ===== Консольный вывод (цветной для dev) ===== -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN_CONSOLE}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ===== Файловый вывод с ротацией по времени и размеру ===== -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/application.log</file>
+
+        <!-- Политика ротации: по времени (ежедневно) И по размеру -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Имя архивного файла: дата + индекс + сжатие -->
+            <fileNamePattern>${LOG_PATH}/application.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+
+            <!-- Хранить логи 30 дней -->
+            <maxHistory>30</maxHistory>
+
+            <!-- Максимальный размер одного файла перед ротацией -->
+            <maxFileSize>100MB</maxFileSize>
+
+            <!-- Общий максимальный размер всех архивов -->
+            <totalSizeCap>3GB</totalSizeCap>
+
+            <!-- Очищать старые логи при запуске -->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ===== Отдельный файл для ошибок (только ERROR уровень) ===== -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/error.log</file>
+
+        <!-- Фильтр: только ERROR уровень -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxHistory>60</maxHistory> <!-- Ошибки храним дольше - 60 дней -->
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>2GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ===== Отдельный файл для аудита и важных действий ===== -->
+    <appender name="AUDIT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/audit.log</file>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/audit.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxHistory>90</maxHistory> <!-- Аудит храним 90 дней -->
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>1GB</totalSizeCap>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ===== Логирование SQL запросов (для отладки, опционально) ===== -->
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </logger>
+
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- ===== Логирование транзакций ===== -->
+    <logger name="org.springframework.transaction" level="INFO" additivity="false">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- ===== Логирование кэша ===== -->
+    <logger name="org.springframework.cache" level="INFO" additivity="false">
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <logger name="jobforsite.sitejob.module.users.service.UserCacheService" level="INFO" additivity="false">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- ===== Логирование безопасности ===== -->
+    <logger name="org.springframework.security" level="WARN" additivity="false">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </logger>
+
+    <!-- ===== Логирование приложения ===== -->
+    <logger name="jobforsite.sitejob" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </logger>
+
+    <!-- ===== Аудит: важные действия (логины, создание постов и т.д.) ===== -->
+    <logger name="AUDIT" level="INFO" additivity="false">
+        <appender-ref ref="AUDIT_FILE"/>
+    </logger>
+
+    <!-- ===== Корневой логгер ===== -->
+    <root level="${LOG_LEVEL_ROOT}">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+
+</configuration>

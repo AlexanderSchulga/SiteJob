@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новое объявление на модерацию</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f4f6f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .header {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #000;
+            padding: 30px 25px;
+            text-align: center;
+        }
+        .header-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        .content {
+            padding: 30px 25px;
+        }
+        .greeting {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .greeting strong {
+            color: #ff9800;
+        }
+        .post-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .post-field {
+            display: flex;
+            padding: 6px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .post-field:last-child {
+            border-bottom: none;
+        }
+        .post-field-label {
+            font-weight: 600;
+            color: #555;
+            width: 120px;
+            flex-shrink: 0;
+        }
+        .post-field-value {
+            color: #333;
+            word-break: break-word;
+        }
+        .post-field-value .badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-product { background: #e3f2fd; color: #1565c0; }
+        .badge-service { background: #e8f5e9; color: #2e7d32; }
+        .badge-vacancy { background: #fce4ec; color: #c62828; }
+        .badge-resume { background: #f3e5f5; color: #6a1b9a; }
+
+        .actions {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 35px;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #000 !important;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(255, 193, 7, 0.3);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 193, 7, 0.4);
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff !important;
+            padding: 10px 25px;
+            font-size: 14px;
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: none;
+            transform: translateY(-1px);
+        }
+        .links {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f1f3f5;
+            border-radius: 8px;
+        }
+        .links p {
+            font-size: 13px;
+            color: #666;
+            margin: 5px 0;
+            word-break: break-all;
+        }
+        .links a {
+            color: #ff9800;
+            text-decoration: none;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .info-box .icon {
+            margin-right: 8px;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 25px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            border-top: 1px solid #e9ecef;
+        }
+        .footer a {
+            color: #ff9800;
+            text-decoration: none;
+        }
+        @media (max-width: 480px) {
+            .post-field {
+                flex-direction: column;
+                padding: 8px 0;
+            }
+            .post-field-label {
+                width: 100%;
+                font-size: 13px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .btn {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- HEADER -->
+    <div class="header">
+        <span class="header-icon">📋</span>
+        <h1>Новое объявление на модерацию</h1>
+        <p>Требуется ваша проверка</p>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+        <div class="greeting">
+            Здравствуйте, <strong>уважаемый модератор</strong>!
+        </div>
+
+        <p>На сайте <a th:href="${baseUrl}" th:text="${baseUrl}" style="color:#ff9800;text-decoration:none;"></a>
+            появилось новое объявление, которое ожидает вашей проверки.</p>
+
+        <!-- КАРТОЧКА ОБЪЯВЛЕНИЯ -->
+        <div class="post-card">
+            <div class="post-field">
+                <span class="post-field-label">📌 Тип:</span>
+                <span class="post-field-value">
+                        <span class="badge" th:classappend="'badge-' + ${postTypeCode}" th:text="${postType}"></span>
+                    </span>
+            </div>
+            <div class="post-field">
+                <span class="post-field-label">📝 Заголовок:</span>
+                <span class="post-field-value" th:text="${title}">Название</span>
+            </div>
+            <div class="post-field">
+                <span class="post-field-label">👤 Автор:</span>
+                <span class="post-field-value" th:text="${nameUse}">Имя автора</span>
+            </div>
+
+            <div class="post-field" th:if="${location} != 'Не указана'">
+                <span class="post-field-label">📍 Локация:</span>
+                <span class="post-field-value" th:text="${location}">Город</span>
+            </div>
+
+            <div class="post-field">
+                <span class="post-field-label">🕐 Создано:</span>
+                <span class="post-field-value" th:text="${createdAt}">01.01.2024 12:00</span>
+            </div>
+
+        </div>
+
+        <div class="info-box">
+            <span class="icon">⏳</span>
+            <strong>Статус:</strong> Объявление ожидает модерации.
+
+        </div>
+
+        <!-- КНОПКИ ДЕЙСТВИЙ -->
+        <div class="actions">
+            <a th:href="${moderationUrl}" class="btn">🔍 Перейти в панель модерации</a>
+
+        </div>
+
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p>Это автоматическое уведомление с сайта <a th:href="${baseUrl}" th:text="${baseUrl}"></a></p>
+        <p>Пожалуйста, не отвечайте на это письмо.</p>
+        <p style="margin-top:5px;font-size:11px;color:#aaa;">
+            © <span th:text="${currentYear}">2024</span> Все права защищены.
+        </p>
+    </div>
+</div>
+</body>
+</html>

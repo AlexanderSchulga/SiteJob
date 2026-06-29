@@ -1,0 +1,299 @@
+/* styleadmincreateuser.css - исправленная версия */
+
+body, .container-wrapper, .admin-panel, .content-block,
+.card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container-wrapper {
+    max-width: 1200px;
+    margin: 5px auto;
+    padding: 0 15px 80px 15px;
+    min-height: calc(100vh - 160px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ФОРМА СОЗДАНИЯ ПОЛЬЗОВАТЕЛЯ */
+.user-form {
+    background: white;
+    padding: 30px 35px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto 40px auto;
+    transition: all 0.3s ease;
+}
+
+.form-title {
+    color: #343a40;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+h3.form-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #495057;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 8px;
+}
+
+/* ВСЕ ПОЛЯ ВВОДА */
+.form-control,
+.phone-input,
+.form-select,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+select,
+textarea {
+    border: 2px solid #6c757d !important;
+    background-color: #fefefe !important;
+    transition: all 0.2s ease-in-out !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+}
+
+.form-control:focus,
+.phone-input:focus,
+.form-select:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #0d6efd !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25) !important;
+    outline: none !important;
+}
+
+.form-label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 8px !important;
+    font-size: 0.9rem;
+}
+
+.form-text {
+    color: #6c757d !important;
+    font-size: 0.75rem !important;
+    margin-top: 5px !important;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
+    border: none !important;
+    font-weight: 600 !important;
+    padding: 12px !important;
+    transition: all 0.2s ease !important;
+    border-radius: 8px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+}
+
+.alert {
+    border-radius: 10px !important;
+    border-left: 4px solid !important;
+    padding: 12px 15px !important;
+    margin-bottom: 20px !important;
+    font-size: 0.9rem;
+}
+
+.alert-danger {
+    background-color: #f8d7da !important;
+    border-left-color: #dc3545 !important;
+    color: #721c24 !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1 !important;
+    border-left-color: #17a2b8 !important;
+    color: #0c5460 !important;
+}
+
+.alert-success {
+    background-color: #d4edda !important;
+    border-left-color: #28a745 !important;
+    color: #155724 !important;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+}
+
+.password-wrapper input {
+    padding-right: 40px;
+}
+
+/* ========== КАСТОМНЫЙ SELECT - ИСПРАВЛЕН (абсолютное позиционирование) ========== */
+.custom-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fefefe;
+    border: 2px solid #6c757d;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-select-trigger:hover {
+    border-color: #0d6efd;
+}
+
+.custom-select-trigger.active {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.custom-select-trigger .arrow {
+    transition: transform 0.2s ease;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.custom-select-trigger.active .arrow {
+    transform: rotate(180deg);
+}
+
+/* ВАЖНО: абсолютное позиционирование, не сдвигает контент */
+.custom-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #0d6efd;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 10000;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.custom-dropdown.show {
+    display: block;
+}
+
+.custom-dropdown-option {
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #eee;
+}
+
+.custom-dropdown-option:last-child {
+    border-bottom: none;
+}
+
+.custom-dropdown-option:hover {
+    background-color: #e9ecef;
+}
+
+.custom-dropdown-option.selected {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.custom-dropdown-option.selected:hover {
+    background-color: #0b5ed7;
+}
+
+/* Поиск внутри выпадающего списка */
+.custom-dropdown-search {
+    padding: 8px;
+    border-bottom: 1px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+}
+
+.custom-dropdown-search input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #6c757d;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.custom-dropdown-search input:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+/* Мобильные */
+@media (max-width: 767px) {
+    .container-wrapper {
+        padding: 0 15px 120px 15px !important;
+    }
+    .user-form {
+        max-width: 500px;
+        padding: 20px 24px;
+        margin: 15px auto 30px auto;
+    }
+    .form-title {
+        font-size: 1.3rem;
+    }
+    h3.form-title {
+        font-size: 1rem;
+    }
+    .form-control, .phone-input, .form-select,
+    .custom-select-trigger {
+        padding: 8px 12px !important;
+        font-size: 14px !important;
+    }
+    .custom-dropdown-option {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-form {
+        max-width: 94%;
+        padding: 18px 20px;
+    }
+    .form-title {
+        font-size: 1.2rem;
+    }
+}

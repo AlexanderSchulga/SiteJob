@@ -1,0 +1,82 @@
+<div th:fragment="footerhtml">
+    <head>
+        <link rel="stylesheet" th:href="@{/css/stylefooter.css}">
+    </head>
+
+    <!-- Яндекс Метрика -->
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110199438', 'ym');
+
+        ym(110199438, 'init', {
+            ssr: true,                // Для серверного рендеринга
+            webvisor: true,           // Вебвизор для записи сессий
+            trackHash: true,          // Отслеживание хешей (#) для ваших объявлений
+            clickmap: true,           // Карта кликов
+            ecommerce: "dataLayer",   // Для электронной коммерции
+            accurateTrackBounce: true,// Точный показатель отказов
+            trackLinks: true,         // Отслеживание внешних ссылок
+            referrer: document.referrer, // Передаем источник перехода
+            url: location.href           // Передаем текущий URL
+        });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/110199438" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Колонка 1: Бренд -->
+                <div class="footer-col">
+                    <div class="footer-title">Biranaku</div>
+                </div>
+
+                <!-- Колонка 2: Ленты (товары, услуги, вакансии, резюме) -->
+                <div class="footer-col">
+                    <div class="footer-col-title">Ленты</div>
+                    <ul class="footer-list">
+                        <li><a href="/page_one/viewsone" class="footer-link">🛍️ Товары</a></li>
+                        <li><a href="/page_one/viewsonejob" class="footer-link">🔧 Услуги</a></li>
+                        <li><a href="/page_one/viewsonevac" class="footer-link">💼 Вакансии</a></li>
+                        <li><a href="/page_one/viewsoneres" class="footer-link">📄 Резюме</a></li>
+                    </ul>
+                </div>
+
+                <!-- Колонка 3: Информация -->
+                <div class="footer-col">
+                    <div class="footer-col-title">Информация</div>
+                    <ul class="footer-list">
+                        <li><a href="/" class="footer-link">🏠 Главная</a></li>
+                        <li><a href="/about" class="footer-link">📖 О нас</a></li>
+                        <li><a href="/confiden_agr/agreement" class="footer-link">⚖️ Пользовательское соглашение</a></li>
+                        <li><a href="/confiden_agr/confidential" class="footer-link">🔒 Политика конфиденциальности</a></li>
+                    </ul>
+                </div>
+
+                <!-- Колонка 4: Контакты -->
+                <div class="footer-col">
+                    <div class="footer-col-title">Контакты</div>
+                    <ul class="footer-list contact-list">
+                        <li><span class="contact-icon">✉️</span> <a href="mailto:biranaku-connection@yandex.ru" class="footer-link">biranaku-connection@yandex.ru</a></li>
+                        <li><span class="contact-icon">📞</span> <a href="tel:+79999999999" class="footer-link">+7 (999) 999-99-99</a></li>
+                        <li><span class="contact-icon">🕒</span> <span class="contact-text">Пн–Пт: 09:00–22:00</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Нижняя строка с датой -->
+            <div class="footer-bottom">
+                <div class="footer-date" th:text="'© ' + ${#dates.format(#dates.createNow(), 'yyyy')} + ' Biranaku. Все права защищены.'"></div>
+                <div class="footer-date-updated" th:text="${#dates.format(#dates.createNow(), 'dd MMMM yyyy')}"></div>
+            </div>
+        </div>
+    </footer>
+
+    <button onclick="topFunction()" id="myBtn" title="Вернуться наверх">↑ Наверх</button>
+    <script type="text/javascript" src="/js/button_top.js"></script>
+</div>

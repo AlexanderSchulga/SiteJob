@@ -1,0 +1,254 @@
+body, .container-wrapper, .about-content,
+.card, .btn, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* === ГЛАВНЫЙ КОНТЕЙНЕР - ПОЛНОСТЬЮ КАК В INDEX === */
+.container-wrapper {
+    max-width: 1200px;
+    margin: 5px auto;
+    padding: 0 15px;
+    min-height: calc(100vh - 160px);
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* === КОНТЕНТНЫЙ БЛОК - ТАКОЙ ЖЕ КАК .content-block В INDEX === */
+.about-content {
+    background: #e8f9ff;
+    padding: 15px;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    min-height: 300px;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 0 !important;
+    margin-top: 10px !important;
+    position: relative;
+    width: 100%;
+}
+
+/* Заголовок */
+.about-title {
+    color: #360b0b;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    width: 100%;
+}
+
+/* === ВНУТРЕННИЙ БЛОК С ТЕКСТОМ === */
+.content-block {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    width: 100%;
+    border: none;
+}
+
+.content-block h3 {
+    color: #343a40;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.content-block p {
+    color: #2c3e50;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* === КАРТОЧКИ - КАК В INDEX === */
+.card {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 12px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    background-color: #ffffff !important;
+    height: 100%;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.card-title {
+    color: #0d6efd !important;
+    font-weight: 600 !important;
+    margin-bottom: 15px !important;
+}
+
+.card-text {
+    color: #2c3e50 !important;
+    line-height: 1.5;
+}
+
+/* === ПЛЕЙСХОЛДЕР === */
+.content-placeholder {
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 16px;
+    font-weight: bold;
+    min-height: 200px;
+    padding: 40px 20px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* === РЯД С КАРТОЧКАМИ (как в index) === */
+.row.mt-4 {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+    gap: 20px;
+    margin: 0 auto !important;
+    width: 100%;
+    margin-top: 0 !important;
+    padding-top: 15px !important;
+}
+
+/* === АДАПТИВ - ТОЧНО КАК В INDEX === */
+
+/* Планшеты */
+@media (max-width: 1199px) and (min-width: 769px) {
+    .container-wrapper {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+}
+
+/* Мобильные (до 768px) */
+@media (max-width: 768px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+
+    .about-content {
+        padding: 10px;
+        margin: 10px 0;
+        min-height: 250px;
+        border-radius: 14px;
+    }
+
+    .about-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .content-block {
+        padding: 15px;
+        border-radius: 14px;
+        margin: 15px 0;
+    }
+
+    .content-block h3 {
+        font-size: 1.3rem;
+    }
+
+    .content-block p {
+        font-size: 0.9rem;
+    }
+
+    .content-placeholder {
+        font-size: 14px;
+        min-height: 150px;
+        padding: 30px 15px;
+        border-radius: 10px;
+    }
+
+    .card {
+        border-radius: 10px !important;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-text {
+        font-size: 0.85rem;
+    }
+}
+
+/* Маленькие телефоны (до 576px) */
+@media (max-width: 576px) {
+    .container-wrapper {
+        padding: 0 8px;
+    }
+
+    .about-content {
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .about-title {
+        font-size: 1.3rem;
+    }
+
+    .content-block {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .content-block h3 {
+        font-size: 1.2rem;
+    }
+
+    .content-block p {
+        font-size: 0.85rem;
+    }
+
+    .content-placeholder {
+        font-size: 12px;
+        min-height: 120px;
+        padding: 20px 10px;
+        border-radius: 8px;
+    }
+}
+
+/* Очень маленькие (до 360px) */
+@media (max-width: 360px) {
+    .about-content {
+        padding: 6px;
+        border-radius: 10px;
+    }
+
+    .about-title {
+        font-size: 1.1rem;
+    }
+
+    .content-block {
+        padding: 10px;
+        border-radius: 10px;
+    }
+}
+
+/* Большие экраны (от 1200px) */
+@media (min-width: 1200px) {
+    .container-wrapper {
+        max-width: 1300px;
+    }
+
+    .about-content {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .content-block {
+        padding: 20px;
+        border-radius: 20px;
+    }
+}

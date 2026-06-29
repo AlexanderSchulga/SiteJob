@@ -1,0 +1,1036 @@
+body, .container-wrapper, .edit-card,
+.card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.has-sticky-header .container-wrapper {
+    padding-top: 90px !important;
+}
+
+@media (max-width: 768px) {
+    body.has-sticky-header .container-wrapper {
+        padding-top: 120px !important;
+    }
+}
+
+.container-wrapper {
+    transition: padding-top 0.2s ease;
+    max-width: 1200px;
+    margin: 5px auto;
+    padding: 0 15px;
+    min-height: calc(100vh - 160px);
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    .container-wrapper {
+        padding: 0 10px;
+        max-width: 100%;
+    }
+}
+
+/* Карточки */
+.card {
+    border-radius: 12px !important;
+    border: 1px solid #dee2e6 !important;
+    background-color: #ffffff !important;
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-header {
+    background: #00BFFF !important;
+    border: none;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.card-header h5, .card-header .card-title {
+    color: #360b0b !important;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* Статистические бейджи */
+.stat-badge {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.stat-badge i {
+    margin-right: 6px;
+    color: #00BFFF;
+}
+
+/* Кнопки */
+.btn {
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+}
+
+.btn-success {
+    background-color: #17c75c;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-success:hover {
+    background-color: #b0ece0;
+    border-color: #b0ece0;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    color: white;
+}
+
+/* Алерты */
+.alert {
+    border: none;
+    border-radius: 12px;
+}
+
+.alert-info {
+    background-color: #e2f3f5 !important;
+    border-left: 4px solid #17a2b8 !important;
+    color: #0c5460;
+}
+
+/* Формы */
+.form-label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 6px !important;
+    font-size: 0.9rem;
+}
+
+/* Контейнер для полей ввода с ограничением ширины */
+.mb-3 {
+    max-width: 100%;
+}
+
+/* Стили для полей ввода - ширина 50% от родителя, но не более 500px */
+.form-control,
+.form-select,
+textarea {
+    border: 2px solid #6c757d !important;
+    background-color: #fefefe !important;
+    transition: all 0.2s ease-in-out !important;
+    border-radius: 12px !important;
+    padding: 8px 12px !important;
+    font-size: 0.9rem;
+
+    max-width: 500px !important;
+    min-width: 200px !important;
+}
+
+/* Для мобильных устройств - ширина 100% */
+@media (max-width: 768px) {
+    .form-control,
+    .form-select,
+    textarea {
+        width: 100% !important;
+        min-width: unset !important;
+    }
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: #0d6efd !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25) !important;
+    outline: none !important;
+}
+
+.form-text {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.form-check-input {
+    width: 1.1em !important;
+    height: 1.1em !important;
+    cursor: pointer;
+    border-radius: 4px !important;
+}
+
+.form-check-label {
+    margin-left: 0.5rem;
+}
+
+/* ========== КАСТОМНЫЙ SELECT - НЕ ТРОГАТЬ, РАБОТАЕТ ========== */
+.custom-select-wrapper {
+    position: relative;
+    width: 50%;
+    max-width: 500px;
+    min-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .custom-select-wrapper {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+.custom-select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #fefefe;
+    border: 2px solid #6c757d;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    min-height: 42px;
+}
+
+.custom-select-trigger:hover {
+    border-color: #0d6efd;
+}
+
+.custom-select-trigger.active {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.custom-select-trigger .selected-value {
+    color: #2c3e50;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom-select-trigger .arrow {
+    margin-left: 10px;
+    transition: transform 0.2s;
+    color: #6c757d;
+}
+
+.custom-select-trigger.active .arrow {
+    transform: rotate(180deg);
+}
+
+.custom-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #0d6efd;
+    border-radius: 12px;
+    margin-top: 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 10000;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.custom-dropdown.show {
+    display: block;
+}
+
+.custom-dropdown-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.custom-dropdown-option:last-child {
+    border-bottom: none;
+}
+
+.custom-dropdown-option:hover {
+    background: #e8f0fe;
+}
+
+.custom-dropdown-option.selected {
+    background: #0d6efd;
+    color: white;
+}
+
+.custom-dropdown-search {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+}
+
+.custom-dropdown-search input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+
+.custom-dropdown-search input:focus {
+    outline: none;
+    border-color: #0d6efd;
+}
+
+/* Вкладки - как в user_posts */
+.category-tabs {
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 0.75rem;
+}
+
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+    flex-wrap: wrap;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 600;
+    padding: 8px 25px;
+    margin-bottom: -2px;
+    border-radius: 12px 12px 0 0;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: transparent;
+    font-size: 1.1rem;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #78acb3;
+    border-bottom-color: #78acb3;
+    background: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: #000;
+    border-bottom: 2px solid #5a9e6e;
+    background: transparent;
+    font-weight: 700;
+}
+
+.nav-tabs .nav-link i {
+    margin-right: 6px;
+}
+
+/* ========== КАРТОЧКИ ПОСТОВ - ПОЛНОСТЬЮ КАК В USER_POSTS ========== */
+.post-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 10px;
+    padding-bottom: 0 !important;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: #adb5bd;
+}
+
+.post-image-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 2px;
+    background-color: #f8f9fa;
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.post-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.post-image-placeholder {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+
+.post-card:hover .post-image {
+    transform: scale(1.05);
+}
+
+.post-content {
+    padding: 0 0 8px 0;
+    flex: 1;
+}
+
+.post-content small {
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.post-content strong {
+    color: #2c3034;
+    font-weight: 700;
+    margin-right: 5px;
+}
+
+.post-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2c3034;
+    margin-top: 2px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* Баннеры статусов */
+.status-banner {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.status-banner .badge {
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.blocked-banner .badge {
+    background-color: #dc3545;
+    color: white;
+}
+
+.archived-banner .badge {
+    background-color: #6c757d;
+    color: white;
+}
+
+.moderation-banner .badge {
+    background-color: #ffc107;
+    color: #000;
+}
+
+/* Кнопки действий */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: auto;
+}
+
+.action-buttons .btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    border-radius: 8px !important;
+    font-weight: 600;
+}
+
+.btn-mod {
+    padding: 5px 12px;
+    font-size: 0.8rem;
+}
+
+/* ========== СЕКЦИЯ ОБЪЯВЛЕНИЙ ========== */
+.user-posts-section {
+    margin-top: 1.5rem !important;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.user-posts-section .tab-content {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.user-posts-section .tab-pane {
+    width: 100%;
+}
+
+/* Контейнеры для динамической загрузки - flex-сетка как в user_posts */
+#productsContainer,
+#servicesContainer,
+#vacanciesContainer,
+#resumeContainer {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -8px;
+    width: calc(100% + 16px);
+}
+
+#productsContainer > [class*="col-"],
+#servicesContainer > [class*="col-"],
+#vacanciesContainer > [class*="col-"],
+#resumeContainer > [class*="col-"],
+.tab-pane .row {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+/* Кнопки "Показать еще" */
+#loadMoreProductsBtn, #loadMoreServicesBtn, #loadMoreVacanciesBtn, #loadMoreResumeBtn {
+    border-radius: 12px !important;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    background-color: #00BFFF;
+    border-color: #1a3a1a;
+    color: #000000;
+}
+
+#loadMoreProductsBtn:hover, #loadMoreServicesBtn:hover, #loadMoreVacanciesBtn:hover, #loadMoreResumeBtn:hover {
+    background-color: #b0d68e;
+    border-color: #5a9e6e;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+/* Сообщение "все загружено" */
+.all-loaded-message {
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    border: 1px dashed #dee2e6;
+    font-size: 0.8rem;
+}
+
+/* ========== СЕТКА: 4 КАРТОЧКИ В РЯДУ НА БОЛЬШИХ ЭКРАНАХ ========== */
+@media (min-width: 1200px) {
+    .col-xl-3 {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+    }
+    .post-card {
+        padding: 12px;
+        padding-bottom: 0 !important;
+        margin-bottom: 14px;
+    }
+    .post-image, .post-image-placeholder {
+        height: 200px;
+    }
+    .post-title {
+        font-size: 1rem;
+        margin-top: 8px;
+    }
+    .post-content small {
+        font-size: 0.9rem;
+    }
+    .action-buttons .btn {
+        font-size: 0.8rem;
+        padding: 5px 8px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .col-lg-4 {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+    }
+    .post-image, .post-image-placeholder {
+        height: 170px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .col-md-6 {
+        flex: 0 0 33.333333% !important;
+        max-width: 33.333333% !important;
+    }
+    .post-card {
+        padding: 9px;
+        padding-bottom: 0 !important;
+        margin-bottom: 10px;
+    }
+    .post-image, .post-image-placeholder {
+        height: 150px;
+    }
+    .post-title {
+        font-size: 0.9rem;
+    }
+    .post-content small {
+        font-size: 0.8rem;
+    }
+
+    .container-wrapper {
+        padding-left: 60px !important;
+        padding-right: 60px !important;
+    }
+}
+
+
+@media (min-width: 576px) and (max-width: 767px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    .container-wrapper {
+        padding-left: 40px !important;
+        padding-right: 40px !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+
+    .container-wrapper {
+        padding-left: 30px !important;
+        padding-right: 30px !important;
+    }
+}
+
+/* ========== МОБИЛЬНЫЕ НАСТРОЙКИ ========== */
+@media (max-width: 767px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+    .card-body {
+        padding: 20px;
+    }
+    .card-header {
+        padding: 10px 16px;
+    }
+    .form-label {
+        font-size: 0.85rem;
+    }
+    .btn {
+        padding: 8px 18px;
+        font-size: 0.85rem;
+    }
+    .stat-badge {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+    .nav-tabs .nav-link {
+        padding: 5px 12px;
+        font-size: 0.9rem;
+    }
+
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        margin-bottom: 8px !important;
+    }
+    .post-card {
+        padding: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    .post-image, .post-image-placeholder {
+        height: 160px;
+    }
+    .post-title, .post-content, .action-buttons {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    .post-title {
+        font-size: 0.95rem !important;
+    }
+    .post-content small {
+        font-size: 0.85rem !important;
+    }
+    .action-buttons {
+        padding-bottom: 6px;
+    }
+
+    #productsContainer,
+    #servicesContainer,
+    #vacanciesContainer,
+    #resumeContainer {
+        margin: 0 -4px;
+        width: calc(100% + 8px);
+    }
+
+    #productsContainer > [class*="col-"],
+    #servicesContainer > [class*="col-"],
+    #vacanciesContainer > [class*="col-"],
+    #resumeContainer > [class*="col-"] {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+    .card-body {
+        padding: 16px;
+    }
+    .form-label {
+        font-size: 0.8rem;
+    }
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+    .d-flex.gap-2 {
+        flex-direction: column;
+    }
+    .d-flex.gap-2 .btn {
+        width: 100%;
+    }
+    .post-card .post-image {
+        height: 140px;
+    }
+    .stat-badge {
+        font-size: 0.7rem;
+        padding: 5px 8px;
+    }
+    .custom-select-trigger {
+        min-height: 44px;
+        font-size: 0.85rem;
+    }
+    .custom-dropdown {
+        max-height: 200px;
+    }
+    .custom-dropdown-option {
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+    .form-select {
+        font-size: 16px !important;
+        padding: 10px 12px !important;
+    }
+    .custom-select-trigger {
+        min-height: 48px;
+        font-size: 16px;
+    }
+    .custom-dropdown-option {
+        padding: 14px 12px;
+        font-size: 16px;
+    }
+    .custom-dropdown {
+        max-width: calc(100vw - 30px);
+        left: 0 !important;
+        right: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+        margin-bottom: 6px !important;
+    }
+    .post-image, .post-image-placeholder {
+        height: 140px;
+    }
+    .post-title, .post-content, .action-buttons {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+    .post-title {
+        font-size: 0.9rem !important;
+    }
+    .post-content small {
+        font-size: 0.8rem !important;
+    }
+    .action-buttons {
+        padding-bottom: 4px;
+    }
+    .action-buttons .btn {
+        padding: 2px 6px;
+        font-size: 0.7rem;
+    }
+
+    #productsContainer,
+    #servicesContainer,
+    #vacanciesContainer,
+    #resumeContainer {
+        margin: 0 -2px;
+        width: calc(100% + 4px);
+    }
+
+    #productsContainer > [class*="col-"],
+    #servicesContainer > [class*="col-"],
+    #vacanciesContainer > [class*="col-"],
+    #resumeContainer > [class*="col-"] {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .container-wrapper {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        padding-left: 1px !important;
+        padding-right: 1px !important;
+        margin-bottom: 4px !important;
+    }
+    .post-image, .post-image-placeholder {
+        height: 120px;
+    }
+    .post-title {
+        font-size: 0.85rem !important;
+    }
+    .post-title, .post-content, .action-buttons {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+    .action-buttons .btn {
+        padding: 1px 4px;
+        font-size: 0.6rem;
+    }
+
+    .container-wrapper {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}
+
+/* Фикс футера */
+html, body {
+    height: 100%;
+}
+.container-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.main-content {
+    flex: 1 0 auto;
+}
+footer {
+    flex-shrink: 0;
+}
+
+/* Уменьшенные отступы */
+.mb-5 {
+    margin-bottom: 0.75rem !important;
+}
+.mb-4 {
+    margin-bottom: 0.5rem !important;
+}
+.mb-3 {
+    margin-bottom: 0.35rem !important;
+}
+.mt-4 {
+    margin-top: 0.5rem !important;
+}
+
+/* Стили для рейтинга (если используется) */
+.rating-stars {
+    display: inline-flex;
+    gap: 2px;
+}
+
+.rating-stars i {
+    font-size: 0.8rem;
+}
+
+/* Стили для кнопки "Назад к списку" */
+.btn-secondary.btn-sm {
+    border-radius: 12px;
+}
+
+/* Убираем фон у бейджей в табах */
+.badge.bg-primary.ms-1,
+.badge.bg-success.ms-1,
+.badge.bg-danger.ms-1,
+.badge.bg-warning.ms-1 {
+    background-color: transparent !important;
+    color: #6c757d !important;
+    border: none !important;
+}
+
+/* ========== ФИКС ДЛЯ ВЫПАДАЮЩИХ СПИСКОВ - НЕ ПЕРЕКРЫВАЮТ ДРУГ ДРУГА ========== */
+/* Убираем overflow у всех родительских контейнеров */
+.edit-form .card,
+.edit-form .card-body,
+.edit-form .mb-3,
+.edit-form .row,
+.edit-form [class*="col-"] {
+    overflow: visible !important;
+}
+
+/* Кастомные селекты - каждый в своем слое */
+.edit-form .custom-select-wrapper {
+    position: relative;
+    z-index: auto;
+}
+
+/* Активный триггер поднимаем */
+.edit-form .custom-select-trigger.active {
+    position: relative;
+    z-index: 100;
+}
+
+/* Открытый dropdown - высокий z-index */
+.edit-form .custom-dropdown.show {
+    z-index: 1050 !important;
+}
+
+/* Для списка городов - чуть выше, чтобы не перекрывался регионом */
+#cityContainer .custom-dropdown.show,
+select[name="city"] ~ .custom-dropdown.show {
+    z-index: 1060 !important;
+}
+
+/* Для обычного select (город) */
+.edit-form select.form-select {
+    position: relative;
+    z-index: 10;
+}
+
+.edit-form select.form-select:focus {
+    z-index: 15;
+}
+
+
+
+/* ========== ПРЕМИУМ И ДОНАТ КАРТОЧКИ ДЛЯ АДМИНКИ ========== */
+.post-card-premium {
+    background: linear-gradient(145deg, #fff8e7 0%, #fff4d6 100%);
+    border: 1px solid #ffd700;
+    border-radius: 0.6rem;
+    padding: 10px;
+    padding-bottom: 0 !important;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card-premium:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+    border-color: #ffc107;
+}
+
+.post-card-donate {
+    background: linear-gradient(145deg, #f0f0f5 0%, #d7d7fa 100%);
+    border: 1px solid #c0c0c0;
+    border-radius: 0.6rem;
+    padding: 10px;
+    padding-bottom: 0 !important;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card-donate:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(192, 192, 192, 0.3);
+    border-color: #a9a9a9;
+}
+
+.post-card-premium .post-image,
+.post-card-donate .post-image {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Тонкая золотая кайма для премиум */
+.post-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ffd700, #ffec8b, #ffd700);
+}
+
+/* Тонкая серебряная кайма для донат */
+.post-card-donate::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #c0c0c0, #e0e0e0, #c0c0c0);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .post-card-premium,
+    .post-card-donate {
+        padding: 8px;
+        padding-bottom: 0 !important;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .post-card-premium,
+    .post-card-donate {
+        padding: 6px;
+        padding-bottom: 0 !important;
+        margin-bottom: 8px;
+    }
+}
+
+/* Увеличение фото при наведении */
+.post-card-premium:hover .post-image,
+.post-card-donate:hover .post-image {
+    transform: scale(1.05);
+}

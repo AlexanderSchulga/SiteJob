@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="onlineStatus(user)">
+    <span class="user-status" th:if="${user != null}">
+        <span th:text="${user.nameuse}"></span>
+        <span th:class="${user.online} ? 'status-online' : 'status-offline'">
+            <i th:class="${user.online} ? 'fas fa-circle' : 'fas fa-circle'"></i>
+            <span th:text="${user.online} ? ' онлайн' : ' офлайн'"></span>
+        </span>
+    </span>
+</div>

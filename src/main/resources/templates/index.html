@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title th:text="${title} ?: 'Biranaku'">Biranaku</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylehome.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <link rel="stylesheet" th:href="@{/css/carusel.css}">
+    <link rel="stylesheet" th:href="@{/css/carusel_paid.css}">
+</head>
+
+<body>
+
+<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <a href="/" class="main-logo" th:href="@{/}">
+        <img th:src="@{/images/biranaku.png}"
+             alt="Биранаку"
+             onerror="this.classList.add('error')">
+        <span class="logo-fallback">Biranaku</span>
+    </a>
+
+    <div sec:authorize="hasRole('SUPER')" class="admin-panel">
+        <div class="admin-header">
+            <h2 class="admin-title">Панель супер администратора</h2>
+            <small class="user-info" sec:authorize="isAuthenticated()">
+                <span th:text="${#authentication.principal.nameuse}"></span>
+            </small>
+        </div>
+
+        <div class="admin-buttons">
+            <a th:href="@{/admin-create-user}" class="btn btn-danger btn-admin">Создать пользователя</a>
+            <a th:href="@{/users}" class="btn btn-danger btn-admin">Управление пользователями</a>
+            <a th:href="@{/page_two/viewstwo}" class="btn btn-danger btn-admin">Товар</a>
+            <a th:href="@{/page_two/viewstwojob}" class="btn btn-danger btn-admin">Услуга</a>
+            <a th:href="@{/page_two/viewstwovac}" class="btn btn-danger btn-admin">Вакансия</a>
+            <a th:href="@{/page_two/viewstwores}" class="btn btn-danger btn-admin">Резюме</a>
+            <a th:href="@{/page_two/redactorblocked}" class="btn btn-warning btn-admin position-relative">
+                Заблокированные
+                <span th:if="${hasBlockedPosts}" class="position-absolute top-0 start-100 translate-middle p-1 p-sm-2 bg-danger border border-light rounded-circle">
+                    <i class="fas fa-ban" style="font-size: 0.7rem;"></i>
+                    <span th:text="${blockedPostsCount}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                          style="font-size: 0.5em; padding: 0.15em 0.3em;"></span>
+                    <span class="visually-hidden">Заблокированные объявления</span>
+                </span>
+            </a>
+            <a th:href="@{/page_two/moderat}"
+               class="btn btn-admin moderation-btn"
+               id="moderationBtn">
+                Модерация
+                <span th:if="${hasModerationPosts}"
+                      class="badge bg-warning text-dark ms-1"
+                      id="moderationBadge">
+        <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+        <span th:text="${moderationCount}"></span>
+    </span>
+            </a>
+        </div>
+    </div>
+
+    <div sec:authorize="hasRole('ADMIN') and !hasRole('SUPER')" class="admin-panel">
+        <div class="admin-header">
+            <h2 class="admin-title">Панель администратора</h2>
+            <small class="user-info" sec:authorize="isAuthenticated()">
+                <span th:text="${#authentication.principal.nameuse}"></span>
+            </small>
+        </div>
+
+        <div class="admin-buttons">
+            <a th:href="@{/users}" class="btn btn-danger btn-admin">Управление пользователями</a>
+            <a th:href="@{/page_two/redactorblocked}" class="btn btn-warning btn-admin position-relative">
+                Заблокированные
+                <span th:if="${hasBlockedPosts}" class="position-absolute top-0 start-100 translate-middle p-1 p-sm-2 bg-danger border border-light rounded-circle">
+                <i class="fas fa-ban" style="font-size: 0.7rem;"></i>
+                <span th:text="${blockedPostsCount}" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                      style="font-size: 0.5em; padding: 0.15em 0.3em;"></span>
+                <span class="visually-hidden">Заблокированные объявления</span>
+            </span>
+            </a>
+            <a th:href="@{/page_two/moderat}"
+               class="btn btn-admin moderation-btn"
+               id="moderationBtnad">
+                Модерация
+                <span th:if="${hasModerationPosts}"
+                      class="badge bg-warning text-dark ms-1"
+                      id="moderationBadgead">
+        <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+        <span th:text="${moderationCount}"></span>
+    </span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Панель для USER -->
+    <div sec:authorize="hasRole('USER') and !hasRole('ADMIN') and !hasRole('SUPER')" class="admin-panel">
+        <div class="admin-header">
+            <!-- Текст с именем и рейтингом - слева, на всю ширину -->
+            <div class="user-info-wrapper">
+                <small class="user-info" sec:authorize="isAuthenticated()">
+                    <span class="user-name" th:text="${#authentication.principal.nameuse}"></span>
+                    <span th:if="${currentUserRatingDTO != null}"
+                          class="user-rating ms-2"
+                          th:title="'Ваш рейтинг: ' + ${currentUserRatingDTO.formattedRating} + ' из 5 (на основе ' + ${currentUserRatingDTO.ratingCount} + ' оценок)'">
+                    <span th:text="${currentUserRatingDTO.formattedRating}"></span>
+                    <small>(<span th:text="${currentUserRatingDTO.ratingCount}"></span>)</small>
+                </span>
+                </small>
+            </div>
+
+            <!-- КНОПКА СОЗДАТЬ - на отдельной строке, по центру -->
+            <div class="create-btn-wrapper">
+                <div class="create-dropdown-wrapper">
+                    <button class="create-dropdown-btn-user" id="createDropdownBtnUser" type="button">
+                        <i class="fas fa-plus-circle"></i> Создать обьявление
+                    </button>
+                    <div class="dropdown-menu-create-user" id="createDropdownMenuUser">
+                        <a class="dropdown-item" th:href="@{/page_two/viewstwo}">
+                            <i class="fas fa-tag"></i> Товар
+                        </a>
+                        <a class="dropdown-item" th:href="@{/page_two/viewstwojob}">
+                            <i class="fas fa-handshake"></i> Услуга
+                        </a>
+                        <a class="dropdown-item" th:href="@{/page_two/viewstwovac}">
+                            <i class="fas fa-users"></i> Вакансия
+                        </a>
+                        <a class="dropdown-item" th:href="@{/page_two/viewstwores}">
+                            <i class="fas fa-id-card"></i> Резюме
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-block">
+        <p class="section-title text-center">Начните поиск</p>
+        <div class="row mt-4 flex-nowrap">
+            <div class="col">
+                <a href="/page_one/viewsone" class="card-clickable">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Товары</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col">
+                <a href="/page_one/viewsonejob" class="card-clickable">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Услуги</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col">
+                <a href="/page_one/viewsonevac" class="card-clickable">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Вакансии</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col">
+                <a href="/page_one/viewsoneres" class="card-clickable">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Резюме</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- КАРУСЕЛЬ ФОТО (эффект синус, автопрокрутка, свайп/тач) -->
+        <div class="carousel-sine" id="featuredCarousel">
+            <div class="carousel-sine__container">
+                <div class="carousel-sine__track" id="carouselTrack">
+                    <!-- Слайды будут вставлены через JS -->
+                </div>
+            </div>
+            <div class="carousel-sine__dots" id="carouselDots"></div>
+        </div>
+
+        <!-- КАРУСЕЛЬ: ПЛАТНЫЕ ОБЪЯВЛЕНИЯ И РЕКЛАМА -->
+        <div class="carousel-paid" id="paidCarousel">
+
+            <!-- Стрелки навигации -->
+            <div class="carousel-paid__nav">
+                <button class="carousel-paid__nav-btn carousel-paid__nav-prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-paid__nav-btn carousel-paid__nav-next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="carousel-paid__container">
+                <div class="carousel-paid__track">
+                    <!-- Слайды будут вставлены через JS -->
+                </div>
+            </div>
+            <div class="carousel-paid__dots"></div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="deleteMyAccountModal" tabindex="-1" aria-labelledby="deleteMyAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteMyAccountModalLabel">Удаление аккаунта</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Внимание! Это действие необратимо.</strong>
+                </div>
+                <p>Вы уверены, что хотите удалить свой аккаунт? Все ваши данные будут безвозвратно удалены.</p>
+
+                <form th:action="@{/index/delete}" method="post" id="deleteAccountForm">
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Для подтверждения введите ваш пароль:</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" form="deleteAccountForm" class="btn btn-danger">Удалить аккаунт</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<style>
+    /* Скрываем элементы на мобильных (до 768px) */
+    @media (max-width: 768px) {
+        .hide-on-mobile {
+            display: none !important;
+        }
+    }
+</style>
+
+<script type="text/javascript" src="/js/supports/support_notifications.js"></script>
+<script type="text/javascript" src="/js/functions/blocked_posts_notifications.js"></script>
+
+<!-- Загружаем скрипт уведомлений о блокировках ТОЛЬКО для авторизованных пользователей -->
+<script sec:authorize="isAuthenticated()" type="text/javascript" src="/js/functions/blocked_posts_notifications.js"></script>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+
+<script sec:authorize="isAuthenticated()">
+    window.currentUserHashId = '[[${#authentication.principal.hashId}]]';
+</script>
+
+<script>
+    // Загружаем карусель через AJAX (всегда свежие данные)
+    function loadPaidCarousel() {
+        fetch('/api/paid-carousel')
+            .then(response => response.json())
+            .then(data => {
+                // Сохраняем в глобальную переменную
+                window.paidCarouselItems = data;
+
+                // Обновляем или создаем карусель
+                if (window.paidCarousel && window.paidCarousel.updateItems) {
+                    window.paidCarousel.updateItems(data);
+                } else if (data && data.length >= 0) {
+                    window.paidCarousel = new PaidCarousel('paidCarousel', {
+                        items: data,
+                        autoplayDelay: 4000
+                    });
+                }
+            })
+            .catch(err => console.log('Carousel load error:', err));
+    }
+
+    // Загружаем при загрузке страницы И при восстановлении из bfcache
+    document.addEventListener('DOMContentLoaded', loadPaidCarousel);
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            loadPaidCarousel();
+        }
+    });
+
+    // Слушаем событие обновления карусели (после удаления/редактирования)
+    document.addEventListener('carouselRefresh', function() {
+        loadPaidCarousel();
+    });
+</script>
+
+<!-- Запрещаем bfcache для карусели -->
+<script>
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            console.log('Page restored from bfcache, reloading carousel...');
+            loadPaidCarousel();
+        }
+    });
+</script>
+
+<script>
+// Управление кнопкой "Создать" в панели USER
+document.addEventListener('DOMContentLoaded', function() {
+const createBtn = document.getElementById('createDropdownBtnUser');
+const createMenu = document.getElementById('createDropdownMenuUser');
+
+if (createBtn && createMenu) {
+// Клик по кнопке - переключение меню
+createBtn.addEventListener('click', function(e) {
+e.stopPropagation();
+createMenu.classList.toggle('show');
+});
+
+// Закрытие при клике вне
+document.addEventListener('click', function(e) {
+if (!createBtn.contains(e.target) && !createMenu.contains(e.target)) {
+createMenu.classList.remove('show');
+}
+});
+
+// Закрытие при клике на пункт меню
+createMenu.querySelectorAll('.dropdown-item').forEach(function(item) {
+item.addEventListener('click', function() {
+createMenu.classList.remove('show');
+});
+});
+}
+});
+</script>
+
+<script type="text/javascript" src="/js/functions/carousel_sine.js"></script>
+<script type="text/javascript" src="/js/functions/carousel_paid.js"></script>
+<script type="text/javascript" src="/js/functions/moderation_notifications.js"></script>
+
+</body>
+</html>

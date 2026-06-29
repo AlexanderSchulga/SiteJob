@@ -1,0 +1,1419 @@
+/* ========== ОСНОВНЫЕ СТИЛИ - единые с styleedit.css ========== */
+
+body, .container-wrapper, .admin-panel, .content-block,
+.card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Компенсация sticky-шапки */
+body.has-sticky-header .container-wrapper {
+    padding-top: 90px !important;
+}
+
+@media (max-width: 768px) {
+    body.has-sticky-header .container-wrapper {
+        padding-top: 120px !important;
+    }
+}
+
+/* Плавный переход */
+.container-wrapper {
+    transition: padding-top 0.2s ease;
+}
+
+.container-wrapper {
+    max-width: 800px;
+    margin: 5px auto;
+    padding: 0 15px;
+    min-height: calc(100vh - 160px);
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    .container-wrapper {
+        padding: 0 10px;
+        max-width: 100%;
+    }
+}
+
+/* ========== НОВЫЕ СТИЛИ ДЛЯ ГРУПП ИНФОРМАЦИИ ========== */
+
+/* Группа 1: Название + категория + цена */
+.info-group-1 {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+}
+
+.info-group-1:hover {
+    border-color: #dee2e6;
+    background: #fefefe;
+}
+
+/* Группа 2: Просмотры, даты, автор, рейтинг, телефон */
+.info-group-2 {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 12px 20px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+}
+
+.info-group-2:hover {
+    border-color: #dee2e6;
+    background: #fefefe;
+}
+
+/* Группа 3: Кнопки действий (объявления, отзывы, избранное) */
+.info-group-3 {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    transition: all 0.2s ease;
+}
+
+.info-group-3:hover {
+    border-color: #dee2e6;
+    background: #fefefe;
+}
+
+/* Убираем лишние отступы у внутренних элементов групп */
+.info-group-1 .text-muted,
+.info-group-2 .text-muted {
+    margin-bottom: 8px;
+}
+
+.info-group-1 .text-muted:last-child,
+.info-group-2 .text-muted:last-child {
+    margin-bottom: 0;
+}
+
+.info-group-1 .post-title {
+    margin-bottom: 12px;
+    margin-top: 0;
+}
+
+/* Группа 4: Описание */
+.info-group-description {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+}
+
+.info-group-description:hover {
+    border-color: #dee2e6;
+    background: #fefefe;
+}
+
+.info-group-description strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #2c3e50;
+}
+
+.info-group-description .post-full-text {
+    margin-bottom: 0;
+}
+
+/* ========== КАРТОЧКА ПОСТА ========== */
+.post-detail {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post-detail:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок - УМЕНЬШЕН на десктопе */
+.post-title {
+    color: #2c3e50;
+    margin-bottom: 12px;
+    overflow: hidden;
+    word-wrap: break-word;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Цена */
+.post-anons {
+    color: #17c75c;
+    margin-bottom: 15px;
+    font-weight: 700;
+    word-wrap: break-word;
+    font-size: 1.4rem;
+}
+
+/* Описание */
+.post-full-text {
+    white-space: pre-line;
+    margin-bottom: 20px;
+    word-wrap: break-word;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #495057;
+}
+
+/* ========== ИМЯ ПОЛЬЗОВАТЕЛЯ В КАРТОЧКЕ ========== */
+.post-user-info .text-muted.d-block {
+    display: block !important;
+    max-width: 100%;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.post-user-info .text-muted.d-block strong {
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.post-user-info .text-muted.d-block .user-name-wrapper {
+    display: inline-block;
+    max-width: calc(100% - 80px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Статус онлайн/офлайн на отдельной строке */
+.status-online,
+.status-offline {
+    display: block !important;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    margin-top: 2px;
+    padding-left: 0;
+}
+
+.status-online i,
+.status-offline i {
+    font-size: 0.65rem;
+    margin-right: 3px;
+}
+
+.status-online {
+    color: #28a745;
+}
+
+.status-offline {
+    color: #6c757d;
+}
+
+/* ========== КОММЕНТАРИИ - ТАБЫ ========== */
+.comments-tabs {
+    background: white;
+    border-radius: 16px 16px 0 0;
+    padding: 0 20px;
+    margin-bottom: 0;
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+}
+
+.nav-tabs {
+    border-bottom: none;
+    display: flex;
+    gap: 0;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 12px 20px;
+    position: relative;
+    border-radius: 12px 12px 0 0;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:not(:last-child):after {
+    content: '/';
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #dee2e6;
+    font-weight: normal;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    background-color: transparent;
+    border-bottom: 2px solid #0d6efd;
+}
+
+.nav-tabs .nav-link:hover {
+    border: none;
+    color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Секция комментариев */
+.comments-section {
+    background: white;
+    padding: 25px;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #dee2e6;
+    border-top: none;
+    margin-bottom: 20px;
+}
+
+.comments-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.text-muted {
+    font-size: 1rem;
+}
+
+/* ========== ГАЛЕРЕЯ ИЗОБРАЖЕНИЙ ========== */
+.image-gallery {
+    margin: 0 0 10px 0;
+    margin-top: 10px !important;
+}
+
+.horizontal-scroll-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.scroll-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    flex: 1;
+    border-radius: 16px;
+}
+
+.scroll-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.scroll-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scroll-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.horizontal-scroll {
+    display: flex;
+    gap: 12px;
+    padding: 4px 0 8px 0;
+}
+
+.image-card {
+    flex-shrink: 0;
+    width: 210px;
+    height: 210px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #dee2e6;
+}
+
+.image-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.image-card:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+    pointer-events: auto;
+}
+
+.image-card:hover img {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    font-weight: 500;
+}
+
+.image-counter {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.scroll-btn {
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: white;
+    backdrop-filter: blur(4px);
+}
+
+.scroll-btn i {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.scroll-btn:hover {
+    background: rgba(0, 0, 0, 0.75);
+    transform: scale(1.05);
+}
+
+.scroll-btn:active {
+    transform: scale(0.95);
+}
+
+/* ========== КАРТА - ИСПРАВЛЕННЫЕ СТИЛИ ========== */
+#viewMap {
+    width: 100%;
+    height: 300px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Стили для контейнера карты, чтобы он не вытягивался */
+.location-section {
+    margin-top: 20px;
+}
+
+.location-section h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.location-section .card {
+    border: 1px solid #dee2e6;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.location-section .card-body {
+    padding: 15px;
+}
+
+.location-section .card-text {
+    margin-bottom: 12px;
+    color: #495057;
+    font-size: 0.9rem;
+    word-break: break-word;
+}
+
+/* Яндекс карта - фикс высоты и поведения */
+.ymaps-2-1-79-map {
+    width: 100% !important;
+}
+
+/* ========== АЛЕРТЫ ========== */
+.alert-info {
+    background-color: #e2f3f5 !important;
+    border-left: 4px solid #17a2b8 !important;
+    color: #0c5460;
+    border-radius: 12px;
+    border: none;
+    padding: 10px 15px;
+}
+
+.alert-info i {
+    margin-right: 6px;
+}
+
+/* ========== КНОПКИ ========== */
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    padding: 8px 18px;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+    transform: translateY(-1px);
+}
+
+.btn-outline-info {
+    border-color: #0dcaf0;
+    color: #0dcaf0;
+}
+
+.btn-outline-info:hover {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #000;
+    transform: translateY(-1px);
+}
+
+.btn-outline-warning {
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.btn-outline-warning:hover {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+}
+
+/* ========== КНОПКА ОТПРАВИТЬ - УМЕНЬШЕНА НА 15% ДЛЯ ВСЕХ РАЗРЕШЕНИЙ ========== */
+#submitPublicComment,
+#submitPrivateComment,
+#private-comment-form button[type="submit"],
+#public-comment-form button[type="submit"] {
+    font-size: 0.765rem !important;
+    padding: 6.8px 15.3px !important;
+}
+
+/* ========== КНОПКИ АДМИНА/СУПЕРА - УМЕНЬШЕНЫ НА 15% ========== */
+.delete-comment-btn,
+.delete-branch-btn,
+.delete-public-comment-btn,
+.delete-public-branch-btn {
+    font-size: 0.7225rem !important;
+    padding: 3.4px 8.5px !important;
+}
+
+/* ========== ФОРМА КОММЕНТАРИЯ ========== */
+.comment-form {
+    margin-bottom: 25px;
+}
+
+.comment-form .form-group textarea {
+    border: 2px solid #6c757d;
+    border-radius: 12px;
+    padding: 10px 12px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.comment-form .form-group textarea:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+    outline: none;
+}
+
+/* ========== КАРТОЧКИ КОММЕНТАРИЕВ ========== */
+.comment-card {
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    padding: 14px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+.comment-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.comment-card.public-comment {
+    background: #e7f1ff;
+    border-color: #cfe2ff;
+}
+
+.comment-card.reply-comment {
+    background: #f8f9fa;
+    border-color: #e9ecef;
+    font-size: 0.95rem;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.comment-user {
+    font-weight: 600;
+    color: #0d6efd;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.comment-date {
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+.comment-content {
+    margin-top: 8px;
+    padding-left: 12px;
+    border-left: 2px solid #f0f0f0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.comment-actions {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+/* Ветка комментариев */
+.comments-tree {
+    margin-top: 15px;
+}
+
+.comment-item {
+    margin-bottom: 15px;
+}
+
+.comment-replies {
+    border-left: 3px solid #e9ecef;
+    padding-left: 15px;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+}
+
+.reply-comment {
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid #e9ecef;
+}
+
+/* Кнопки в комментариях */
+.reply-btn, .public-reply-btn {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.reply-btn:hover, .public-reply-btn:hover {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.toggle-branch-btn, .public-toggle-branch-btn {
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.btn-delete-comment {
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    border-radius: 20px;
+}
+
+/* ========== СТАТУС ОНЛАЙН/ОФЛАЙН ========== */
+.status-online {
+    color: #28a745;
+    font-size: 0.9rem;
+    margin-left: 5px;
+}
+
+.status-online i {
+    font-size: 0.65rem;
+    margin-right: 3px;
+}
+
+.status-offline {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-left: 5px;
+}
+
+.status-offline i {
+    font-size: 0.65rem;
+    margin-right: 3px;
+}
+
+/* ========== РЕЙТИНГ ========== */
+.seller-rating {
+    margin: 8px 0;
+}
+
+.rating-stars {
+    display: inline-flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.rating-star {
+    font-size: 15px;
+    margin-right: 2px;
+}
+
+.rating-star.active,
+.rating-star.rated {
+    color: #ffc107;
+}
+
+.empty-star {
+    color: #ddd !important;
+}
+
+.interactive-star {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.rating-text {
+    font-size: 0.8em;
+    color: #6c757d;
+}
+
+.rate-seller-link {
+    font-size: 0.8em;
+    text-decoration: none;
+    color: #0d6efd;
+}
+
+.rate-seller-link:hover {
+    text-decoration: underline;
+}
+
+/* ========== БЛОКИ ИНФОРМАЦИИ ========== */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.text-muted strong {
+    color: #495057;
+}
+
+.text-muted.d-block {
+    margin-bottom: 6px;
+}
+
+.post-user-info {
+    margin: 8px 0;
+}
+
+.seller-actions {
+    margin-top: 10px !important;
+    margin-bottom: 6px;
+}
+
+.favorite-section {
+    margin: 0;
+}
+
+/* ========== ЛАЙТБОКС СТИЛИ ========== */
+.lightbox-close-btn {
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px 16px;
+    border-radius: 30px;
+    transition: all 0.2s ease;
+    font-family: sans-serif;
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    z-index: 10001;
+}
+
+.lightbox-close-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.02);
+}
+
+#lightboxPrev, #lightboxNext {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    border: none;
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+    padding: 12px 18px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+    z-index: 10001;
+}
+
+#lightboxPrev:hover, #lightboxNext:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: translateY(-50%) scale(1.05);
+}
+
+#lightboxPrev {
+    left: 20px;
+}
+
+#lightboxNext {
+    right: 20px;
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+
+/* Планшеты и мобильные (до 768px) - ЗДЕСЬ ВСЕ УВЕЛИЧЕНИЯ */
+@media (max-width: 768px) {
+    .container-wrapper {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+
+    .post-detail,
+    .comments-section {
+        padding: 20px;
+    }
+
+    .comments-tabs {
+        padding: 0 15px;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 10px 16px;
+        font-size: 0.95rem;
+    }
+
+    /* УВЕЛИЧЕНИЕ ШРИФТОВ НА 15% ДЛЯ ПЛАНШЕТОВ/МОБИЛЬНЫХ */
+    .post-title {
+        font-size: 1.725rem;
+    }
+
+    .post-anons {
+        font-size: 1.61rem;
+    }
+
+    .post-full-text {
+        font-size: 1rem;
+    }
+
+    .comments-section h3 {
+        font-size: 1.4375rem;
+    }
+
+    .text-muted {
+        font-size: 0.95rem;
+    }
+
+    .comment-card.reply-comment {
+        font-size: 1.0925rem;
+    }
+
+    .comment-content {
+        font-size: 0.9rem;
+    }
+
+    .comment-user {
+        font-size: 1.0925rem;
+        max-width: 150px;
+    }
+
+    .comment-date {
+        font-size: 0.8625rem;
+    }
+
+    .alert-info {
+        font-size: 1.035rem;
+    }
+
+    .rating-star {
+        font-size: 17.25px;
+    }
+
+    .rating-text {
+        font-size: 0.92rem;
+    }
+
+    .rate-seller-link {
+        font-size: 0.92rem;
+    }
+
+    .status-online, .status-offline {
+        font-size: 0.805rem;
+    }
+
+    .image-card {
+        width: 160px;
+        height: 160px;
+    }
+
+    .image-overlay {
+        font-size: 13.8px;
+    }
+
+    .image-counter {
+        font-size: 14.95px;
+    }
+
+    /* УВЕЛИЧЕНИЕ КНОПОК НА 10% ДЛЯ ПЛАНШЕТОВ/МОБИЛЬНЫХ */
+    .btn {
+        padding: 8.8px 19.8px;
+        font-size: 0.99rem;
+    }
+
+    .btn-sm {
+        padding: 4.4px 11px;
+        font-size: 0.935rem;
+    }
+
+    /* КНОПКА ОТПРАВИТЬ НА ПЛАНШЕТАХ - УМЕНЬШЕНА НА 15% ОТ УВЕЛИЧЕННОГО РАЗМЕРА */
+    #submitPublicComment,
+    #submitPrivateComment,
+    #private-comment-form button[type="submit"],
+    #public-comment-form button[type="submit"] {
+        font-size: 0.8415rem !important;
+        padding: 7.48px 16.83px !important;
+    }
+
+    /* КНОПКИ АДМИНА/СУПЕРА НА ПЛАНШЕТАХ - УМЕНЬШЕНЫ НА 15% */
+    .delete-comment-btn,
+    .delete-branch-btn,
+    .delete-public-comment-btn,
+    .delete-public-branch-btn {
+        font-size: 0.79475rem !important;
+        padding: 3.74px 9.35px !important;
+    }
+
+    .reply-btn, .public-reply-btn {
+        font-size: 0.825rem;
+        padding: 3.3px 11px;
+    }
+
+    .toggle-branch-btn, .public-toggle-branch-btn {
+        padding: 3.3px 11px;
+        font-size: 0.77rem;
+    }
+
+    .btn-delete-comment {
+        padding: 3.3px 11px;
+        font-size: 0.77rem;
+    }
+
+    #loadMoreCommentsBtn,
+    #loadMorePublicCommentsBtn {
+        padding: 6.6px 17.6px;
+        font-size: 0.935rem;
+    }
+
+    #viewMap {
+        height: 260px;
+    }
+
+    .scroll-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .scroll-btn i {
+        font-size: 16px;
+    }
+
+    /* УМЕНЬШЕНИЕ b, strong на планшетах */
+    b, strong {
+        font-weight: 600;
+    }
+
+    /* Адаптация групп на планшетах */
+    .info-group-1,
+    .info-group-2,
+    .info-group-3 {
+        padding: 12px 16px;
+    }
+
+    /* Ограничение имени на планшетах */
+    .post-user-info .text-muted.d-block span {
+        max-width: 150px;
+    }
+}
+
+/* Мобильные телефоны (до 576px) - дополнительные корректировки, увеличения уже применены выше */
+@media (max-width: 576px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+
+    .post-detail,
+    .comments-section {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .post-detail {
+        margin-bottom: 15px;
+    }
+
+    .comments-section {
+        margin-bottom: 15px;
+    }
+
+    .comments-tabs {
+        padding: 0 12px;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 8px 12px;
+        font-size: 0.95rem;
+    }
+
+    .post-title {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+
+    .post-anons {
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+    }
+
+    .post-full-text {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+
+    .horizontal-scroll {
+        gap: 8px;
+    }
+
+    .image-counter {
+        margin-top: 8px;
+    }
+
+    /* КАРТА НА МОБИЛЬНЫХ - ФИКС ВЫСОТЫ */
+    #viewMap {
+        height: 230px !important;
+        min-height: 230px;
+    }
+
+    .location-section {
+        margin-top: 15px;
+    }
+
+    .location-section h5 {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .location-section .card-body {
+        padding: 12px;
+    }
+
+    .location-section .card-text {
+        margin-bottom: 10px;
+        font-size: 0.85rem;
+    }
+
+    .comment-card {
+        padding: 10px;
+    }
+
+    .comment-content {
+        padding-left: 10px;
+    }
+
+    /* Убираем стрелки скролла галереи на мобильных */
+    .scroll-btn {
+        display: none !important;
+    }
+
+    .horizontal-scroll-container {
+        gap: 0;
+    }
+
+    /* Лайтбокс на мобильных */
+    #lightboxPrev, #lightboxNext {
+        display: none !important;
+    }
+
+    .lightbox-close-btn {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 20px auto 10px auto;
+        background: rgba(255, 255, 255, 0.2);
+        font-size: 16px;
+        padding: 8px 24px;
+    }
+
+    #lightboxCounter {
+        position: relative;
+        bottom: auto;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        text-align: center;
+    }
+
+    #lightboxOverlay {
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    #lightboxImageContainer {
+        height: 60vh !important;
+        min-height: 250px !important;
+    }
+
+    .comment-replies {
+        padding-left: 10px;
+        margin-left: 5px;
+    }
+
+    .comment-form {
+        margin-bottom: 20px;
+    }
+
+    .text-muted.d-block {
+        margin-bottom: 4px;
+    }
+
+    .seller-rating {
+        margin: 6px 0;
+    }
+
+    .favorite-section {
+        margin: 0;
+    }
+
+    /* УМЕНЬШЕНИЕ b, strong на телефонах */
+    b, strong {
+        font-weight: 550;
+        font-size: 0.95em;
+    }
+
+    .image-card {
+        width: 160px;
+        height: 160px;
+    }
+
+    /* КНОПКА ОТПРАВИТЬ НА МОБИЛЬНЫХ (576px) - УМЕНЬШЕНА НА 15% */
+    #submitPublicComment,
+    #submitPrivateComment,
+    #private-comment-form button[type="submit"],
+    #public-comment-form button[type="submit"] {
+        font-size: 0.85rem !important;
+        padding: 6px 14px !important;
+    }
+
+    /* КНОПКИ АДМИНА/СУПЕРА НА МОБИЛЬНЫХ */
+    .delete-comment-btn,
+    .delete-branch-btn,
+    .delete-public-comment-btn,
+    .delete-public-branch-btn {
+        font-size: 0.72rem !important;
+        padding: 3px 8px !important;
+    }
+
+    /* Адаптация групп на телефонах */
+    .info-group-1,
+    .info-group-2,
+    .info-group-3 {
+        padding: 10px 14px;
+        border-radius: 14px;
+    }
+
+    .info-group-1 .post-title {
+        font-size: 1.3rem;
+    }
+
+    .info-group-1 .post-anons {
+        font-size: 1.2rem;
+    }
+
+    /* Ограничение имени на телефонах */
+    .post-user-info .text-muted.d-block span {
+        max-width: 120px;
+    }
+}
+
+/* Маленькие телефоны (до 480px) */
+@media (max-width: 480px) {
+
+    .image-card {
+        width: 150px;
+        height: 150px;
+    }
+
+    .container-wrapper {
+        padding: 0 8px;
+    }
+
+    .post-detail,
+    .comments-section {
+        padding: 12px;
+    }
+
+    .post-title {
+        font-size: 1.3rem;
+    }
+
+    .post-anons {
+        font-size: 1.2rem;
+    }
+
+    .post-full-text {
+        font-size: 0.9rem;
+    }
+
+    /* КАРТА НА МАЛЕНЬКИХ ТЕЛЕФОНАХ */
+    #viewMap {
+        height: 200px !important;
+        min-height: 200px;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    .rating-stars .rating-star {
+        font-size: 14px;
+    }
+
+    .rating-text {
+        font-size: 0.75rem;
+    }
+
+    .comment-replies {
+        padding-left: 8px;
+    }
+
+    /* ДОПОЛНИТЕЛЬНОЕ УМЕНЬШЕНИЕ b, strong на маленьких телефонах */
+    b, strong {
+        font-weight: 550;
+        font-size: 0.95em;
+    }
+
+    /* КНОПКА ОТПРАВИТЬ НА 480px */
+    #submitPublicComment,
+    #submitPrivateComment,
+    #private-comment-form button[type="submit"],
+    #public-comment-form button[type="submit"] {
+        font-size: 0.8rem !important;
+        padding: 5px 12px !important;
+    }
+
+    .info-group-1,
+    .info-group-2,
+    .info-group-3 {
+        padding: 8px 12px;
+    }
+
+    /* Ограничение имени на маленьких телефонах */
+    .post-user-info .text-muted.d-block span {
+        max-width: 100px;
+    }
+}
+
+@media (max-width: 360px) {
+
+    .image-card {
+        width: 140px;
+        height: 140px;
+    }
+
+    .post-title {
+        font-size: 1.05rem;
+    }
+
+    .post-anons {
+        font-size: 1rem;
+    }
+
+    .post-full-text {
+        font-size: 0.85rem;
+    }
+
+    .btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+
+    .nav-tabs .nav-link {
+        padding: 5px 8px;
+        font-size: 0.85rem;
+    }
+
+    /* КАРТА НА САМЫХ МАЛЕНЬКИХ */
+    #viewMap {
+        height: 190px !important;
+        min-height: 190px;
+    }
+
+    /* МАКСИМАЛЬНОЕ УМЕНЬШЕНИЕ b, strong */
+    b, strong {
+        font-weight: 550;
+        font-size: 0.9em;
+    }
+
+    /* КНОПКА ОТПРАВИТЬ НА 360px */
+    #submitPublicComment,
+    #submitPrivateComment,
+    #private-comment-form button[type="submit"],
+    #public-comment-form button[type="submit"] {
+        font-size: 0.75rem !important;
+        padding: 4px 10px !important;
+    }
+
+    /* КНОПКИ АДМИНА/СУПЕРА НА 360px */
+    .delete-comment-btn,
+    .delete-branch-btn,
+    .delete-public-comment-btn,
+    .delete-public-branch-btn {
+        font-size: 0.68rem !important;
+        padding: 2px 6px !important;
+    }
+
+    .info-group-1,
+    .info-group-2,
+    .info-group-3 {
+        padding: 6px 10px;
+    }
+
+    /* Ограничение имени на очень маленьких */
+    .post-user-info .text-muted.d-block span {
+        max-width: 80px;
+    }
+}
+
+/* Отсутствие комментариев */
+.no-comments {
+    text-align: center;
+    padding: 15px;
+}
+
+.no-comments .card {
+    border-radius: 16px;
+    background: #f8f9fa !important;
+}
+
+.no-comments .card-body {
+    padding: 25px;
+}
+
+.no-comments i {
+    color: #adb5bd;
+}
+
+.no-comments h5 {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* Сообщение об ответе */
+#replyTo,
+#publicReplyTo {
+    border-radius: 12px;
+    border-left: 4px solid #0dcaf0;
+    background-color: #e2f3f5;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+}
+
+/* Кнопки загрузки комментариев (базовые, на мобильных увеличены выше) */
+#loadMoreCommentsBtn,
+#loadMorePublicCommentsBtn {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    color: #495057;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+}
+
+#loadMoreCommentsBtn:hover,
+#loadMorePublicCommentsBtn:hover {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.loadMoreCommentsContainer {
+    margin-top: 15px;
+}
+
+/* ========== ЛИЧНЫЕ КОММЕНТАРИИ - ЦВЕТА КАК В ОБЩИХ ========== */
+
+/* Основной личный комментарий - светлый фон (как у public-comment) */
+.comment-card.private-comment {
+    background: #e7f1ff;
+    border-color: #cfe2ff;
+}
+
+/* Личный комментарий-ответ (reply) - сероватый фон (как у reply-comment) */
+.comment-card.private-comment.reply-comment {
+    background: #f8f9fa;
+    border-color: #e9ecef;
+}

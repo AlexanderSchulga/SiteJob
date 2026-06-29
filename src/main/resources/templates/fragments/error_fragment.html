@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Фрагмент для отображения ошибок -->
+<div th:fragment="errorFragment(errorMessage)"
+     class="col-12 text-center py-4">
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage != null ? errorMessage : error}">
+            Произошла ошибка при загрузке
+        </span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</div>
+
+<!-- Фрагмент для rate limit ошибок -->
+<div th:fragment="rateLimitError"
+     class="col-12 text-center py-4">
+    <div class="alert alert-danger" role="alert">
+        <i class="fas fa-clock me-2"></i>
+        <strong>Слишком много запросов!</strong>
+        <p class="mb-0 mt-2">Пожалуйста, подождите немного перед повторной попыткой.</p>
+    </div>
+</div>
+
+</body>
+</html>

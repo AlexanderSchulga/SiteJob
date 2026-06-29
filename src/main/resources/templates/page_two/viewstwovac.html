@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <link rel="stylesheet" th:href="@{/css/styleviewstwo.css}">
+
+    <!-- Асинхронная загрузка Яндекс.Карт -->
+    <script>
+        function loadYandexMaps() {
+            return new Promise((resolve, reject) => {
+                if (window.ymaps) {
+                    resolve();
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = 'https://api-maps.yandex.ru/2.1/?apikey=a29aa5a3-6b5d-4e6e-a513-27f390d21ae1&lang=ru_RU';
+                script.onload = () => ymaps.ready(resolve);
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+    </script>
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="container mt-4">
+        <!-- Хлебные крошки -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/index}" class="text-decoration-none">
+                        <i class="fas fa-home me-1"></i>Главная
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Создание новой вакансии
+                </li>
+            </ol>
+        </nav>
+
+        <div class="create-form-card card shadow-sm">
+            <div class="card-header bg-primary">
+                <h5 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>Создание новой вакансии
+                </h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <form th:action="@{/page_two/viewstwovac}" method="post" enctype="multipart/form-data">
+                    <!-- Категория вакансии -->
+                    <div class="mb-4">
+                        <label for="category" class="form-label">
+                            <i class="fas fa-tag me-1 text-muted"></i>Категория вакансии <span class="text-danger">*</span>
+                        </label>
+                        <select id="category" name="category" class="form-select" required style="display: none;">
+                            <option value="">Выберите категорию</option>
+                            <option th:each="category : ${categories}"
+                                    th:if="${category.key != 'all'}"
+                                    th:value="${category.key}"
+                                    th:text="${category.value}">
+                            </option>
+                        </select>
+                        <!-- Кастомный select будет создан здесь через JS -->
+                    </div>
+
+                    <!-- Название вакансии -->
+                    <div class="mb-4">
+                        <label for="title" class="form-label">
+                            <i class="fas fa-heading me-1 text-muted"></i>Название вакансии <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="title" name="title"
+                               placeholder="Введите название вакансии"
+                               class="form-control" required>
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        <label for="experience" class="form-label">Опыт работы *</label>
+                        <select id="experience" name="experience" class="form-select" required>
+                            <option value="">Выберите опыт работы</option>
+                            <option th:each="experience : ${experience}"
+                                    th:if="${experience.key != 'all'}"
+                                    th:value="${experience.key}"
+                                    th:text="${experience.value}">
+                            </option>
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="workformat" class="form-label">Формат работы *</label>
+                        <select id="workformat" name="workformat" class="form-select" required>
+                            <option value="">Выберите формат работы</option>
+                            <option th:each="workformat : ${workformat}"
+                                    th:if="${workformat.key != 'all'}"
+                                    th:value="${workformat.key}"
+                                    th:text="${workformat.value}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- зарплата -->
+                    <div class="mb-4">
+                        <label for="cash" class="form-label">
+                            <i class="fas fa-ruble-sign me-1 text-muted"></i>Укажите зарплату <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">₽</span>
+                            <input type="number"
+                                   id="cash"
+                                   name="cash"
+                                   placeholder="Укажите зарплату (только цифры)"
+                                   class="form-control"
+                                   required
+                                   min="0"
+                                   step="1"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                    </div>
+
+                    <!-- Описание вакансии -->
+                    <div class="mb-4">
+                        <label for="full_text" class="form-label">
+                            <i class="fas fa-align-left me-1 text-muted"></i>Описание вакансии <span class="text-danger">*</span>
+                        </label>
+                        <textarea id="full_text" name="full_text"
+                                  placeholder="Введите описание вакансии"
+                                  class="form-control" rows="5" required></textarea>
+                        <div class="form-text">Подробно опишите вакансии, в чем заключается...</div>
+                    </div>
+
+                    <!-- Блок местоположения -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-map-marker-alt me-1 text-muted"></i>Местоположение <span class="text-danger">*</span>
+                        </label>
+
+                        <div class="input-group mb-2">
+                            <input type="text" id="locationInput" name="location"
+                                   class="form-control" placeholder="Введите адрес или выберите на карте"
+                                   th:value="${el?.location}" required>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearLocation()">
+                                <i class="fas fa-times me-1"></i>Очистить
+                            </button>
+                        </div>
+
+                        <div class="form-text mb-2">
+                            <i class="fas fa-info-circle me-1"></i>📍 Введите адрес вручную или кликните на карте для выбора
+                        </div>
+
+                        <!-- Контейнер для карты -->
+                        <div id="map" class="map-container"></div>
+                    </div>
+
+                    <!-- Изображения -->
+                    <div class="mb-4">
+                        <label for="files" class="form-label">
+                            <i class="fas fa-images me-1 text-muted"></i>Изображения <span class="text-danger">*</span>
+                        </label>
+                        <input type="file" name="files" id="files" class="form-control" multiple accept="image/*" required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle me-1"></i>Вы можете выбрать несколько изображений, удерживая Ctrl (или Cmd на Mac). Максимум 5 изображений
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="moderation" value="true">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus-circle me-2"></i>Добавить вакансии
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/map_location.js"></script>
+<script type="text/javascript" src="/js/functions/imagelimit.js"></script>
+<script type="text/javascript" src="/js/functions/custom-select-set.js"></script>
+<script type="text/javascript" src="/js/functions/custom-select-experience-set.js"></script>
+<script type="text/javascript" src="/js/functions/menu_work_format-set.js"></script>
+
+<script>
+    document.getElementById('files').addEventListener('change', function(e) {
+        const files = e.target.files;
+        const maxSizeMB = 20;
+        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+        if (files.length > 5) {
+            alert('Можно загрузить не более 5 изображений');
+            e.target.value = '';
+            return;
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].size > maxSizeBytes) {
+                alert(`Файл "${files[i].name}" слишком большой! Максимум ${maxSizeMB} MB`);
+                e.target.value = '';
+                return;
+            }
+        }
+    });
+
+    // Адаптация для sticky-шапки
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.querySelector('header');
+        if (header && window.getComputedStyle(header).position === 'sticky') {
+            document.body.classList.add('has-sticky-header');
+        }
+    });
+</script>
+
+</body>
+</html>

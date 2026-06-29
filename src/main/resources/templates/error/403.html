@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Доступ запрещен - 403</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        .error-code {
+            font-size: clamp(5rem, 15vw, 8rem);
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 0;
+            line-height: 1.1;
+        }
+        .error-title {
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            margin-bottom: 1rem;
+            color: #343a40;
+            font-weight: 600;
+        }
+        .error-message {
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            color: #6c757d;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 1rem;
+        }
+        .error-actions {
+            margin-top: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .btn-lg {
+            padding: 0.8rem 1.8rem;
+            font-size: 1.1rem;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+        }
+        .btn-outline-secondary {
+            border: 1px solid #6c757d;
+            color: #6c757d;
+            background: transparent;
+        }
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 1rem;
+            }
+            .btn-lg {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            .error-actions {
+                gap: 0.75rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+                <h1 class="error-code" th:text="${errorCode}">403</h1>
+                <h2 class="error-title" th:text="${errorTitle}">Доступ запрещен</h2>
+                <p class="error-message" th:text="${errorMessage}">
+                    У вас нет прав для просмотра этой страницы. Если вы считаете, что это ошибка, обратитесь к администратору.
+                </p>
+                <div class="error-actions">
+                    <a href="/" class="btn btn-primary btn-lg">На главную</a>
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg">Вернуться назад</a>
+                </div>
+                <div class="mt-4">
+                    <p class="text-muted">
+                        Если вы считаете, что это ошибка, пожалуйста, <a href="/contact">свяжитесь с нами</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/css/styleregistr.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="register-form">
+        <h2 class="form-title">Регистрация</h2>
+
+        <!-- ЛЕГЕНДА ОБЯЗАТЕЛЬНЫХ ПОЛЕЙ -->
+        <div class="required-legend">
+            <span class="required-star">*</span>
+            <span><strong>Обязательные поля</strong> — отмечены красной рамкой и звёздочкой</span>
+        </div>
+
+        <h3 class="form-title">Поля для авторизации</h3>
+
+        <!-- Отображение всех ошибок -->
+        <div th:if="${errors}" class="alert alert-danger mt-3">
+            <ul class="mb-0">
+                <li th:each="error : ${errors}" th:text="${error}"></li>
+            </ul>
+        </div>
+        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+
+        <form th:action="@{/register}" method="post" id="registrationForm" th:object="${registrationDto}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <!-- LOGIN - обязательное -->
+            <div class="mb-3">
+                <label class="form-label required-label">Login <span class="required-star">*</span></label>
+                <input type="text" name="username" id="username" class="form-control required-field"
+                       th:value="${registrationDto != null ? registrationDto.username : ''}" required>
+            </div>
+
+            <!-- ПАРОЛЬ - обязательное -->
+            <div class="mb-3">
+                <label class="form-label required-label">Пароль — только английские буквы и цифры, минимум 6 символов <span class="required-star">*</span></label>
+                <div class="password-wrapper">
+                    <input type="password" name="password" class="form-control required-field" id="password"
+                           th:value="${registrationDto != null ? registrationDto.password : ''}" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ПОВТОРИТЕ ПАРОЛЬ - обязательное -->
+            <div class="mb-3">
+                <label class="form-label required-label">Повторите пароль <span class="required-star">*</span></label>
+                <div class="password-wrapper">
+                    <input type="password" name="confirmPassword" class="form-control required-field" id="confirmPassword"
+                           th:value="${registrationDto != null ? registrationDto.confirmPassword : ''}" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <div id="passwordError" class="text-danger" style="display: none;">Пароли не совпадают</div>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <strong>Безопасность пароля:</strong><br>
+                • Используйте уникальный пароль<br>
+                • Рекомендуем пароль не менее 12 символов с цифрами<br>
+                • Пароль может содержать только английские буквы и цифры<br>
+            </div>
+
+            <h3 class="form-title">Поля для объявлений</h3>
+
+            <!-- ИМЯ ПОЛЬЗОВАТЕЛЯ - обязательное -->
+            <div class="mb-3">
+                <label class="form-label required-label">Имя пользователя <span class="required-star">*</span></label>
+                <input type="text" name="nameuse" id="nameuse" class="form-control required-field"
+                       th:value="${registrationDto != null ? registrationDto.nameuse : ''}" required>
+            </div>
+
+            <!-- EMAIL - обязательное -->
+            <div class="mb-3">
+                <label class="form-label required-label">Email <span class="required-star">*</span></label>
+                <input type="email" name="email" class="form-control required-field"
+                       th:value="${registrationDto != null ? registrationDto.email : ''}"
+                       placeholder="xxxx@mail.ru, xxxx@yandex.ru"
+                       required>
+                <div class="form-text">
+                    <strong>Обязательное поле.</strong> На этот email будет отправлен код подтверждения.
+                </div>
+            </div>
+
+            <!-- ТЕЛЕФОН ДЛЯ РЕГИСТРАЦИИ - обязательное -->
+            <div class="mb-3">
+                <label class="form-label required-label">Телефон для регистрации <span class="required-star">*</span></label>
+                <input type="tel"
+                       name="phone"
+                       id="phoneInput"
+                       class="form-control phone-input required-field"
+                       th:value="${registrationDto != null ? registrationDto.phone : ''}"
+                       placeholder="+7 (___) ___-__-__"
+                       pattern="\+7\s?\(?\d{3}\)?\s?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}"
+                       title="Формат: +7 (XXX) XXX-XX-XX"
+                       required>
+                <div class="form-text">
+                    <strong>Обязательное поле.</strong> Номер телефона для связи и идентификации.
+                </div>
+            </div>
+
+            <!-- ТЕЛЕФОН ДЛЯ ОБЪЯВЛЕНИЙ - необязательное -->
+            <div class="mb-3">
+                <label class="form-label">Телефон для отображения в объявлениях</label>
+                <input type="tel"
+                       name="phonePost"
+                       id="phonePostInput"
+                       class="form-control phone-input"
+                       th:value="${registrationDto != null ? registrationDto.phonePost : ''}"
+                       placeholder="+7 (___) ___-__-__"
+                       title="Формат: +7 (XXX) XXX-XX-XX">
+                <div class="form-text">Необязательное поле. Будет показываться в ваших объявлениях</div>
+            </div>
+
+            <!-- РЕГИОН - обязательное -->
+            <div class="mb-3">
+                <label class="form-label required-label">Ваш регион <span class="required-star">*</span></label>
+                <select name="region" id="regionSelect" class="form-select required-field" required>
+                    <option value="" disabled>Загрузка регионов...</option>
+                </select>
+                <input type="hidden" id="selectedRegionValue" th:value="${registrationDto != null ? registrationDto.region : ''}">
+            </div>
+
+            <!-- ГОРОД - необязательное -->
+            <div class="mb-3">
+                <label class="form-label">Город/Населенный пункт</label>
+                <div id="cityContainer">
+                    <select name="city" id="citySelect" class="form-select">
+                        <option value="" selected>Сначала выберите регион</option>
+                    </select>
+                    <div class="form-text">Необязательное поле. Если вашего города нет в списке, выберите "Ввести вручную"</div>
+                </div>
+                <input type="hidden" id="selectedCityValue" th:value="${registrationDto != null ? registrationDto.city : ''}">
+            </div>
+
+            <!-- ЛИЦЕНЗИЯ - обязательное -->
+            <div class="mb-3 form-check captcha-check required-check">
+                <input type="checkbox" class="form-check-input" id="license" name="license"
+                       th:checked="${registrationDto != null ? registrationDto.license : false}" required>
+                <label class="form-check-label" for="license">
+                    Регистрируясь, вы берете на себя обязанность соблюдать наше
+                    <a href="/confiden_agr/agreement">Пользовательское соглашение</a>
+                    Ознакомьтесь с нашей <a href="/confiden_agr/confidential">Политикой конфиденциальности</a>
+                    <span class="required-star">*</span>
+                </label>
+            </div>
+
+            <!-- КАПЧА: 6 шкал + ползунок (от 1 до 6) -->
+            <div class="mb-3 captcha-slider-container required-check">
+                <label class="form-label required-label">
+                    Капча: установите ползунок на число:
+                    <div class="slider-value-display">
+                        <span id="sliderValueDisplay"
+                              th:text="${captchaTarget != null ? captchaTarget : '?'}">?</span>
+                    </div>
+                </label>
+                <div class="slider-wrapper">
+                    <div class="slider-scale">
+                        <span class="scale-mark">1</span>
+                        <span class="scale-mark">2</span>
+                        <span class="scale-mark">3</span>
+                        <span class="scale-mark">4</span>
+                        <span class="scale-mark">5</span>
+                        <span class="scale-mark">6</span>
+                    </div>
+                    <input type="range" name="captchaSlider" id="captchaSlider"
+                           class="form-range captcha-slider"
+                           min="1" max="6" value="1" step="1"
+                           required>
+                </div>
+                <div id="captchaError" class="text-danger" style="display: none;">
+                    Пожалуйста, установите ползунок на правильное число.
+                </div>
+                <div class="form-text">Переместите ползунок на число, которое показано выше (от 2 до 6)</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">Зарегистрироваться</button>
+        </form>
+    </div>
+</div>
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/phone.js"></script>
+<script type="text/javascript" src="/js/validate/validate_passw_registr.js"></script>
+<script type="text/javascript" src="/js/toogle_eye.js"></script>
+<script type="text/javascript" src="/js/validate/validate_mail_registr.js"></script>
+<script type="text/javascript" src="/js/functions/city_config.js"></script>
+<script type="text/javascript" src="/js/functions/region_config.js"></script>
+<script type="text/javascript" src="/js/functions/custom-select.js"></script>
+
+<script>
+    // ========== КАПЧА: РАБОТА С СЕРВЕРНОЙ ЦЕЛЬЮ (2-6) ==========
+    (function() {
+        const slider = document.getElementById('captchaSlider');
+        const display = document.getElementById('sliderValueDisplay');
+        const errorDiv = document.getElementById('captchaError');
+
+        // Получаем цель с сервера (из th:text в display)
+        let targetNumber = parseInt(display.textContent.trim(), 10);
+        if (isNaN(targetNumber) || targetNumber < 2 || targetNumber > 6) {
+            // Запасной вариант - генерируем на клиенте (2-6)
+            targetNumber = Math.floor(Math.random() * 5) + 2;
+            display.textContent = targetNumber;
+        }
+
+        console.log('Цель капчи:', targetNumber);
+
+        // Устанавливаем начальное значение слайдера (всегда 1)
+        slider.value = 1;
+
+        // При движении ползунка - только скрываем ошибку
+        slider.addEventListener('input', function() {
+            errorDiv.style.display = 'none';
+            this.classList.remove('captcha-error-slider');
+        });
+
+        // Валидация при отправке формы
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            const sliderValue = parseInt(slider.value, 10);
+
+            if (sliderValue !== targetNumber) {
+                e.preventDefault();
+                errorDiv.style.display = 'block';
+                slider.classList.add('captcha-error-slider');
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+            return true;
+        });
+
+        // Если есть ошибки валидации, обновляем капчу через AJAX
+        const hasErrors = document.querySelector('.alert-danger') !== null;
+        if (hasErrors) {
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
+            fetch('/api/captcha/refresh', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        targetNumber = data.target;
+                        display.textContent = targetNumber;
+                        // Сбрасываем слайдер на 1
+                        slider.value = 1;
+                        console.log('Капча обновлена:', targetNumber);
+                    }
+                })
+                .catch(err => console.error('Ошибка обновления капчи:', err));
+        }
+    })();
+
+    // ========== ВОССТАНОВЛЕНИЕ ВЫБРАННЫХ ЗНАЧЕНИЙ ПОСЛЕ ОШИБКИ ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        // Восстанавливаем регион
+        const selectedRegion = document.getElementById('selectedRegionValue');
+        const regionSelect = document.getElementById('regionSelect');
+
+        if (selectedRegion && selectedRegion.value && selectedRegion.value !== '' && regionSelect) {
+            setTimeout(function() {
+                for (let i = 0; i < regionSelect.options.length; i++) {
+                    if (regionSelect.options[i].value === selectedRegion.value) {
+                        regionSelect.selectedIndex = i;
+                        if (typeof updateCities === 'function') {
+                            updateCities();
+                        }
+                        break;
+                    }
+                }
+            }, 200);
+        }
+
+        // Восстанавливаем город
+        const selectedCity = document.getElementById('selectedCityValue');
+        if (selectedCity && selectedCity.value && selectedCity.value !== '') {
+            setTimeout(function() {
+                const citySelect = document.getElementById('citySelect');
+                if (citySelect && citySelect.options) {
+                    for (let i = 0; i < citySelect.options.length; i++) {
+                        if (citySelect.options[i].value === selectedCity.value) {
+                            citySelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                if (citySelect && citySelect.value !== selectedCity.value && selectedCity.value !== '') {
+                    const cityContainer = document.getElementById('cityContainer');
+                    if (cityContainer && cityContainer.querySelector('select')) {
+                        const manualOption = Array.from(citySelect.options).find(opt => opt.value === 'manual_input');
+                        if (manualOption) {
+                            citySelect.value = 'manual_input';
+                            citySelect.dispatchEvent(new Event('change'));
+                            setTimeout(() => {
+                                const manualInput = document.getElementById('cityManualInput');
+                                if (manualInput) manualInput.value = selectedCity.value;
+                            }, 50);
+                        }
+                    }
+                }
+            }, 300);
+        }
+    });
+</script>
+
+</body>
+</html>

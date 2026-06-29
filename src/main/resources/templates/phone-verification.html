@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title th:text="${title}"></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+  <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+<body>
+<div class="container-wrapper">
+  <header th:insert="~{block/header :: headerhtml}"></header>
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body">
+            <h2 class="card-title text-center">
+              <i class="bi bi-telephone-inbound text-success"></i>
+              Подтверждение телефона
+            </h2>
+
+            <div class="text-center mb-4">
+              <div class="display-6" th:text="${phone}"></div>
+              <small class="text-muted">На этот номер будет совершён звонок</small>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle"></i>
+              <strong>Как подтвердить:</strong>
+              <ol class="mb-0 mt-2">
+                <li>Ожидайте входящий звонок</li>
+                <li>После ответа автоинформатор назовёт <strong>4 цифры</strong></li>
+                <li>Введите эти цифры в поле ниже</li>
+              </ol>
+            </div>
+
+            <form th:action="@{/verify-phone}" method="post" id="verifyForm">
+              <input type="hidden" name="phone" th:value="${phone}">
+
+              <div class="mb-3">
+                <label class="form-label">Код подтверждения</label>
+                <input type="text"
+                       name="flashCode"
+                       class="form-control text-center"
+                       id="flashCode"
+                       maxlength="4"
+                       pattern="[0-9]{4}"
+                       required
+                       placeholder="✶ ✶ ✶ ✶"
+                       style="font-size: 32px; letter-spacing: 12px; height: 70px;"
+                       autofocus>
+                <div class="form-text text-center">
+                  <span class="text-muted">Введите последние 4 цифры номера, с которого поступил звонок</span>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-success w-100" id="submitBtn">
+                <i class="bi bi-check-circle"></i> Подтвердить
+              </button>
+            </form>
+
+            <div class="text-center mt-3">
+              <button class="btn btn-link" id="resendBtn" onclick="resendCall()">
+                <i class="bi bi-arrow-repeat"></i>
+                <span id="resendText">Отправить звонок заново</span>
+                <span id="timerText" style="display: none;"></span>
+              </button>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('flashCode').focus();
+  });
+
+  document.getElementById('flashCode').addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+    if (this.value.length === 4) {
+      document.getElementById('verifyForm').submit();
+    }
+  });
+
+  let countdown = 60;
+  let timerInterval = null;
+
+  function startTimer() {
+    const resendBtn = document.getElementById('resendBtn');
+    const resendText = document.getElementById('resendText');
+    const timerText = document.getElementById('timerText');
+
+    resendBtn.disabled = true;
+    resendText.style.display = 'none';
+    timerText.style.display = 'inline';
+    countdown = 60;
+
+    timerInterval = setInterval(function() {
+      timerText.textContent = ' (' + countdown + 'с)';
+      countdown--;
+
+      if (countdown < 0) {
+        clearInterval(timerInterval);
+        resendBtn.disabled = false;
+        resendText.style.display = 'inline';
+        timerText.style.display = 'none';
+        timerText.textContent = '';
+      }
+    }, 1000);
+  }
+
+  function resendCall() {
+    const phone = document.querySelector('input[name="phone"]').value;
+    const submitBtn = document.getElementById('submitBtn');
+    const resendBtn = document.getElementById('resendBtn');
+
+    resendBtn.disabled = true;
+    submitBtn.disabled = true;
+
+    fetch('/resend-flashcall', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'phone=' + encodeURIComponent(phone)
+    })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('✅ ' + data.message);
+                startTimer();
+              } else {
+                alert('❌ ' + data.message);
+              }
+            })
+            .catch(error => {
+              alert('❌ Ошибка при отправке запроса');
+            })
+            .finally(() => {
+              resendBtn.disabled = false;
+              submitBtn.disabled = false;
+            });
+  }
+
+  startTimer();
+</script>
+
+</body>
+</html>

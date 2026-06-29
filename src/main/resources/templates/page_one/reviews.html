@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Отзывы о пользователе</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <link rel="stylesheet" th:href="@{/css/stylehome.css}">
+    <link rel="stylesheet" th:href="@{/css/stylereviews.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+</head>
+
+<body th:attr="data-current-user-id=${currentUser != null ? currentUser.id : ''},
+               data-reviewed-user-id=${reviewedUser != null ? reviewedUser.id : reviewedUserId},
+               data-reviewed-user-hash-id=${hashId},
+               data-is-super=${#authorization.expression('hasRole(''SUPER'')') ? 'true' : ''},
+               data-is-admin=${#authorization.expression('hasRole(''ADMIN'')') ? 'true' : ''},
+               data-user-role=${currentUser != null ? currentUser.role : ''}">
+
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="container mt-4">
+        <div th:if="${error != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Хлебные крошки -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/page_one/reviews}" class="text-decoration-none">
+                        <i class="fas fa-home me-1"></i>К поиску
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Отзывы о
+                    <span th:if="${reviewedUser != null}" th:text="${reviewedUser.nameuse}"></span>
+                    <span th:unless="${reviewedUser != null}">(пользователь удален)</span>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- Блок для SUPER пользователя -->
+        <div th:if="${reviewedUser != null and reviewedUser.role == 'ROLE_SUPER'}" class="alert alert-warning text-center">
+            <i class="fas fa-shield-alt me-2"></i>
+            <strong>Это системный администратор</strong> - отзывы недоступны
+            <div class="mt-3">
+                <a th:href="@{/page_one/reviews}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-arrow-left me-1"></i>Вернуться к списку пользователей
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${reviewedUser == null or reviewedUser.role != 'ROLE_SUPER'}">
+            <!-- Информация о пользователе -->
+            <div th:if="${userExists}" class="user-info-card mb-5">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="user-avatar mb-3">
+                            <i class="fas fa-user-circle fa-4x text-primary"></i>
+                        </div>
+                        <h4 class="card-title mb-3">Отзывы о пользователе:
+                            <span class="text-primary" th:text="${reviewedUser.nameuse}"></span>
+                        </h4>
+
+                        <!-- БЛОК РЕЙТИНГА ПОЛЬЗОВАТЕЛЯ -->
+                        <div class="user-rating-section mb-3">
+                            <div class="rating-info d-inline-block p-3 bg-light rounded">
+                                <strong>Рейтинг пользователя:</strong>
+                                <div class="rating-stars d-inline-block ms-2 seller-rating"
+                                     th:attr="data-seller-id=${reviewedUser.hashId}">
+                                </div>
+                                <span th:if="${#authentication.isAuthenticated()
+                                    and currentUser != null
+                                    and currentUser.id != reviewedUser.id
+                                    and !#authorization.expression('hasRole(''SUPER'')')
+                                    and !#authorization.expression('hasRole(''ADMIN'')')}"
+                                      class="rate-seller-text ms-2">
+                                    • <a href="#" class="rate-seller-link"
+                                         th:attr="data-seller-id=${reviewedUser.hashId}">Оценить</a>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="user-details row justify-content-center">
+                            <div class="col-md-4">
+                                <p class="mb-0">
+                                    <i class="fas fa-calendar me-2 text-muted"></i>
+                                    <strong>В системе с:</strong>
+                                    <span th:text="${#temporals.format(reviewedUser.registrationDate, 'dd.MM.yyyy')}"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок для удаленного пользователя -->
+            <div th:unless="${userExists}" class="user-info-card mb-5">
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Этот пользователь был удален</strong> - отзывы сохранены для истории
+                </div>
+                <div class="card shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="user-avatar mb-3">
+                            <i class="fas fa-user-slash fa-4x text-muted"></i>
+                        </div>
+                        <h2 class="card-title mb-3">Отзывы о пользователе:
+                            <span class="text-muted">(пользователь удален)</span>
+                        </h2>
+
+                        <div class="user-rating-section mb-3" th:if="${reviewedUserId}">
+                            <div class="rating-info d-inline-block p-3 bg-light rounded">
+                                <strong>Рейтинг пользователя:</strong>
+                                <div class="rating-stars d-inline-block ms-2 seller-rating"
+                                     th:attr="data-seller-id=${reviewedUserId}">
+                                </div>
+                                <span class="rating-text ms-2">
+                                    (<span class="average-rating">0</span> из 5 на основе
+                                    <span class="rating-count">0</span> оценок)
+                                </span>
+                                <span th:if="${#authentication.isAuthenticated()
+                                    and currentUser != null
+                                    and currentUser.id != reviewedUserId
+                                    and !#authorization.expression('hasRole(''SUPER'')')
+                                    and !#authorization.expression('hasRole(''ADMIN'')')}"
+                                      class="rate-seller-text ms-2">
+                                    • <a href="#" class="rate-seller-link"
+                                         th:attr="data-seller-id=${reviewedUserId}">Оценить</a>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="user-details row justify-content-center">
+                            <div class="col-md-6">
+                                <p class="mb-2">
+                                    <i class="fas fa-user me-2 text-muted"></i>
+                                    <strong>ID пользователя:</strong>
+                                    <span th:if="${#authorization.expression('hasRole(''SUPER'')')}" th:text="${reviewedUserId}"></span>
+                                    <span th:unless="${#authorization.expression('hasRole(''SUPER'')')}" class="text-muted">скрыто</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма для отзывов -->
+            <div th:if="${#authentication.isAuthenticated()}" class="comment-form mb-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-edit me-2"></i>
+                            <span th:if="${currentUser != null and (reviewedUser == null or currentUser.id != reviewedUser.id)}">Оставить отзыв</span>
+                            <span th:if="${currentUser != null and reviewedUser != null and currentUser.id == reviewedUser.id}">Ответить на отзывы</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${currentUser != null and reviewedUser != null and currentUser.id == reviewedUser.id}" class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Информация!</strong> Вы можете отвечать на отзывы о себе.
+                        </div>
+
+                        <form th:action="@{/page_one/reviews/{hashId}/reviecom(hashId=${hashId})}" method="post" id="review-form">
+                            <input type="hidden" name="parentCommentId" id="parentCommentId" value="">
+
+                            <div id="replyTo" class="alert alert-info mb-3" style="display: none;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small>
+                                        <strong><i class="fas fa-reply me-1"></i>Ответ на отзыв:</strong>
+                                        <span id="replyToText"></span>
+                                    </small>
+                                    <button type="button" class="btn-close btn-sm" onclick="cancelReply()" aria-label="Отменить ответ"></button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="reviewText" class="form-label">
+                                    <strong th:if="${currentUser != null and (reviewedUser == null or currentUser.id != reviewedUser.id)}">Ваш отзыв:</strong>
+                                    <strong th:if="${currentUser != null and reviewedUser != null and currentUser.id == reviewedUser.id}">Ваш ответ:</strong>
+                                </label>
+                                <textarea name="text" class="form-control" id="reviewText" rows="4" required
+                                          th:attr="placeholder=${currentUser != null and (reviewedUser == null or currentUser.id != reviewedUser.id)} ? 'Поделитесь вашим опытом взаимодействия с этим пользователем...' : 'Напишите ответ на отзыв...'"></textarea>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    <span th:if="${currentUser != null and (reviewedUser == null or currentUser.id != reviewedUser.id)}">Отправить отзыв</span>
+                                    <span th:if="${currentUser != null and reviewedUser != null and currentUser.id == reviewedUser.id}">Отправить ответ</span>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="cancelReply()" style="display: none;" id="cancelReplyBtn">
+                                    <i class="fas fa-times me-2"></i>Отменить ответ
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Сообщение для неавторизованных -->
+            <div th:unless="${#authentication.isAuthenticated()}" class="alert alert-info mb-5">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle fa-2x me-3"></i>
+                    <div>
+                        <h5 class="alert-heading mb-2">Хотите оставить отзыв?</h5>
+                        <p class="mb-0">
+                            <a th:href="@{/login}" class="alert-link">Войдите в систему</a>,
+                            чтобы оставить отзыв об этом пользователе.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Список отзывов -->
+            <div class="reviews-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-comments me-2 text-primary"></i>Отзывы
+                    </h3>
+                </div>
+
+                <div id="reviewsContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreReviewsContainer">
+                    <button id="loadMoreReviewsBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>Показать еще отзывы
+                    </button>
+                </div>
+
+                <div id="allLoadedReviewsMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>Все отзывы загружены
+                    </p>
+                </div>
+
+                <div id="noReviewsMessage" class="no-reviews text-center py-5" style="display: none;">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body py-5">
+                            <i class="fas fa-comments fa-4x text-muted mb-4"></i>
+                            <h4 class="text-muted mb-3">Отзывов пока нет</h4>
+                            <p class="text-muted mb-0">Будьте первым, кто оставит отзыв об этом пользователе</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/reviews_com.js"></script>
+<script type="text/javascript" src="/js/paginationPost/load-more-reviews.js"></script>
+<script type="text/javascript" src="/js/functions/rating.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof loadAllSellerRatings === 'function') {
+            setTimeout(function() { loadAllSellerRatings(); }, 500);
+        }
+        if (typeof initRatingHandlers === 'function') {
+            initRatingHandlers();
+        }
+    });
+</script>
+
+<!-- модалка для подтверждения удаления -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-trash-alt text-danger me-2"></i>Подтверждение удаления
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0" id="deleteConfirmMessage">Вы уверены, что хотите удалить этот отзыв?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Отмена
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash-alt me-1"></i>Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

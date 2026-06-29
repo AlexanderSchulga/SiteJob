@@ -1,0 +1,312 @@
+/* ===== БАЗОВЫЕ СТИЛИ ФУТЕРА ===== */
+.footer {
+    background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
+    padding: 32px 0 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.05);
+}
+
+.footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Сетка 4 колонки */
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+/* Колонки */
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    margin-bottom: 0;
+}
+
+.footer-col-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 6px;
+}
+
+.footer-col-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 35px;
+    height: 2px;
+    background: #ffd700;
+    border-radius: 2px;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.footer-list li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.footer-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.footer-link:hover {
+    color: #ffd700;
+    transform: translateX(3px);
+}
+
+.contact-icon {
+    font-size: 14px;
+    min-width: 22px;
+    color: #ffd700;
+}
+
+.contact-text {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Нижняя строка */
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.footer-date, .footer-date-updated {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* ===== КНОПКА "НАВЕРХ" ===== */
+#myBtn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99;
+    border: none;
+    outline: none;
+    background: linear-gradient(135deg, #1e2a3a 0%, #0f1724 100%);
+    color: white;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+#myBtn:hover {
+    background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+    color: #1e2a3a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== ТВОЯ РОДНАЯ СХЕМА ПРИЛИПАНИЯ ===== */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.container-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-wrapper > .main-content {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 992px) {
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 28px;
+    }
+    .footer {
+        padding: 28px 0 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+    }
+    .footer {
+        padding: 24px 0 16px;
+    }
+    .footer-container {
+        padding: 0 16px;
+    }
+    .footer-title {
+        font-size: 20px;
+    }
+    .footer-col-title {
+        font-size: 15px;
+    }
+    .footer-col-title::after {
+        width: 30px;
+        height: 2px;
+    }
+    .footer-list {
+        gap: 6px;
+    }
+    .footer-link, .contact-text {
+        font-size: 12px;
+    }
+    .contact-icon {
+        font-size: 13px;
+        min-width: 20px;
+    }
+    .footer-bottom {
+        padding-top: 12px;
+        flex-direction: column;
+        text-align: center;
+        gap: 4px;
+    }
+    .footer-date, .footer-date-updated {
+        font-size: 10px;
+    }
+    #myBtn {
+        bottom: 15px;
+        right: 15px;
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+}
+
+/* Очень маленькие телефоны - тоже 2 колонки, но компактнее */
+@media (max-width: 480px) {
+    .footer {
+        padding: 20px 0 12px;
+    }
+    .footer-grid {
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+    .footer-col {
+        gap: 6px;
+    }
+    .footer-list {
+        gap: 5px;
+    }
+    .footer-link, .contact-text {
+        font-size: 11px;
+    }
+    .footer-col-title {
+        font-size: 13px;
+        padding-bottom: 4px;
+    }
+    .footer-col-title::after {
+        width: 25px;
+        height: 2px;
+    }
+    .contact-icon {
+        font-size: 12px;
+        min-width: 18px;
+    }
+}
+
+/* Для совсем крошечных телефонов (до 360px) - всё ещё 2 колонки */
+@media (max-width: 360px) {
+    .footer-grid {
+        gap: 12px;
+    }
+    .footer-link, .contact-text {
+        font-size: 10px;
+    }
+    .footer-col-title {
+        font-size: 12px;
+    }
+    .contact-icon {
+        font-size: 11px;
+        min-width: 16px;
+    }
+}
+
+/* Адаптация для landscape на телефонах */
+@media (max-width: 767px) and (orientation: landscape) {
+    .footer {
+        padding: 16px 0 12px;
+    }
+    .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+    .footer-list {
+        gap: 4px;
+    }
+}
+
+/* Для очень больших экранов */
+@media (min-width: 1600px) {
+    .footer-container {
+        max-width: 1500px;
+    }
+    .footer {
+        padding: 40px 0 24px;
+    }
+    .footer-title {
+        font-size: 26px;
+    }
+    .footer-link, .contact-text {
+        font-size: 14px;
+    }
+    #myBtn {
+        bottom: 30px;
+        right: 30px;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}

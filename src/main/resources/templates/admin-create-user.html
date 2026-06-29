@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/css/styleadmincreateuser.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="user-form">
+        <h2 class="form-title">Создать пользователя</h2>
+        <h3 class="form-title">Поля для авторизации</h3>
+
+        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+        <div th:if="${param.success}" class="alert alert-success mt-3">Пользователь создан!</div>
+
+        <form id="createUserForm" th:action="@{/admin-create-user}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div class="mb-3">
+                <label class="form-label">Login *</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Пароль *</label>
+                <div class="password-wrapper">
+                    <input type="password" name="password" id="password" class="form-control" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Подтвердите пароль *</label>
+                <div class="password-wrapper">
+                    <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle"></i>
+                <strong>Безопасность пароля:</strong><br>
+                • Используйте уникальный пароль для нашего сайта<br>
+                • Не используйте пароли от почты или соцсетей<br>
+                • Рекомендуем пароль не менее 12 символов с цифрами и спецсимволами
+            </div>
+
+            <h3 class="form-title">Поля для объявлений</h3>
+
+            <div class="mb-3">
+                <label class="form-label">Имя пользователя *</label>
+                <input type="text" name="nameuse" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email *</label>
+                <input type="email" name="email" class="form-control"
+                       placeholder="только российские почтовые сервисы"
+                       required>
+                <div class="form-text">Разрешены: Mail.ru, Яндекс, Рамблер, VK.com</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Телефон (Для партнеров) *</label>
+                <input type="tel"
+                       name="phone"
+                       id="phoneInput"
+                       class="form-control phone-input"
+                       placeholder="+7 (___) ___-__-__"
+                       required>
+                <div class="form-text">В формате: +7 (XXX) XXX-XX-XX</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Телефон (Для отображения в объявлениях)</label>
+                <input type="tel"
+                       name="phonePost"
+                       id="phonePostInput"
+                       class="form-control phone-input"
+                       placeholder="+7 (___) ___-__-__">
+                <div class="form-text">Необязательное поле</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ваш регион *</label>
+                <select name="region" id="regionSelect" class="form-select" required>
+                    <option value="" disabled selected>Загрузка регионов...</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Город/Населенный пункт</label>
+                <div id="cityContainer">
+                    <select name="city" id="citySelect" class="form-select">
+                        <option value="" selected>Сначала выберите регион</option>
+                    </select>
+                    <div class="form-text">Необязательное поле. Если вашего города нет в списке, выберите "Ввести вручную"</div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Роль *</label>
+                <select name="role" class="form-select" required>
+                    <option value="SUPER">Супер</option>
+                    <option value="ADMIN">Администратор</option>
+                    <option value="USER" selected>Пользователь</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">Создать</button>
+        </form>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/phone.js"></script>
+<script type="text/javascript" src="/js/toogle_eye.js"></script>
+<script type="text/javascript" src="/js/validate/validate_passw_registr.js"></script>
+<script type="text/javascript" src="/js/functions/city_config.js"></script>
+<script type="text/javascript" src="/js/functions/region_config.js"></script>
+<script type="text/javascript" src="/js/functions/custom-select.js"></script>
+
+<script>
+    // Простой обработчик отправки формы для ручного ввода города
+    document.getElementById('createUserForm').addEventListener('submit', function(e) {
+        const citySelect = document.getElementById('citySelect');
+        const manualInput = document.getElementById('cityManualInput');
+
+        // Если есть поле ручного ввода и оно видимо
+        if (manualInput && manualInput.offsetParent !== null) {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'city';
+            hiddenInput.value = manualInput.value.trim();
+            this.appendChild(hiddenInput);
+            citySelect.disabled = true;
+        }
+    });
+</script>
+</body>
+</html>

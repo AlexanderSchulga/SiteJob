@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <title th:text="${title}"></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+  <link rel="stylesheet" th:href="@{/css/stylelogin.css}">
+  <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+  <style>
+    .banned-alert {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      border: none;
+      border-left: 5px solid #ffc107;
+    }
+    .banned-alert i {
+      font-size: 1.2rem;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="container-wrapper">
+  <header th:insert="~{block/header :: headerhtml}"></header>
+
+  <div class="login-form">
+    <h2 class="form-title">Вход</h2>
+
+    <!-- Сообщение о блокировке -->
+    <div th:if="${bannedError}" class="alert banned-alert" role="alert">
+      <i class="bi bi-shield-exclamation"></i>
+      <strong>Доступ запрещен</strong>
+      <div th:text="${bannedError}" class="mt-2"></div>
+    </div>
+
+    <!-- Обычное сообщение об ошибке -->
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+      <i class="bi bi-exclamation-triangle"></i>
+      <span th:text="${error}"></span>
+    </div>
+
+    <form th:action="@{/login}" method="post">
+      <div class="mb-3">
+        <label class="form-label">Login</label>
+        <input type="text" name="username" class="form-control"
+               th:value="${param.username}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Пароль</label>
+        <div class="password-wrapper">
+          <input type="password" name="password" class="form-control" id="password" required>
+          <button type="button" class="password-toggle" onclick="togglePassword('password')">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-submit">Войти</button>
+      <div class="text-center mt-3">
+        <a th:href="@{/forgot-password}">Забыли пароль?</a>
+      </div>
+
+      <a th:href="'/register'" class="btn btn-warning btn-register">Регистрация</a>
+    </form>
+  </div>
+</div>
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/toogle_eye.js"></script>
+</body>
+</html>

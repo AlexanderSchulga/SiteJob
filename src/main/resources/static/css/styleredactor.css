@@ -1,0 +1,589 @@
+body, .container-wrapper, .admin-panel, .content-block,
+.card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ========== УМЕНЬШЕНИЕ КОНТЕЙНЕРА НА ДЕСКТОПЕ ========== */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1200px !important;
+    }
+}
+
+.container-wrapper {
+    max-width: 1200px;
+    margin: 5px auto;
+    padding: 0 15px;
+    min-height: calc(100vh - 160px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========== ОБЩИЕ СТИЛИ КАРТОЧЕК ========== */
+.post-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.6rem;
+    padding: 10px;
+    padding-bottom: 0 !important;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ========== ПРЕМИУМ КАРТОЧКИ ========== */
+.post-card-premium {
+    background: linear-gradient(145deg, #fff8e7 0%, #fff4d6 100%);
+    border: 1px solid #ffd700;
+    border-radius: 0.6rem;
+    padding: 10px;
+    padding-bottom: 0 !important;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card-premium:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+    border-color: #ffc107;
+}
+
+/* Тонкая золотая кайма для премиум */
+.post-card-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ffd700, #ffec8b, #ffd700);
+}
+
+/* ========== ДОНАТ КАРТОЧКИ ========== */
+.post-card-donate {
+    background: linear-gradient(145deg, #f0f0f5 0%, #d7d7fa 100%);
+    border: 1px solid #c0c0c0;
+    border-radius: 0.6rem;
+    padding: 10px;
+    padding-bottom: 0 !important;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.post-card-donate:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(192, 192, 192, 0.3);
+    border-color: #a9a9a9;
+}
+
+/* Тонкая серебряная кайма для донат */
+.post-card-donate::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #c0c0c0, #e0e0e0, #c0c0c0);
+}
+
+/* ========== ОБЩИЕ СТИЛИ ДЛЯ ВСЕХ КАРТОЧЕК ========== */
+@media (min-width: 768px) {
+    .post-card, .post-card-premium, .post-card-donate {
+        padding: 10px;
+        padding-bottom: 0 !important;
+    }
+}
+
+.post-card:hover, .post-card-premium:hover, .post-card-donate:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.post-image-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 4px;
+    background-color: #f8f9fa;
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .post-image-wrapper {
+        margin-bottom: 4px;
+    }
+}
+
+.post-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.post-image-placeholder {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+}
+
+.post-card:hover .post-image,
+.post-card-premium:hover .post-image,
+.post-card-donate:hover .post-image {
+    transform: scale(1.05);
+}
+
+.post-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2c3034;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.post-content small {
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+    display: block;
+}
+
+.post-content strong {
+    color: #2c3034;
+    font-weight: 700;
+    margin-right: 5px;
+}
+
+/* ========== СТИЛИ ДЛЯ КНОПОК В 2 СТРОКИ ========== */
+.action-buttons {
+    margin-top: 8px;
+    padding-top: 0px;
+    margin-bottom: 8px;
+    padding-bottom: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.btn-row {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.btn-row .btn,
+.btn-row form {
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-row .btn {
+    padding: 6px 4px;
+    font-size: 0.75rem;
+    border-radius: 0.25rem !important;
+    transition: all 0.2s ease-in-out;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.btn-placeholder {
+    flex: 1;
+}
+
+.action-buttons .btn-mod {
+    background-color: #e8f9fa;
+    border-color: #90e4e7;
+    color: #000000;
+}
+
+.action-buttons .btn-mod:hover {
+    background-color: #b0d68e;
+    border-color: #1a3a1a;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+/* ========== СЕТКА: УМЕНЬШЕННЫЕ ОТСТУПЫ ПО БОКАМ НА МОБИЛЬНЫХ ========== */
+@media (max-width: 767px) {
+    .col-6 {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .col-6 {
+        padding-left: 3px !important;
+        padding-right: 3px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .col-6 {
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+    }
+}
+
+/* ========== СЕТКА: 4 КАРТОЧКИ В РЯДУ НА БОЛЬШИХ ЭКРАНАХ ========== */
+@media (min-width: 1200px) {
+    .col-xl-3 {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .col-lg-4 {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .col-md-6 {
+        flex: 0 0 33.333333% !important;
+        max-width: 33.333333% !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+}
+
+@media (max-width: 575px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+    .container-wrapper {
+        padding: 0 15px;
+    }
+}
+
+/* ========== ВКЛАДКИ ========== */
+.category-tabs {
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 0.75rem;
+}
+
+.category-tabs .nav-link {
+    border-radius: 0px;
+    padding: 8px 25px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: #495057;
+    background: transparent;
+    font-size: 1.1rem;
+}
+
+.category-tabs .nav-link:hover {
+    border-bottom-color: #78acb3;
+    background-color: transparent;
+    color: #000;
+}
+
+.category-tabs .nav-link.active {
+    background-color: transparent;
+    border-bottom-color: #5a9e6e;
+    color: #000;
+    font-weight: 700;
+}
+
+.tab-content h2 {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 700;
+}
+
+.tab-content h2 i {
+    font-size: 1rem;
+}
+
+/* ========== КНОПКИ "ПОКАЗАТЬ ЕЩЕ" ========== */
+#loadMoreProductsBtn, #loadMoreServicesBtn, #loadMoreVacanciesBtn, #loadMoreResumeBtn {
+    border-radius: 0.5rem !important;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    background-color: #00BFFF;
+    border-color: #1a3a1a;
+    color: #000000;
+}
+
+#loadMoreProductsBtn:hover, #loadMoreServicesBtn:hover, #loadMoreVacanciesBtn:hover, #loadMoreResumeBtn:hover {
+    background-color: #b0d68e;
+    border-color: #5a9e6e;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.all-loaded-message {
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 0px;
+    border: 1px dashed #dee2e6;
+    font-size: 0.8rem;
+}
+
+/* ========== БАННЕРЫ СТАТУСОВ ========== */
+.archived-banner, .blocked-banner, .moderation-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    padding: 4px 8px;
+    z-index: 3;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.archived-banner {
+    background: #6c757d;
+    color: white;
+}
+
+.blocked-banner {
+    background: #dc3545;
+    color: white;
+}
+
+.moderation-banner {
+    background: #ffc107;
+    color: #212529;
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+@media (min-width: 1200px) {
+    .post-card, .post-card-premium, .post-card-donate {
+        padding: 12px;
+        padding-bottom: 0 !important;
+        margin-bottom: 14px;
+    }
+    .post-image { height: 200px; }
+    .post-image-placeholder { height: 200px; }
+    .post-title {
+        font-size: 1rem;
+        margin-top: 8px;
+        margin-bottom: 3px;
+    }
+    .post-content small {
+        font-size: 0.9rem;
+        margin-bottom: 3px;
+    }
+    .btn-row .btn { font-size: 0.8rem; padding: 6px 4px; }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .post-card, .post-card-premium, .post-card-donate {
+        padding: 9px;
+        padding-bottom: 0 !important;
+        margin-bottom: 10px;
+    }
+    .post-image { height: 150px; }
+    .post-image-placeholder { height: 150px; }
+    .post-title {
+        font-size: 0.9rem;
+        margin-top: 5px;
+        margin-bottom: 2px;
+    }
+    .post-content small {
+        font-size: 0.8rem;
+        margin-bottom: 2px;
+    }
+    .category-tabs .nav-link { font-size: 1rem; padding: 6px 20px; }
+    .tab-content h2 { font-size: 1rem !important; }
+}
+
+/* ========== МОБИЛЬНЫЕ НАСТРОЙКИ ========== */
+@media (max-width: 767px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .post-card, .post-card-premium, .post-card-donate {
+        padding: 0 !important;
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+        border: 1px solid #dee2e6;
+    }
+
+    .post-card-premium {
+        border-color: #ffd700;
+    }
+
+    .post-card-donate {
+        border-color: #c0c0c0;
+    }
+
+    .post-image-wrapper {
+        margin-bottom: 0 !important;
+    }
+
+    .post-image {
+        height: 160px;
+    }
+    .post-image-placeholder {
+        height: 160px;
+    }
+
+    .post-title,
+    .post-content {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .action-buttons {
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-bottom: 8px;
+    }
+
+    .post-title {
+        font-size: 0.95rem !important;
+        margin-top: 6px;
+        margin-bottom: 4px;
+        font-weight: 700;
+    }
+
+    .post-content small {
+        font-size: 0.85rem !important;
+        margin-bottom: 4px;
+    }
+
+    .post-content strong {
+        font-size: 0.85rem;
+    }
+
+    .btn-row .btn {
+        padding: 5px 4px;
+        font-size: 0.7rem;
+    }
+
+    .category-tabs { margin-bottom: 0.5rem; }
+    .category-tabs .nav-link {
+        padding: 5px 12px;
+        font-size: 0.9rem;
+    }
+    .tab-content h2 { font-size: 0.95rem !important; }
+}
+
+@media (max-width: 480px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        padding-left: 3px !important;
+        padding-right: 3px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .post-image { height: 140px; }
+    .post-image-placeholder { height: 140px; }
+
+    .post-title,
+    .post-content {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    .action-buttons {
+        padding-left: 6px;
+        padding-right: 6px;
+        padding-bottom: 6px;
+    }
+
+    .post-title { font-size: 0.9rem !important; }
+    .post-content small { font-size: 0.8rem !important; }
+    .btn-row .btn {
+        padding: 4px 3px;
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .col-md-6, .col-lg-4, .col-xl-3 {
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+        margin-bottom: 4px !important;
+    }
+
+    .post-image { height: 120px; }
+    .post-image-placeholder { height: 120px; }
+    .post-title { font-size: 0.85rem !important; }
+
+    .post-title,
+    .post-content {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .action-buttons {
+        padding-left: 4px;
+        padding-right: 4px;
+        padding-bottom: 4px;
+    }
+
+    .btn-row .btn {
+        padding: 3px 2px;
+        font-size: 0.6rem;
+    }
+}
+
+/* ========== ФИКС ДЛЯ СЕНСОРНЫХ УСТРОЙСТВ ========== */
+@media (hover: none) and (pointer: coarse) {
+    #loadMoreProductsBtn:hover,
+    #loadMoreServicesBtn:hover,
+    #loadMoreVacanciesBtn:hover,
+    #loadMoreResumeBtn:hover {
+        background-color: #00BFFF !important;
+    }
+}
+
+/* Фикс футера */
+html, body { height: 100%; }
+.container-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+.main-content { flex: 1 0 auto; }
+footer { flex-shrink: 0; }
+
+/* Уменьшенные отступы */
+.mb-5 { margin-bottom: 0.75rem !important; }
+.mb-4 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 0.35rem !important; }
+.mt-4 { margin-top: 0.5rem !important; }

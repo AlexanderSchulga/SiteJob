@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Заблокированные объявления</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/styleredactorblock.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div th:unless="${#authentication.principal.role == 'ROLE_SUPER' or #authentication.principal.role == 'ROLE_ADMIN'}">
+        <div class="alert alert-danger">
+            Доступ запрещен. Только администраторы могут просматривать эту страницу.
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <h1 class="text-center mb-4" style="color:red;">Заблокированные объявления</h1>
+
+        <!-- Статистика -->
+        <div class="alert alert-warning text-center">
+            <strong>Статистика:</strong>
+            Заблокировано товаров: <span id="blockedProductsCount" th:text="${blockedProductsCount}">0</span> |
+            Заблокировано услуг: <span id="blockedServicesCount" th:text="${blockedServicesCount}">0</span> |
+            Заблокировано вакансий: <span id="blockedVacanciesCount" th:text="${blockedVacanciesCount}">0</span>
+            Заблокировано резюме: <span id="blockedResumeCount" th:text="${blockedResumeCount}">0</span>
+        </div>
+
+        <!-- Поисковая строка -->
+
+        <div class="search-container mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4 col-lg-3">
+                            <select id="searchType" class="form-select custom-select-init">
+                                <option value="all">По всем полям</option>
+                                <option value="title">По заголовку</option>
+                                <option value="nameuse">По имени автора</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-lg-7">
+                            <div class="input-group">
+                                <input type="text"
+                                       id="searchInput"
+                                       class="form-control"
+                                       placeholder="Поиск..."
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary flex-grow-1" type="button" id="searchButton">
+                                    <i class="fas fa-search me-1"></i> Найти
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" id="clearSearchButton">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Введите минимум 2 символа для поиска
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладки для переключения между категориями -->
+        <div class="category-tabs mb-4">
+            <ul class="nav nav-tabs" id="categoryTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="products-tab"
+                            data-bs-toggle="tab" data-bs-target="#products-content"
+                            type="button" role="tab" data-type="products">
+                        <i class="fas fa-shopping-bag me-2"></i>Товары
+
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="services-tab"
+                            data-bs-toggle="tab" data-bs-target="#services-content"
+                            type="button" role="tab" data-type="services">
+                        <i class="fas fa-concierge-bell me-2"></i>Услуги
+
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="vacancies-tab"
+                            data-bs-toggle="tab" data-bs-target="#vacancies-content"
+                            type="button" role="tab" data-type="vacancies">
+                        <i class="fas fa-briefcase me-2"></i>Вакансии
+
+                    </button>
+                </li>
+
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="resume-tab"
+                            data-bs-toggle="tab" data-bs-target="#resume-content"
+                            type="button" role="tab" data-type="resume">
+                        <i class="fas fa-briefcase me-2"></i>Резюме
+
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Контент вкладок -->
+        <div class="tab-content" id="categoryTabContent">
+            <!-- Вкладка товаров -->
+            <div class="tab-pane fade show active" id="products-content" role="tabpanel">
+                <h5 class="mb-3" style="color: #007bff;">
+                    <i class="fas fa-shopping-bag me-2"></i>Заблокированные товары
+                </h5>
+                <div class="row" id="productsContainer">
+                    <!-- Товары будут загружаться через JavaScript -->
+                </div>
+
+                <div class="text-center mt-4" id="loadMoreProductsContainer">
+                    <button id="loadMoreProductsBtn" class="btn btn-primary"
+                            data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Показать еще товары
+                    </button>
+                </div>
+
+                <!-- Сообщение когда все товары загружены -->
+                <div id="allLoadedProductsMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все заблокированные товары загружены
+                    </p>
+                </div>
+
+                <!-- Сообщение если нет товаров -->
+                <div id="noProductsMessage" class="text-center mt-4" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Нет заблокированных товаров
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка услуг -->
+            <div class="tab-pane fade" id="services-content" role="tabpanel">
+                <h5 class="mb-3" style="color: #28a745;">
+                    <i class="fas fa-concierge-bell me-2"></i>Заблокированные услуги
+                </h5>
+                <div class="row" id="servicesContainer">
+                    <!-- Услуги будут загружаться через JavaScript -->
+                </div>
+
+                <div class="text-center mt-4" id="loadMoreServicesContainer">
+                    <button id="loadMoreServicesBtn" class="btn btn-success"
+                            data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Показать еще услуги
+                    </button>
+                </div>
+
+                <!-- Сообщение когда все услуги загружены -->
+                <div id="allLoadedServicesMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все заблокированные услуги загружены
+                    </p>
+                </div>
+
+                <!-- Сообщение если нет услуг -->
+                <div id="noServicesMessage" class="text-center mt-4" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Нет заблокированных услуг
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка вакансий -->
+            <div class="tab-pane fade" id="vacancies-content" role="tabpanel">
+                <h5 class="mb-3" style="color: #dc3545;">
+                    <i class="fas fa-briefcase me-2"></i>Заблокированные вакансии
+                </h5>
+                <div class="row" id="vacanciesContainer">
+                    <!-- Вакансии будут загружаться через JavaScript -->
+                </div>
+
+                <div class="text-center mt-4" id="loadMoreVacanciesContainer">
+                    <button id="loadMoreVacanciesBtn" class="btn btn-danger"
+                            data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Показать еще вакансии
+                    </button>
+                </div>
+
+                <!-- Сообщение когда все вакансии загружены -->
+                <div id="allLoadedVacanciesMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все заблокированные вакансии загружены
+                    </p>
+                </div>
+
+                <!-- Сообщение если нет вакансий -->
+                <div id="noVacanciesMessage" class="text-center mt-4" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Нет заблокированных вакансий
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="resume-content" role="tabpanel">
+                <h5 class="mb-3" style="color: #dc3545;">
+                    <i class="fas fa-briefcase me-2"></i>Заблокированные резюме
+                </h5>
+                <div class="row" id="resumeContainer">
+                    <!-- Резюме будут загружаться через JavaScript -->
+                </div>
+
+                <div class="text-center mt-4" id="loadMoreResumeContainer">
+                    <button id="loadMoreResumeBtn" class="btn btn-danger"
+                            data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Показать еще резюме
+                    </button>
+                </div>
+
+                <!-- Сообщение когда все вакансии загружены -->
+                <div id="allLoadedResumeMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все заблокированные резюме загружены
+                    </p>
+                </div>
+
+                <!-- Сообщение если нет вакансий -->
+                <div id="noResumeMessage" class="text-center mt-4" style="display: none;">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Нет заблокированных резюме
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Общий спиннер загрузки -->
+        <div id="loadingSpinner" class="text-center mt-2" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="text-muted mt-2">Загружаем...</p>
+        </div>
+
+        <!-- Результаты поиска -->
+        <div id="searchResultsInfo" class="alert alert-info" style="display: none;">
+            <i class="fas fa-info-circle me-2"></i>
+            <span id="searchResultsText"></span>
+            <button type="button" class="btn-close float-end" onclick="document.getElementById('clearSearchButton').click()"></button>
+        </div>
+    </div>
+</div>
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" th:src="@{/js/paginationPost/load-more-blocked-redact.js}"></script>
+<script type="text/javascript" src="/js/functions/custom-select-redblock.js"></script>
+
+
+<!-- Модальное окно для подтверждения разблокировки -->
+<div class="modal fade" id="unblockModal" tabindex="-1" aria-labelledby="unblockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="unblockModalLabel">
+                    <i class="fas fa-unlock me-2"></i>Подтверждение разблокировки
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="unblockItemInfo">
+                <!-- Текст будет заполняться динамически -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="unblockForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-unlock me-1"></i>Разблокировать
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для подтверждения удаления -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-trash me-2"></i>Подтверждение удаления
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="deleteItemInfo">
+                <!-- Текст будет заполняться динамически -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1579 @@
+body, .container-wrapper, .admin-panel, .content-block,
+.card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Компенсация sticky-шапки */
+body.has-sticky-header .container-wrapper {
+    padding-top: 90px !important;
+}
+
+@media (max-width: 768px) {
+    body.has-sticky-header .container-wrapper {
+        padding-top: 120px !important;
+    }
+}
+
+/* Плавный переход */
+.container-wrapper {
+    transition: padding-top 0.2s ease;
+}
+
+.content-block {
+    background: #e8f9ff;
+    padding: 15px;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin: 20px 0;
+    min-height: 300px;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 0 !important;
+    margin-top: 10px !important;
+    position: relative;
+}
+
+.content-placeholder {
+    height: 200px;
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.container-wrapper {
+    max-width: 1200px;
+    margin: 5px auto;
+    padding: 0 15px;
+    min-height: calc(100vh - 160px);
+    overflow-x: hidden;
+}
+
+.admin-panel {
+    position: relative;
+    background: #00BFFF;
+    padding: 10px;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+/* Уменьшаем отступ между админ панелью и следующим блоком */
+.admin-panel + .content-block {
+    margin-top: 5px !important;
+}
+
+/* ========== ОБЩИЙ СТИЛЬ ДЛЯ admin-header ========== */
+.admin-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 4px;
+    gap: 4px;
+}
+
+.admin-title {
+    color: #360b0b;
+    margin-bottom: 0;
+    text-align: left;
+    font-size: 1.5rem;
+}
+
+/* ========== USER ПАНЕЛЬ - ТЕКСТ СЛЕВА, КНОПКА СНИЗУ ========== */
+
+/* Контейнер для текста с именем - слева, на всю ширину */
+.user-info-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.user-info {
+    font-size: 1.05rem;
+    padding: 4px 10px;
+    background: transparent;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    color: #360b0b;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Для очень длинных имен - обрезаем с многоточием */
+.user-info .user-name {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+/* Рейтинг не должен сжиматься */
+.user-info .user-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: #360b0b;
+    flex-shrink: 0;
+    margin-left: 4px;
+}
+
+.user-rating small,
+.user-rating small span,
+.user-rating span small {
+    color: #360b0b !important;
+}
+
+.user-rating > span {
+    color: #360b0b !important;
+}
+
+/* Кнопка "Создать" - на отдельной строке, выравнивание по центру */
+.create-btn-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 6px;
+}
+
+.create-dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.create-dropdown-btn-user {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background-color: #17c75c;
+    border: 1px solid #95e5d3;
+    color: #000000;
+    min-width: 160px;
+    padding: 6px 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.create-dropdown-btn-user:hover {
+    background-color: #b0d68e;
+    border-color: #b0d68e;
+    color: #1a3a1a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.create-dropdown-btn-user:active {
+    transform: translateY(0px);
+}
+
+.dropdown-menu-create-user {
+    position: absolute;
+    z-index: 1000;
+    display: none;
+    min-width: 200px;
+    padding: 0;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #000000;
+    text-align: center;
+    list-style: none;
+    background-color: #ffffff;
+    background-clip: padding-box;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.dropdown-menu-create-user.show {
+    display: block;
+}
+
+.dropdown-menu-create-user .dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 16px;
+    clear: both;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #000000;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu-create-user .dropdown-item:hover {
+    background-color: #b0d68e;
+    color: #1a3a1a;
+}
+
+.dropdown-menu-create-user .dropdown-item:active {
+    background-color: #7ad6c0;
+    color: #000000;
+}
+
+.dropdown-menu-create-user .dropdown-item:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dropdown-menu-create-user .dropdown-item i {
+    width: 18px;
+    text-align: center;
+}
+
+/* ========== АДАПТИВ ДЛЯ USER ПАНЕЛИ ========== */
+
+/* Десктоп */
+@media (min-width: 769px) {
+    .create-btn-wrapper {
+        padding-top: 8px;
+    }
+    .create-dropdown-btn-user {
+        min-width: 180px;
+        padding: 8px 24px;
+        font-size: 1rem;
+    }
+    .user-info {
+        font-size: 1.1rem;
+        padding: 4px 10px;
+    }
+    .dropdown-menu-create-user {
+        min-width: 200px;
+        margin-top: 10px;
+        border-radius: 12px;
+    }
+    .dropdown-menu-create-user .dropdown-item {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    .create-dropdown-wrapper {
+        display: inline-block;
+    }
+}
+
+/* Планшеты */
+@media (max-width: 768px) {
+    .create-btn-wrapper {
+        padding-top: 6px;
+    }
+    .create-dropdown-btn-user {
+        min-width: 150px;
+        padding: 6px 16px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+    .user-info {
+        font-size: 1rem;
+        padding: 3px 8px;
+    }
+    .dropdown-menu-create-user {
+        min-width: 180px;
+        margin-top: 6px;
+        border-radius: 10px;
+    }
+    .dropdown-menu-create-user .dropdown-item {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Мобильные */
+@media (max-width: 576px) {
+    .user-info {
+        font-size: 0.9rem;
+        padding: 2px 6px;
+        white-space: nowrap;
+        max-width: 100%;
+    }
+    .user-info .user-name {
+        max-width: 200px;
+    }
+    .create-btn-wrapper {
+        padding-top: 5px;
+    }
+    .create-dropdown-btn-user {
+        min-width: 130px;
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+    .dropdown-menu-create-user {
+        min-width: 170px;
+        margin-top: 5px;
+        border-radius: 8px;
+    }
+    .dropdown-menu-create-user .dropdown-item {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 380px) {
+    .user-info {
+        font-size: 0.8rem;
+        padding: 2px 4px;
+    }
+    .user-info .user-name {
+        max-width: 150px;
+    }
+    .create-dropdown-btn-user {
+        min-width: 110px;
+        padding: 4px 10px;
+        font-size: 0.8rem;
+        border-radius: 7px;
+    }
+    .dropdown-menu-create-user {
+        min-width: 160px;
+        margin-top: 4px;
+        border-radius: 8px;
+    }
+    .dropdown-menu-create-user .dropdown-item {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Для очень длинных имен - гарантированная обрезка */
+@media (max-width: 480px) {
+    .user-info .user-name {
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 360px) {
+    .user-info .user-name {
+        max-width: 100px;
+    }
+}
+
+.admin-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-admin {
+    min-width: 150px;
+    padding: 6px 12px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    flex: 1;
+    max-width: 170px;
+    border-radius: 10px;
+}
+
+.admin-buttons-mess {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-admin-mess {
+    min-width: 90px;
+    padding: 6px 12px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    border-radius: 10px;
+}
+
+.btn-admin.position-relative {
+    position: relative;
+}
+
+.position-absolute.bg-warning {
+    z-index: 100;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.badge.bg-danger {
+    font-size: 0.55em;
+    padding: 0.15em 0.35em;
+    min-width: 1.1em;
+}
+
+.row.mt-4 {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+    gap: 20px;
+    margin: 0 auto !important;
+    width: 100%;
+    margin-top: 0 !important;
+    padding-top: 15px !important;
+}
+
+@media (max-width: 640px) {
+    .row.mt-4 {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        justify-content: center !important;
+        gap: 12px;
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    .row.mt-4::-webkit-scrollbar {
+        height: 3px;
+    }
+    .row.mt-4::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    .row.mt-4::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+}
+
+.row.mt-4 > .col {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 100px !important;
+    max-width: 180px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.card-clickable {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+    width: 100%;
+}
+
+.card-clickable:hover {
+    text-decoration: none;
+    color: inherit;
+}
+
+.row.mt-4 .card.h-100 {
+    width: 100%;
+    margin: 0;
+    height: 100%;
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #dee2e6;
+    background: #17c75c;
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+.card-clickable:hover .card.h-100 {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background-color: #b0d68e;
+    color: #1a3a1a;
+}
+
+.card-clickable:active .card.h-100 {
+    transform: translateY(0px);
+}
+
+.row.mt-4 .card-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px 16px;
+}
+
+.row.mt-4 .card-title {
+    margin-bottom: 0;
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #000000;
+}
+
+.row.mt-4 .card-title .nav-link {
+    display: none;
+}
+
+@media (max-width: 992px) {
+    .row.mt-4 .card-body {
+        padding: 8px 12px;
+    }
+    .row.mt-4 .card-title {
+        font-size: 1rem;
+    }
+    .row.mt-4 > .col {
+        min-width: 90px !important;
+        max-width: 140px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+    .content-block {
+        padding: 10px;
+        margin: 10px 0;
+        min-height: 250px;
+        border-radius: 14px;
+    }
+    .admin-panel {
+        padding: 9px;
+        margin-top: 9px;
+        margin-bottom: 0;
+        border-radius: 14px;
+    }
+    .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+    .admin-title {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    .user-info {
+        font-size: 1rem;
+        padding: 3px 8px;
+        background: transparent;
+        white-space: nowrap;
+        color: #360b0b;
+        border-radius: 8px;
+        max-width: 100%;
+    }
+    .admin-buttons {
+        gap: 6px;
+    }
+    .btn-admin {
+        width: auto;
+        min-width: auto;
+        padding: 5px 8px;
+        font-size: 0.8rem;
+        margin: 0;
+        flex: 1 0 calc(50% - 6px);
+        max-width: none;
+        border-radius: 8px;
+    }
+    .main-logo {
+        max-width: 200px !important;
+    }
+    .main-logo img {
+        max-height: 50px !important;
+    }
+    .row.mt-4 .card-body {
+        padding: 6px 10px;
+    }
+    .row.mt-4 .card-title {
+        font-size: 0.95rem;
+    }
+    .row.mt-4 > .col {
+        min-width: 80px !important;
+        max-width: 120px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .row.mt-4 > .col {
+        min-width: 90px !important;
+        max-width: 110px !important;
+    }
+    .row.mt-4 .card.h-100 {
+        min-height: 40px;
+        border-radius: 10px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .container-wrapper {
+        padding: 0 8px;
+    }
+    .content-block {
+        padding: 8px;
+        margin: 8px 0;
+        border-radius: 12px;
+    }
+    .admin-panel {
+        padding: 8px;
+        margin-bottom: 0;
+        border-radius: 12px;
+    }
+    .admin-title {
+        font-size: 1.1rem;
+    }
+    .user-info {
+        font-size: 0.85rem;
+        padding: 2px 6px;
+        background: transparent;
+        white-space: nowrap;
+        color: #360b0b;
+        border-radius: 6px;
+        max-width: 100%;
+    }
+    .admin-buttons {
+        gap: 5px;
+    }
+    .btn-admin {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        flex: 1 0 calc(50% - 5px);
+        border-radius: 8px;
+    }
+    .main-logo {
+        max-width: 180px !important;
+    }
+    .main-logo img {
+        max-height: 45px !important;
+    }
+    .row.mt-4 {
+        gap: 8px;
+    }
+    .row.mt-4 .card-body {
+        padding: 5px 8px;
+    }
+    .row.mt-4 .card-title {
+        font-size: 0.9rem;
+    }
+    .row.mt-4 > .col {
+        min-width: 80px !important;
+        max-width: 100px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .row.mt-4 .card-body {
+        padding: 4px 6px;
+    }
+    .row.mt-4 .card-title {
+        font-size: 0.85rem;
+    }
+    .row.mt-4 > .col {
+        min-width: 75px !important;
+        max-width: 90px !important;
+    }
+    .row.mt-4 .card.h-100 {
+        border-radius: 8px !important;
+    }
+    .user-info {
+        max-width: 100%;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .row.mt-4 > .col {
+        min-width: 70px !important;
+        max-width: 85px !important;
+    }
+    .row.mt-4 .card-title {
+        font-size: 0.8rem;
+    }
+    .row.mt-4 .card-body {
+        padding: 4px 4px;
+    }
+}
+
+/* ФИКС ДЛЯ SAMSUNG GALAXY (360px и меньше) - кнопки в 2 ряда, а не столбиком */
+@media (max-width: 380px) {
+    .admin-buttons {
+        gap: 6px;
+    }
+    .btn-admin {
+        flex: 1 0 calc(50% - 6px);
+        min-width: 0;
+        max-width: none;
+        padding: 6px 4px;
+        font-size: 0.7rem;
+        white-space: normal;
+        word-break: break-word;
+        line-height: 1.2;
+        border-radius: 7px;
+    }
+    .user-info {
+        max-width: 100%;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .content-block {
+        padding: 6px;
+        border-radius: 10px;
+    }
+    .admin-panel {
+        padding: 7px;
+        margin-bottom: 0;
+        border-radius: 10px;
+    }
+    .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+    .admin-title {
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+    .user-info {
+        font-size: 0.75rem;
+        padding: 2px 4px;
+        background: transparent;
+        white-space: nowrap;
+        color: #360b0b;
+        border-radius: 5px;
+        max-width: 100%;
+    }
+    .admin-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .btn-admin {
+        flex: 1 0 calc(50% - 5px);
+        width: auto;
+        min-width: 0;
+        padding: 5px 4px;
+        font-size: 0.65rem;
+        line-height: 1.2;
+        white-space: normal;
+        word-break: break-word;
+        border-radius: 6px;
+    }
+    .main-logo {
+        max-width: 160px !important;
+    }
+    .main-logo img {
+        max-height: 40px !important;
+    }
+    .row.mt-4 > .col {
+        min-width: 65px !important;
+        max-width: 80px !important;
+    }
+    .row.mt-4 .card-title {
+        font-size: 0.75rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container-wrapper {
+        max-width: 1300px;
+    }
+    .content-block {
+        padding: 20px;
+        border-radius: 20px;
+    }
+    .admin-panel {
+        padding: 18px;
+        margin-bottom: 0;
+        border-radius: 20px;
+    }
+    .user-info {
+        font-size: 1.05rem;
+        padding: 5px 12px;
+        background: transparent;
+        color: #360b0b;
+        border-radius: 10px;
+        max-width: 100%;
+    }
+    .btn-admin {
+        min-width: 140px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        border-radius: 12px;
+    }
+    .main-logo {
+        max-width: 300px !important;
+    }
+    .main-logo img {
+        max-height: 70px !important;
+    }
+    .row.mt-4 > .col {
+        max-width: 200px !important;
+        min-width: 120px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .position-absolute.bg-warning,
+    .position-absolute.bg-danger {
+        width: 14px;
+        height: 14px;
+        font-size: 0.55rem;
+    }
+    .badge.bg-danger {
+        font-size: 0.45em;
+        padding: 0.1em 0.25em;
+    }
+}
+
+.card {
+    transition: transform 0.2s ease;
+    border-radius: 12px;
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+    .admin-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .btn-admin {
+        flex: 1 0 calc(33.333% - 6px);
+        min-width: auto;
+        padding: 4px 8px;
+        font-size: 0.75rem;
+        border-radius: 8px;
+    }
+    .content-block {
+        min-height: 200px;
+        border-radius: 12px;
+    }
+    .row.mt-4 > .col {
+        min-width: 100px !important;
+        max-width: 120px !important;
+    }
+}
+
+/* ========== ЦВЕТ КНОПОК ========== */
+.admin-buttons .btn-admin {
+    background-color: #17c75c;
+    border-color: #95e5d3;
+    color: #000000;
+    border-radius: 10px;
+}
+
+.admin-buttons .btn-admin:hover {
+    background-color: #b0ece0;
+    border-color: #b0ece0;
+    color: #000000;
+}
+
+.admin-buttons .btn-admin:active {
+    background-color: #7ad6c0;
+    border-color: #7ad6c0;
+    color: #000000;
+}
+
+.admin-buttons .btn-outline-danger.btn-admin {
+    background-color: transparent;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.admin-buttons .btn-outline-danger.btn-admin:hover {
+    background-color: #95e5d3;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+/* ========== ВЫПАДАЮЩЕЕ МЕНЮ "СОЗДАТЬ" ========== */
+.create-dropdown-btn {
+    background-color: #95e5d3;
+    border-color: #95e5d3;
+    color: #000000;
+    border-radius: 10px;
+}
+
+.create-dropdown-btn:hover {
+    background-color: #b0ece0;
+    border-color: #b0ece0;
+    color: #000000;
+}
+
+.create-dropdown-btn:active {
+    background-color: #7ad6c0;
+    border-color: #7ad6c0;
+    color: #000000;
+}
+
+.dropdown-menu-create {
+    background-color: #95e5d3;
+    border-color: #95e5d3;
+}
+
+.dropdown-menu-create .dropdown-item {
+    color: #000000;
+    background-color: #95e5d3;
+}
+
+.dropdown-menu-create .dropdown-item:hover {
+    background-color: #b0ece0;
+    color: #000000;
+}
+
+.dropdown-menu-create .dropdown-item:active {
+    background-color: #7ad6c0;
+    color: #000000;
+}
+
+.dropdown-menu-create .dropdown-item:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ========== КНОПКА ИЗБРАННОЕ ========== */
+.btn-favorites-home {
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    color: #000000;
+}
+
+.btn-favorites-home:hover {
+    background-color: #b0d68e;
+    color: #1a3a1a;
+    text-decoration: none;
+}
+
+@media (max-width: 576px) {
+    .btn-admin .fas {
+        margin-right: 3px;
+        font-size: 0.85em;
+    }
+    .btn-admin {
+        line-height: 1.3;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-block {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .content-block {
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .content-block {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}
+
+/* Заголовок перед карточками */
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #360b0b;
+    text-align: center;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    padding-top: 5px;
+}
+
+.section-divider {
+    width: 60px;
+    height: 2px;
+    background: #8FBC8F;
+    margin: 8px auto 0;
+    border-radius: 2px;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 576px) {
+    .section-title {
+        font-size: 1rem;
+    }
+    .section-divider {
+        width: 40px;
+    }
+}
+
+/* ========== ЛОГОТИП ========== */
+.main-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto 15px auto;
+    max-width: 280px;
+    width: auto;
+    cursor: pointer;
+    text-decoration: none;
+    transition: margin-top 0.2s ease;
+}
+
+.main-logo img {
+    max-width: 100%;
+    max-height: 65px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    vertical-align: middle;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.main-logo:hover img {
+    transform: scale(1.02);
+    opacity: 0.95;
+}
+
+.main-logo:active img {
+    transform: scale(0.98);
+}
+
+.main-logo .logo-fallback {
+    display: none;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: 2px;
+}
+
+.main-logo img.error + .logo-fallback {
+    display: block;
+}
+
+.main-logo img.error {
+    display: none;
+}
+
+.main-title {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .main-logo {
+        max-width: 220px;
+        margin-bottom: 10px;
+    }
+    .main-logo img {
+        max-height: 50px;
+    }
+    .main-logo .logo-fallback {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .main-logo {
+        max-width: 180px;
+        margin-bottom: 7px;
+    }
+    .main-logo img {
+        max-height: 42px;
+    }
+    .main-logo .logo-fallback {
+        font-size: 1.2rem;
+    }
+}
+
+body.has-sticky-header .main-logo {
+    margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+    body.has-sticky-header .main-logo {
+        margin-top: 25px;
+    }
+}
+
+@media (max-width: 576px) {
+    body.has-sticky-header .main-logo {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body.has-sticky-header .main-logo {
+        margin-top: 15px;
+    }
+}
+
+/* ========== КНОПКА ИЗБРАННОЕ НА ГЛАВНОЙ ========== */
+.favorites-button-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 5px 0 10px 0;
+}
+
+.btn-favorites-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    color: #000000;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    min-width: 160px;
+}
+
+.btn-favorites-home:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background-color: #b0d68e;
+    color: #1a3a1a;
+    text-decoration: none;
+}
+
+.btn-favorites-home:active {
+    transform: translateY(0px);
+}
+
+.btn-favorites-home i {
+    font-size: 1rem;
+    color: #ff4444;
+}
+
+@media (max-width: 768px) {
+    .btn-favorites-home {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        min-width: 140px;
+        border-radius: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn-favorites-home {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        min-width: 120px;
+        border-radius: 8px;
+    }
+    .btn-favorites-home i {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .btn-favorites-home {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        min-width: 100px;
+        gap: 5px;
+        border-radius: 8px;
+    }
+}
+
+/* ========== ОТСТУПЫ ========== */
+@media (max-width: 992px) {
+    .row.mt-4 {
+        padding-top: 10px !important;
+        gap: 15px;
+    }
+    .favorites-button-wrapper {
+        margin: 5px 0 8px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .row.mt-4 {
+        padding-top: 8px !important;
+        gap: 10px;
+    }
+    .favorites-button-wrapper {
+        margin: 3px 0 6px 0;
+    }
+    .section-title {
+        margin-bottom: 5px !important;
+        padding-top: 3px !important;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .row.mt-4 {
+        padding-top: 5px !important;
+        gap: 8px;
+    }
+    .favorites-button-wrapper {
+        margin: 2px 0 5px 0;
+    }
+    .section-title {
+        margin-bottom: 3px !important;
+        padding-top: 2px !important;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .row.mt-4 {
+        padding-top: 3px !important;
+        gap: 6px;
+    }
+    .favorites-button-wrapper {
+        margin: 2px 0 4px 0;
+    }
+    .section-title {
+        margin-bottom: 2px !important;
+        padding-top: 0 !important;
+    }
+}
+
+@media (min-width: 360px) and (max-width: 430px) {
+    .favorites-button-wrapper {
+        margin: 2px 0 4px 0;
+    }
+    .row.mt-4 {
+        padding-top: 3px !important;
+        gap: 6px;
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-sine {
+        margin-top: 0;
+        padding-top: 0;
+    }
+    .carousel-sine__container {
+        margin-top: 0;
+    }
+}
+
+/* ========== ОТСТУПЫ ЛОГОТИПА ========== */
+@media (min-width: 1200px) {
+    .main-logo {
+        margin: 25px auto 20px auto;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+    .main-logo {
+        margin: 20px auto 15px auto;
+    }
+}
+
+@media (max-width: 767px) {
+    .main-logo {
+        margin: 15px auto 10px auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-logo {
+        margin: 10px auto 9px auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-logo {
+        margin: 8px auto 7px auto;
+    }
+}
+
+@media (max-width: 360px) {
+    .main-logo {
+        margin: 7px auto 6px auto;
+    }
+}
+
+/* ========== МОДАЛЬНОЕ ОКНО ========== */
+#deleteMyAccountModal .modal-dialog {
+    max-width: 400px;
+    margin: 1.75rem auto;
+}
+
+#deleteMyAccountModal .modal-content {
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+#deleteMyAccountModal .modal-body {
+    padding: 1.25rem;
+}
+
+#deleteMyAccountModal .alert {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+}
+
+#deleteMyAccountModal .modal-body p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+#deleteMyAccountModal .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+#deleteMyAccountModal .form-control {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+}
+
+#deleteMyAccountModal .modal-footer {
+    padding: 0.75rem 1.25rem;
+}
+
+#deleteMyAccountModal .btn {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: 8px;
+}
+
+@media (max-width: 480px) {
+    #deleteMyAccountModal .modal-dialog {
+        max-width: 92%;
+        margin: 1rem auto;
+    }
+    #deleteMyAccountModal .modal-body {
+        padding: 1rem;
+    }
+    #deleteMyAccountModal .modal-footer {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #deleteMyAccountModal .btn {
+        flex: 1;
+        min-width: 100px;
+    }
+}
+
+/* ========== ВЫПАДАЮЩЕЕ МЕНЮ ДЛЯ МОБИЛЬНЫХ ========== */
+.create-dropdown-btn {
+    display: none;
+}
+
+.dropdown-menu-create {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .admin-buttons .btn-create-original {
+        display: none !important;
+    }
+
+    .create-dropdown-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        background-color: #95e5d3;
+        border-color: #95e5d3;
+        color: #000000;
+        min-width: auto;
+        padding: 6px 12px;
+        font-weight: 500;
+        font-size: 0.85rem;
+        border-radius: 10px;
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .create-dropdown-btn:hover {
+        background-color: #b0ece0;
+        border-color: #b0ece0;
+        color: #000000;
+    }
+
+    .create-dropdown-btn:active {
+        background-color: #7ad6c0;
+        border-color: #7ad6c0;
+        color: #000000;
+    }
+
+    .dropdown-menu-create {
+        position: absolute;
+        z-index: 1000;
+        display: none;
+        min-width: 160px;
+        padding: 0;
+        margin: 4px 0 0;
+        font-size: 0.85rem;
+        color: #000000;
+        text-align: center;
+        list-style: none;
+        background-color: #95e5d3;
+        background-clip: padding-box;
+        border: 1px solid #95e5d3;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .dropdown-menu-create.show {
+        display: block;
+    }
+
+    .dropdown-menu-create .dropdown-item {
+        display: block;
+        width: 100%;
+        padding: 8px 12px;
+        clear: both;
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: #000000;
+        text-align: center;
+        text-decoration: none;
+        white-space: nowrap;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .dropdown-menu-create .dropdown-item:hover {
+        background-color: #b0ece0;
+        color: #000000;
+    }
+
+    .dropdown-menu-create .dropdown-item:active {
+        background-color: #7ad6c0;
+        color: #000000;
+    }
+
+    .dropdown-menu-create .dropdown-item:not(:last-child) {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 480px) {
+        .create-dropdown-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            gap: 5px;
+            border-radius: 8px;
+        }
+        .dropdown-menu-create {
+            min-width: 140px;
+            border-radius: 10px;
+        }
+        .dropdown-menu-create .dropdown-item {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .create-dropdown-btn {
+            padding: 5px 8px;
+            font-size: 0.75rem;
+            gap: 4px;
+            border-radius: 7px;
+        }
+        .dropdown-menu-create {
+            min-width: 130px;
+            border-radius: 8px;
+        }
+        .dropdown-menu-create .dropdown-item {
+            padding: 5px 8px;
+            font-size: 0.75rem;
+        }
+    }
+}
+
+/* УДАЛЯЕМ display: contents для десктопа - больше не нужен */
+/* @media (min-width: 769px) {
+    .create-dropdown-wrapper {
+        display: contents;
+    }
+    .create-dropdown-btn,
+    .dropdown-menu-create {
+        display: none !important;
+    }
+    .admin-buttons .btn-create-original {
+        display: inline-flex !important;
+    }
+} */
+
+/* Кнопка модерации с уведомлением */
+.moderation-btn {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.moderation-btn.has-moderation {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: #212529 !important;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+    animation: pulse-glow 2s infinite;
+}
+
+.moderation-btn.has-moderation:hover {
+    background-color: #ffdb4d !important;
+    border-color: #ffdb4d !important;
+    box-shadow: 0 0 25px rgba(255, 193, 7, 0.6);
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.6);
+    }
+}
+
+.moderation-btn .badge {
+    animation: pulse-dot 1.5s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}

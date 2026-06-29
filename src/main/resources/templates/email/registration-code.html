@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Код подтверждения</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <h2 style="color: #333;">Подтверждение регистрации</h2>
+  <p>Для завершения регистрации используйте следующий код подтверждения:</p>
+
+  <div style="background-color: #f8f9fa; padding: 15px; text-align: center;
+                    border-radius: 5px; margin: 20px 0;">
+    <h1 style="color: #007bff; margin: 0; font-size: 32px;"
+        th:text="${code}">123456</h1>
+  </div>
+
+  <p>Код действителен в течение 5 минут.</p>
+  <p>Если вы не регистрировались на нашем сайте, проигнорируйте это письмо.</p>
+
+  <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+  <p style="color: #666; font-size: 12px;">
+    С уважением,<br>
+    Команда Прораб и торг
+  </p>
+</div>
+</body>
+</html>

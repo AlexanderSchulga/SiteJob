@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Технические работы</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <style>
+        .maintenance-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .maintenance-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 600px;
+        }
+        .maintenance-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+        }
+        .countdown {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="maintenance-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="maintenance-content">
+                    <div class="maintenance-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h1>Ведутся технические работы</h1>
+                    <p class="lead">Мы улучшаем наш сервис для вашего удобства</p>
+
+                    <div class="countdown" id="countdown">
+                        Возвращаемся через: <span id="timer">30:00</span>
+                    </div>
+
+                    <div class="progress mb-4" style="height: 15px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                             style="width: 60%">60%</div>
+                    </div>
+
+                    <p>Работы включают:</p>
+                    <ul class="list-unstyled">
+                        <li>✓ Обновление системы безопасности</li>
+                        <li>✓ Улучшение производительности</li>
+                        <li>✓ Добавление новых функций</li>
+                    </ul>
+
+                    <div class="mt-4">
+                        <p><small>Приносим извинения за временные неудобства</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="/js/all.min.js"></script>
+<script>
+    // Таймер обратного отсчета
+    let timeLeft = 30 * 60; // 30 минут в секундах
+
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent =
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft > 0) {
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+    }
+
+    updateTimer();
+
+    // Авто-обновление страницы каждую минуту
+    setInterval(() => {
+        fetch('/')
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                }
+            })
+            .catch(() => {
+                console.log('Сервер еще недоступен');
+            });
+    }, 60000);
+</script>
+</body>
+</html>

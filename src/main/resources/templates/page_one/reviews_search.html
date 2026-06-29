@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Отзывы о пользователях</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <link rel="stylesheet" th:href="@{/css/stylehome.css}">
+    <link rel="stylesheet" th:href="@{/css/stylereviews.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Заголовок -->
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold text-primary">Отзывы о пользователях</h2>
+                    <p class="lead text-muted">Найдите пользователя и посмотрите отзывы о нем</p>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Системные администраторы скрыты из поиска
+                    </small>
+                </div>
+
+                <!-- Форма поиска -->
+                <div class="card shadow-sm mb-5">
+                    <div class="card-body p-4">
+                        <form method="get" th:action="@{/page_one/reviews}">
+                            <div class="input-group input-group-lg">
+                                <input type="text" class="form-control" name="search"
+                                       th:value="${searchTerm}"
+                                       placeholder="Введите имя пользователя...">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i> Найти
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Результаты поиска -->
+                <div th:if="${searchTerm}" class="search-results mb-4">
+                    <h5 class="text-muted">
+                        Результаты поиска для "<span th:text="${searchTerm}"></span>"
+                    </h5>
+                </div>
+
+                <!-- Сообщение о недоступности SUPER пользователей -->
+                <div th:if="${param.error == 'super_user'}" class="alert alert-warning mb-4">
+                    <i class="fas fa-shield-alt me-2"></i>
+                    <strong>Внимание!</strong> Отзывы о системных администраторах недоступны.
+                </div>
+
+                <!-- Активные пользователи -->
+                <div th:if="${not #lists.isEmpty(users)}" class="mb-5">
+                    <h4 class="mb-4">
+                        <i class="fas fa-users me-2 text-success"></i>Активные пользователи
+                        <span class="badge bg-success fs-6" th:text="${users.size()}"></span>
+                    </h4>
+
+                    <div class="users-list">
+                        <div th:each="user : ${users}" class="card mb-4 shadow-sm hover-card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h5 class="card-title text-primary mb-2">
+                                            <i class="fas fa-user me-2"></i>
+                                            <span th:text="${user.nameuse}"></span>
+                                        </h5>
+                                        <div class="user-details">
+                                            <p class="card-text mb-0">
+                                                <i class="fas fa-calendar me-2 text-muted"></i>
+                                                <strong>Зарегистрирован:</strong>
+                                                <span th:text="${#temporals.format(user.registrationDate, 'dd.MM.yyyy')}"></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <a th:href="@{/page_one/reviews/{hashId}(hashId=${user.hashId})}"
+                                           class="btn btn-primary btn-lg">
+                                            <i class="fas fa-comments me-2"></i>
+                                            Смотреть отзывы
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Удаленные пользователи с отзывами -->
+                <div th:if="${not #lists.isEmpty(reviewsOfDeletedUsers)}" class="mb-5">
+                    <h4 class="mb-4">
+                        <i class="fas fa-user-slash me-2 text-muted"></i>Удаленные пользователи
+                        <span class="badge bg-secondary fs-6" th:text="${reviewsOfDeletedUsers.size()}"></span>
+                    </h4>
+
+                    <div class="users-list">
+                        <div th:each="review : ${reviewsOfDeletedUsers}" class="card mb-4 shadow-sm hover-card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h5 class="card-title text-muted mb-2">
+                                            <i class="fas fa-user-slash me-2"></i>
+                                            <span th:text="${review.reviewedNameuse}"></span>
+                                            <small class="text-muted">(пользователь удален)</small>
+                                        </h5>
+                                        <div class="user-details">
+                                            <p class="card-text mb-0">
+                                                <small class="text-warning">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                    Пользователь удален, отзывы сохранены в архиве
+                                                </small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <a th:href="@{/page_one/reviews/{id}(id=${review.reviewedUserId})}"
+                                           class="btn btn-outline-primary btn-lg">
+                                            <i class="fas fa-comments me-2"></i>
+                                            Смотреть отзывы
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Сообщение если нет результатов -->
+                <div th:if="${#lists.isEmpty(users) and #lists.isEmpty(reviewsOfDeletedUsers)}" class="no-users text-center py-5">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body py-5">
+                            <i class="fas fa-users fa-4x text-muted mb-4"></i>
+                            <h4 class="text-muted mb-3" th:if="${searchTerm}">Пользователи не найдены</h4>
+                            <h4 class="text-muted mb-3" th:unless="${searchTerm}">Список пользователей пуст</h4>
+                            <p class="text-muted mb-0" th:unless="${searchTerm}">
+                                Попробуйте воспользоваться поиском для нахождения конкретного пользователя
+                            </p>
+                            <div th:if="${searchTerm}" class="mt-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Системные администраторы скрыты из результатов поиска
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

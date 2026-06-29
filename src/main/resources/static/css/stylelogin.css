@@ -1,0 +1,418 @@
+body, .container-wrapper, .admin-panel, .content-block,
+.card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container-wrapper {
+    max-width: 1200px;
+    margin: 5px auto;
+    padding: 0 15px;
+    min-height: calc(100vh - 160px);
+    display: flex;
+    flex-direction: column;
+    /* Убираем justify-content: center - хедер должен быть наверху */
+}
+
+/* ОСНОВНАЯ ФОРМА - УМЕНЬШЕННАЯ И АККУРАТНАЯ */
+.login-form {
+    background: white;
+    padding: 30px 35px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 420px;        /* Максимальная ширина формы (как карточка) */
+    margin: 20px auto 40px auto;  /* Отступ сверху 20px, снизу 40px */
+    transition: all 0.3s ease;
+}
+
+.form-title {
+    color: #343a40;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* ========== ВСЕ ПОЛЯ ВВОДА - ВСЕГДА ВИДИМЫЕ ========== */
+
+.form-control,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="tel"] {
+    border: 2px solid #6c757d !important;
+    background-color: #fefefe !important;
+    transition: all 0.2s ease-in-out !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+}
+
+.form-control:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus {
+    border-color: #0d6efd !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2) !important;
+    outline: none !important;
+}
+
+/* ========== МЕТКИ ========== */
+
+.form-label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 8px !important;
+    font-size: 0.9rem;
+}
+
+/* ========== КНОПКИ ========== */
+
+.btn-submit {
+    width: 100%;
+    padding: 10px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+.btn-submit:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+}
+
+.btn-submit:active {
+    transform: translateY(0) !important;
+}
+
+/* Кнопка регистрации - теперь тоже синяя, как на форме регистрации */
+.btn-register {
+    width: 100%;
+    padding: 10px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+    font-size: 1rem;
+    color: white !important;
+    text-decoration: none !important;
+    display: inline-block;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.btn-register:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.btn-register:active {
+    transform: translateY(0) !important;
+}
+
+/* Ссылка "Забыли пароль?" */
+.text-center {
+    margin-top: 20px !important;
+    margin-bottom: 15px;
+}
+
+.text-center a {
+    color: #0d6efd;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.text-center a:hover {
+    text-decoration: underline;
+}
+
+/* ========== ПОЛЕ ПАРОЛЯ С ГЛАЗИКОМ ========== */
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 40px;
+}
+
+/* ========== АЛЕРТЫ ========== */
+
+.alert {
+    border-radius: 10px !important;
+    border-left: 4px solid !important;
+    padding: 12px 15px !important;
+    margin-bottom: 20px !important;
+    font-size: 0.9rem;
+}
+
+.alert-danger {
+    background-color: #f8d7da !important;
+    border-left-color: #dc3545 !important;
+    color: #721c24 !important;
+}
+
+.alert-success {
+    background-color: #d4edda !important;
+    border-left-color: #28a745 !important;
+    color: #155724 !important;
+}
+
+.alert-success i {
+    margin-right: 8px;
+}
+
+.banned-alert {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    border-left: 5px solid #ffc107;
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.banned-alert i {
+    font-size: 1.2rem;
+    margin-right: 10px;
+}
+
+/* ========== МЕДИА-СТИЛИ (адаптивность) ========== */
+
+/* Планшеты (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .login-form {
+        max-width: 440px;
+        padding: 25px 30px;
+        margin: 30px auto 40px auto;
+    }
+
+    .form-title {
+        font-size: 1.4rem;
+    }
+}
+
+/* Мобильные телефоны (до 767px) - форма компактная, не на весь экран */
+@media (max-width: 767px) {
+    .login-form {
+        max-width: 400px;
+        padding: 20px 24px;
+        margin: 15px auto 30px auto;
+        border-radius: 16px;
+    }
+
+    .form-title {
+        font-size: 1.3rem;
+        margin-bottom: 16px;
+    }
+
+    .mb-3 {
+        margin-bottom: 14px !important;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        margin-bottom: 6px !important;
+    }
+
+    .form-control,
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="tel"] {
+        padding: 8px 12px !important;
+        font-size: 17px !important;
+        border-radius: 8px !important;
+    }
+
+    .password-toggle {
+        right: 10px;
+    }
+
+    .password-toggle i {
+        font-size: 1rem;
+    }
+
+    .btn-submit,
+    .btn-register {
+        padding: 9px !important;
+        font-size: 0.9rem !important;
+        border-radius: 8px;
+    }
+
+    .text-center {
+        margin-top: 16px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .text-center a {
+        font-size: 0.85rem;
+    }
+
+    .alert {
+        padding: 10px 12px !important;
+        font-size: 0.85rem;
+        border-radius: 8px !important;
+    }
+}
+
+/* Маленькие телефоны (до 480px) */
+@media (max-width: 480px) {
+    .login-form {
+        max-width: 94%;
+        padding: 18px 20px;
+        margin: 12px auto 25px auto;
+        border-radius: 14px;
+    }
+
+    .form-title {
+        font-size: 1.2rem;
+        margin-bottom: 14px;
+    }
+
+    .mb-3 {
+        margin-bottom: 12px !important;
+    }
+
+    .form-label {
+        font-size: 0.8rem;
+        margin-bottom: 5px !important;
+    }
+
+    .form-control,
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="tel"] {
+        padding: 7px 10px !important;
+        font-size: 16px !important;
+        border-width: 1.5px !important;
+        border-radius: 8px !important;
+    }
+
+    .btn-submit,
+    .btn-register {
+        padding: 8px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .text-center {
+        margin-top: 14px !important;
+        margin-bottom: 8px !important;
+    }
+
+    .text-center a {
+        font-size: 0.8rem;
+    }
+
+    .alert {
+        padding: 8px 10px !important;
+        font-size: 0.8rem;
+    }
+}
+
+/* Очень маленькие телефоны (до 360px) */
+@media (max-width: 360px) {
+    .login-form {
+        max-width: 92%;
+        padding: 14px 16px;
+        margin: 10px auto 20px auto;
+        border-radius: 12px;
+    }
+
+    .form-title {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+
+    .mb-3 {
+        margin-bottom: 10px !important;
+    }
+
+    .form-label {
+        font-size: 0.75rem;
+    }
+
+    .form-control,
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="tel"] {
+        padding: 6px 8px !important;
+        font-size: 14px !important;
+    }
+
+    .btn-submit,
+    .btn-register {
+        padding: 7px !important;
+        font-size: 0.8rem !important;
+    }
+
+    .password-toggle {
+        right: 8px;
+    }
+
+    .text-center a {
+        font-size: 0.75rem;
+    }
+}
+
+/* Альбомная ориентация телефона */
+@media (max-width: 767px) and (orientation: landscape) {
+    .container-wrapper {
+        min-height: auto;
+        padding: 10px 15px;
+    }
+
+    .login-form {
+        max-width: 420px;
+        padding: 15px 22px;
+        margin: 10px auto 20px auto;
+    }
+
+    .mb-3 {
+        margin-bottom: 10px !important;
+    }
+
+    .form-title {
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+    }
+
+    .btn-submit,
+    .btn-register {
+        padding: 7px !important;
+    }
+}
+
+/* Retina-экраны */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .form-control,
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="tel"] {
+        border-width: 1.5px !important;
+    }
+}

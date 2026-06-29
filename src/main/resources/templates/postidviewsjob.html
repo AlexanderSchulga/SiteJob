@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Детальный просмотр</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylepostidviews.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body th:attr="data-current-user-id=${currentUser != null ? currentUser.id : ''},
+               data-is-super=${#authorization.expression('hasRole(''SUPER'')') ? 'true' : ''},
+               data-is-admin=${#authorization.expression('hasRole(''ADMIN'')') ? 'true' : ''},
+               data-user-role=${currentUser != null ? currentUser.role : ''},
+               data-post-owner-id=${postwo[0] != null && postwo[0].user != null ? postwo[0].user.id : ''},
+               data-is-private-tab=${isPrivateTabActive} ? 'true' : 'false'">
+
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div th:each="el : ${postwo}" class="post-detail">
+        <!-- 1. ФОТО -->
+        <div th:if="${not #lists.isEmpty(postwo[0].images)}" class="image-gallery mt-4">
+            <div class="horizontal-scroll-container">
+                <button class="scroll-btn scroll-left" onclick="scrollImages('left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="scroll-wrapper" id="imageScrollWrapper">
+                    <div class="horizontal-scroll" id="imageScroll">
+                        <div th:each="image, stat : ${postwo[0].images}"
+                             class="image-card"
+                             th:attr="data-image-index=${stat.index}">
+                            <img th:src="${image.imagePath}"
+                                 th:alt="'Фото ' + ${stat.index + 1}"
+                                 loading="lazy">
+                            <div class="image-overlay">
+                                <i class="fas fa-search-plus me-1"></i> Нажмите для увеличения
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="scroll-btn scroll-right" onclick="scrollImages('right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="image-counter" th:if="${postwo[0].images.size() > 0}">
+                <i class="fas fa-camera me-1"></i>
+                <span th:text="${postwo[0].images.size()}"></span> фото
+            </div>
+        </div>
+
+        <!-- ГРУППА 1: НАЗВАНИЕ + КАТЕГОРИЯ + ОПЛАТА -->
+        <div class="info-group-1">
+            <h1 class="post-title" th:text="${el.title}"></h1>
+            <small class="text-muted d-block">
+                <strong>Категория:</strong>
+                <span th:text="${@postTextJobCategoryConfig.getCategoryDisplayName(el.category)}"></span>
+            </small>
+            <strong>Оплата:</strong>
+            <p class="post-anons" th:text="${el.price}"></p>
+        </div>
+
+        <!-- ГРУППА 2: ПРОСМОТРЫ + ДАТЫ + АВТОР + РЕЙТИНГ + ТЕЛЕФОН -->
+        <div class="info-group-2">
+            <small class="text-muted d-block">
+                <strong>Просмотров:</strong>
+                <i class="fas fa-eye"></i> <span th:text="${el.viewCount}"></span>
+            </small>
+            <small class="text-muted d-block">
+                <strong>Опубликовано:</strong>
+                <span th:text="${#temporals.format(el.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+            </small>
+            <small class="text-muted d-block" th:if="${el.updatedAt != null and el.updatedAt != el.createdAt}">
+                <strong>Обновлено:</strong>
+                <span th:text="${#temporals.format(el.updatedAt, 'dd.MM.yyyy HH:mm')}"></span>
+            </small>
+            <div class="post-user-info">
+                <small class="text-muted d-block">
+                    <strong>Автор:</strong>
+                    <span class="user-name-wrapper" th:text="${el.user != null ? el.user.getNameuse() : 'Неизвестный пользователь'}"></span>
+                </small>
+                <span th:if="${targetUser}" class="status-online">
+        <i class="fas fa-circle"></i>
+        <small>онлайн</small>
+    </span>
+                <span th:unless="${targetUser}" class="status-offline">
+        <i class="fas fa-circle"></i>
+        <small>офлайн</small>
+    </span>
+            </div>
+            <div class="seller-rating mb-2">
+                <small class="text-muted d-block">
+                    <strong>Рейтинг пользователя:</strong>
+                    <span class="rating-stars" th:attr="data-seller-id=${el.user.hashId}"></span>
+                    <span class="rating-text">
+                        (<span class="average-rating">0</span> из 5 на основе
+                        <span class="rating-count">0</span> оценок)
+                    </span>
+                    <span th:if="${#authentication.isAuthenticated() and currentUser != null and el.user != null and currentUser.id != el.user.id and not #authorization.expression('hasRole(''SUPER'')') and not #authorization.expression('hasRole(''ADMIN'')')}"
+                          class="rate-seller-text">
+                        • <a href="#" class="rate-seller-link" th:attr="data-seller-id=${el.user.hashId}">Оценить</a>
+                    </span>
+                </small>
+            </div>
+            <small class="text-muted d-block" th:if="${#authorization.expression('isAuthenticated()')}">
+                <strong>Тел:</strong>
+                <span th:text="${el.user != null ? el.user.getPhonePost() : 'Отсутствуют контакты'}"></span>
+            </small>
+            <small class="text-muted d-block" th:unless="${#authorization.expression('isAuthenticated()')}">
+                <strong>Статус:</strong> Не авторизован - телефон скрыт
+            </small>
+
+
+            <div class="post-user-info">
+                <small class="text-muted d-block">
+                    <strong>Регион:</strong>
+                    <span th:text="${@regionsConfig.getRegionDisplayName(el.user.getRegion())}"></span>
+                </small>
+
+            </div>
+
+            <div class="post-user-info">
+                <small class="text-muted d-block">
+                    <strong>Населенный пункт:</strong>
+                    <span th:text="${el.user.city != null ? el.user.city : 'Не указан'}"></span>
+
+                </small>
+
+            </div>
+
+        </div>
+
+        <!-- ГРУППА 3: ВСЕ ОБЪЯВЛЕНИЯ + ОТЗЫВЫ + ИЗБРАННОЕ -->
+        <div class="info-group-3">
+            <div class="seller-actions mt-1">
+                <a th:href="@{/user/{hashId}/posts(hashId=${el.user.hashId})}"
+                   class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-list me-1"></i>Все объявления пользователя
+                </a>
+            </div>
+            <div class="seller-actions mt-1">
+                <a th:href="@{/page_one/reviews/{hashId}(hashId=${el.user.hashId})}"
+                   class="btn btn-sm btn-outline-info">
+                    <i class="fas fa-comments me-1"></i>Отзывы о пользователе
+                </a>
+            </div>
+            <div class="favorite-section mt-2">
+                <div th:if="${#authentication.isAuthenticated() and currentUser != null and currentUser.id != postwo[0].user.id}">
+                    <button class="btn btn-outline-warning favorite-btn"
+                            th:attr="data-type='service', data-id=${postwo[0].id}"
+                            id="favoriteBtn">
+                        <i class="far fa-heart"></i> В избранное
+                    </button>
+                </div>
+                <div th:if="${#authentication.isAuthenticated() and currentUser != null and currentUser.id == postwo[0].user.id}"
+                     class="alert alert-info p-2 mb-0">
+                    <small><i class="fas fa-info-circle me-1"></i> Это ваше объявление</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- ГРУППА 4: ОПИСАНИЕ -->
+        <div class="info-group-description">
+            <strong>Описание:</strong>
+            <p class="post-full-text" th:text="${el.full_text}"></p>
+        </div>
+
+        <!-- КАРТА -->
+        <div th:if="${postwo[0].location != null and postwo[0].location != ''}" class="location-section mt-4">
+            <h5>Местоположение:</h5>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text" th:text="${postwo[0].location}"></p>
+                    <div id="viewMap" style="width: 100%; height: 300px; border-radius: 8px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://api-maps.yandex.ru/2.1/?apikey=a29aa5a3-6b5d-4e6e-a513-27f390d21ae1&lang=ru_RU" type="text/javascript"></script>
+
+        <script>
+            ymaps.ready(function() {
+                const locationText = "[[${postwo[0].location}]]";
+                let coords = [51.296659, 37.835734];
+
+                const coordsMatch = locationText.match(/Координаты:\s*([\d.-]+),\s*([\d.-]+)/);
+                if (coordsMatch && coordsMatch[1] && coordsMatch[2]) {
+                    coords = [parseFloat(coordsMatch[1]), parseFloat(coordsMatch[2])];
+                } else {
+                    ymaps.geocode(locationText).then(function (res) {
+                        const firstGeoObject = res.geoObjects.get(0);
+                        if (firstGeoObject) {
+                            coords = firstGeoObject.geometry.getCoordinates();
+                            initMap(coords, locationText);
+                        } else {
+                            initMap(coords, locationText);
+                        }
+                    }).catch(function() {
+                        initMap(coords, locationText);
+                    });
+                    return;
+                }
+                initMap(coords, locationText);
+
+                function initMap(coordinates, address) {
+                    const viewMap = new ymaps.Map('viewMap', {
+                        center: coordinates,
+                        zoom: 14,
+                        controls: ['zoomControl', 'fullscreenControl']
+                    });
+                    const placemark = new ymaps.Placemark(coordinates, {
+                        hintContent: 'Местоположение услуги',
+                        balloonContent: address
+                    }, {
+                        preset: 'islands#greenIcon'
+                    });
+                    viewMap.geoObjects.add(placemark);
+                }
+            });
+        </script>
+    </div>
+
+    <!-- Переключение между типами комментариев -->
+    <div class="comments-tabs mb-4">
+        <ul class="nav nav-tabs" id="commentsTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="public-tab" data-bs-toggle="tab" data-bs-target="#public-comments" type="button" role="tab">
+                    Общие
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="private-tab" data-bs-toggle="tab" data-bs-target="#private-comments" type="button" role="tab">
+                    Личные
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content" id="commentsTabContent">
+        <div class="tab-pane fade show active" id="public-comments" role="tabpanel">
+            <div class="comments-section">
+                <h3>Общие комментарии</h3>
+                <div th:if="${#authentication.isAuthenticated()}" class="comment-form mb-4">
+                    <form th:action="@{/postidviewsjob/{hashId}/comment(hashId=${postwo[0].hashId})}"
+                          method="post" id="public-comment-form" data-ajax="true">
+                        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                        <input type="hidden" name="parentCommentId" id="publicParentCommentId" value="">
+                        <div id="publicReplyTo" class="alert alert-info mb-2" style="display: none;"></div>
+                        <div class="form-group">
+                            <textarea name="text" class="form-control mb-3" rows="3" required
+                                      placeholder="Ваш комментарий..." id="publicCommentText"></textarea>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary" id="submitPublicComment">
+                                <i class="fas fa-paper-plane me-1"></i> Отправить
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="comments-list">
+                    <div id="publicCommentsContainer"></div>
+                    <div class="text-center mt-4" id="loadMorePublicCommentsContainer">
+                        <button id="loadMorePublicCommentsBtn" class="btn btn-primary" data-current-page="0">
+                            <i class="fas fa-plus-circle me-2"></i> Показать еще комментарии
+                        </button>
+                    </div>
+                    <div id="allLoadedPublicCommentsMessage" class="text-center mt-4 mb-3" style="display: none;">
+                        <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i> Все комментарии загружены</p>
+                    </div>
+                    <div id="noPublicCommentsMessage" class="no-comments text-center py-3" style="display: none;">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body py-4">
+                                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted mb-2">Общих комментариев пока нет</h5>
+                                <p class="text-muted mb-0">Будьте первым, кто оставит комментарий</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="private-comments" role="tabpanel">
+            <div class="comments-section">
+                <h3>Личные комментарии</h3>
+                <div th:if="${#authentication.isAuthenticated()}" class="comment-form">
+                    <form th:action="@{/postidviewsjob/{hashId}/commentPersonalJob(hashId=${postwo[0].hashId})}"
+                          method="post" id="private-comment-form" data-ajax="true">
+                        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                        <input type="hidden" name="parentCommentId" id="parentCommentId" value="">
+                        <div id="replyTo" class="alert alert-info mb-2" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small><strong>Ответ на комментарий:</strong> <span id="replyToText"></span></small>
+                                <button type="button" class="btn-close btn-sm" onclick="cancelReply()" aria-label="Отменить ответ"></button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="text" class="form-control mb-3" rows="3" required
+                                      placeholder="Ваш личный комментарий..." id="commentText"></textarea>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary" id="submitPrivateComment">
+                                <i class="fas fa-paper-plane me-1"></i> Отправить
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelReply()"
+                                    style="display: none;" id="cancelReplyBtn">
+                                <i class="fas fa-times me-1"></i> Отменить ответ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="comments-tree">
+                    <div id="commentsContainer"></div>
+                    <div class="text-center mt-4" id="loadMoreCommentsContainer">
+                        <button id="loadMoreCommentsBtn" class="btn btn-primary" data-current-page="0">
+                            <i class="fas fa-plus-circle me-2"></i> Показать еще комментарии
+                        </button>
+                    </div>
+                    <div id="allLoadedCommentsMessage" class="text-center mt-4 mb-3" style="display: none;">
+                        <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i> Все комментарии загружены</p>
+                    </div>
+                    <div id="noCommentsMessage" class="no-comments text-center py-3" style="display: none;">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body py-4">
+                                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted mb-2">Личных комментариев пока нет</h5>
+                                <p class="text-muted mb-0">Будьте первым, кто начнет обсуждение</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ЛАЙТБОКС -->
+<div id="lightboxOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 10001; align-items: center; justify-content: center; flex-direction: column;">
+    <div id="lightboxImageContainer" style="display: flex; align-items: center; justify-content: center; width: 100%; height: 80vh; min-height: 300px;">
+        <img id="lightboxImage" src="" style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: none; border: none; outline: none; display: block;">
+    </div>
+    <div style="position: absolute; bottom: 25px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.7); font-size: 14px; font-family: sans-serif;" id="lightboxCounter"></div>
+    <button id="lightboxClose" class="lightbox-close-btn"><i class="fas fa-times"></i></button>
+    <button id="lightboxPrev" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.4); border: none; color: white; font-size: 36px; cursor: pointer; padding: 12px 18px; border-radius: 50%; transition: all 0.2s ease; backdrop-filter: blur(4px);">&larr;</button>
+    <button id="lightboxNext" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.4); border: none; color: white; font-size: 36px; cursor: pointer; padding: 12px 18px; border-radius: 50%; transition: all 0.2s ease; backdrop-filter: blur(4px);">&rarr;</button>
+</div>
+
+<script>
+    function scrollImages(direction) {
+        const container = document.getElementById('imageScrollWrapper');
+        const scrollAmount = 220;
+        if (direction === 'left') {
+            container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        } else {
+            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    }
+
+    let lightboxOverlay, lightboxImg, lightboxPrev, lightboxNext, lightboxClose, lightboxCounter;
+    let currentIndex = 0;
+    let imageList = [];
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const minSwipeDistance = 50;
+
+    function updateImageList() {
+        imageList = [];
+        document.querySelectorAll('.image-card img').forEach(img => {
+            if (img.src) imageList.push(img.src);
+        });
+    }
+
+    function closeLightbox() {
+        if (lightboxOverlay) lightboxOverlay.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    function showNext() {
+        if (imageList.length === 0) return;
+        currentIndex = (currentIndex + 1) % imageList.length;
+        if (lightboxImg) lightboxImg.src = imageList[currentIndex];
+        if (lightboxCounter) lightboxCounter.textContent = `${currentIndex + 1} / ${imageList.length}`;
+    }
+
+    function showPrev() {
+        if (imageList.length === 0) return;
+        currentIndex = (currentIndex - 1 + imageList.length) % imageList.length;
+        if (lightboxImg) lightboxImg.src = imageList[currentIndex];
+        if (lightboxCounter) lightboxCounter.textContent = `${currentIndex + 1} / ${imageList.length}`;
+    }
+
+    function openLightboxFromGallery(index) {
+        updateImageList();
+        if (imageList.length === 0) return;
+        currentIndex = index;
+        if (lightboxImg) lightboxImg.src = imageList[currentIndex];
+        if (lightboxCounter) lightboxCounter.textContent = `${currentIndex + 1} / ${imageList.length}`;
+        if (lightboxOverlay) lightboxOverlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function initSwipeListeners() {
+        if (!lightboxOverlay) return;
+        lightboxOverlay.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        lightboxOverlay.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const swipeDistance = touchEndX - touchStartX;
+            if (Math.abs(swipeDistance) >= minSwipeDistance) {
+                if (swipeDistance > 0) showPrev();
+                else showNext();
+            }
+        }, { passive: true });
+    }
+
+    function bindImageClicks() {
+        const cards = document.querySelectorAll('.image-card');
+        cards.forEach((card, idx) => {
+            card.removeEventListener('click', card._clickHandler);
+            card._clickHandler = function(e) {
+                e.stopPropagation();
+                openLightboxFromGallery(idx);
+            };
+            card.addEventListener('click', card._clickHandler);
+            card.style.cursor = 'pointer';
+        });
+    }
+
+    function initLightbox() {
+        lightboxOverlay = document.getElementById('lightboxOverlay');
+        lightboxImg = document.getElementById('lightboxImage');
+        lightboxPrev = document.getElementById('lightboxPrev');
+        lightboxNext = document.getElementById('lightboxNext');
+        lightboxClose = document.getElementById('lightboxClose');
+        lightboxCounter = document.getElementById('lightboxCounter');
+
+        if (!lightboxOverlay) return false;
+
+        if (lightboxClose) lightboxClose.onclick = closeLightbox;
+        if (lightboxPrev) lightboxPrev.onclick = showPrev;
+        if (lightboxNext) lightboxNext.onclick = showNext;
+        if (lightboxOverlay) {
+            lightboxOverlay.onclick = (e) => {
+                if (e.target === lightboxOverlay) closeLightbox();
+            };
+        }
+
+        initSwipeListeners();
+
+        document.addEventListener('keydown', (e) => {
+            if (lightboxOverlay && lightboxOverlay.style.display !== 'flex') return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') showPrev();
+            if (e.key === 'ArrowRight') showNext();
+        });
+
+        return true;
+    }
+
+    function cancelReply() {
+        const replyTo = document.getElementById('replyTo');
+        const parentCommentId = document.getElementById('parentCommentId');
+        const cancelReplyBtn = document.getElementById('cancelReplyBtn');
+        if (replyTo) replyTo.style.display = 'none';
+        if (parentCommentId) parentCommentId.value = '';
+        if (cancelReplyBtn) cancelReplyBtn.style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initLightbox();
+        bindImageClicks();
+        updateImageList();
+    });
+
+    const observer = new MutationObserver(function() {
+        bindImageClicks();
+        updateImageList();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+</script>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/comment-post/respons_comment_job.js"></script>
+<script type="text/javascript" src="/js/functions/rating.js"></script>
+<script type="text/javascript" src="/js/supportAndfavor/favorites.js"></script>
+<script type="text/javascript" src="/js/comment-post/LoadMoreCommentsPagination.js"></script>
+<script type="text/javascript" src="/js/comment-post/LoadMorePublicCommentsJob.js"></script>
+</body>
+</html>

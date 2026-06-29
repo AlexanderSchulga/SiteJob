@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои сообщения</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <link rel="stylesheet" th:href="@{/css/notif_user_comment.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+</head>
+<body>
+
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <!-- ОБЕРТКА ДЛЯ КОНТЕНТА - ПРИЖИМАЕТ ФУТЕР -->
+    <div class="content-wrap">
+        <div class="container mt-4">
+            <h1><i class="fas fa-envelope"></i> Мои сообщения</h1>
+
+            <!-- Блок для flash-сообщений -->
+            <div th:if="${messageType != null}" class="flash-message" th:classappend="'flash-' + ${messageType}">
+                <div class="flash-icon">
+                    <i th:if="${messageType == 'error'}" class="fas fa-exclamation-circle"></i>
+                    <i th:if="${messageType == 'warning'}" class="fas fa-exclamation-triangle"></i>
+                    <i th:if="${messageType == 'info'}" class="fas fa-info-circle"></i>
+                </div>
+                <div class="flash-content">
+                    <div class="flash-title" th:text="${messageTitle}">Заголовок</div>
+                    <div class="flash-text" th:text="${messageText}">Текст сообщения</div>
+                </div>
+                <button class="flash-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div id="noMessages" class="no-messages" style="display: none;">
+                <i class="fas fa-inbox"></i>
+                <p>У вас нет новых сообщений</p>
+            </div>
+
+            <div id="ticketsContainer">
+                <!-- Тикеты будут загружаться сюда через AJAX -->
+            </div>
+
+            <div class="loading-spinner" id="loadingSpinner">
+                <i class="fas fa-spinner fa-spin fa-3x"></i>
+                <p>Загрузка...</p>
+            </div>
+
+            <div class="button-container">
+                <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreTickets()">
+                    <i class="fas fa-plus"></i> Показать еще
+                </button>
+            </div>
+
+            <div class="no-more-messages" id="noMoreMessages">
+                <i class="fas fa-check-circle"></i>
+                <p>Больше нет сообщений</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/notif_user_comment.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const flashMessage = document.querySelector('.flash-message');
+        if (flashMessage) {
+            setTimeout(function() {
+                flashMessage.style.opacity = '0';
+                setTimeout(function() {
+                    flashMessage.remove();
+                }, 300);
+            }, 5000);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title th:text="${title}">Объявления пользователя</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/userposts.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="container mt-4">
+
+        <input type="hidden" id="userHash" th:value="${userHash}">
+
+        <!-- Заголовок с информацией о пользователе -->
+        <div class="user-header mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h1 class="card-title">
+                        <i class="fas fa-user-circle me-2"></i>
+                        <span th:text="${targetUser.nameuse}"></span>
+
+                        <span th:if="${targetUser.online}" class="status-online">
+                            <i class="fas fa-circle"></i>
+                            <small>онлайн</small>
+                        </span>
+                        <span th:unless="${targetUser.online}" class="status-offline">
+                            <i class="fas fa-circle"></i>
+                            <small>офлайн</small>
+                        </span>
+                    </h1>
+
+                    <!-- БЛОК РЕЙТИНГА ПОЛЬЗОВАТЕЛЯ (компактный) -->
+                    <div class="user-rating-section mt-1">
+                        <div class="rating-info d-inline-block px-3 py-1 bg-light">
+                            <span class="fw-semibold small">рейтинг:</span>
+                            <div class="rating-stars d-inline-block ms-1 seller-rating"
+                                 th:attr="data-seller-id=${targetUser.hashId}">
+                            </div>
+                            <span th:if="${#authentication.isAuthenticated() and currentUser != null and targetUser != null and targetUser.hashId != currentUser.hashId}"
+                                  class="ms-1">
+                                <a href="#" class="small rate-seller-link" th:attr="data-seller-id=${targetUser.hashId}">Оценить</a>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Описание пользователя (компактное) -->
+                    <div class="card mb-2 mt-2">
+                        <div class="card-body py-2 px-3" style="text-align: left !important;">
+                            <h6 class="card-title mb-1 fw-bold small" style="text-align: left !important;">Описание:</h6>
+                            <div th:if="${targetUser.descript != null and targetUser.descript != ''}">
+                                <p class="description-text mb-0 small" th:text="${targetUser.descript}"></p>
+                            </div>
+                            <p th:unless="${targetUser.descript != null and targetUser.descript != ''}" class="text-muted small mb-0">
+                                —
+                            </p>
+                        </div>
+                    </div>
+
+                    <p class="card-text text-muted small">
+                        Все активные объявления пользователя
+                    </p>
+
+                    <div class="user-info mt-2">
+                        <span class="badge bg-primary me-2">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            <span th:text="${regionsConfig.getRegionDisplayName(targetUser.region)}"></span>
+                        </span>
+                        <span class="badge bg-info me-2">
+                            <i class="fas fa-box me-1"></i>
+                            Товары: <span th:text="${totalProducts}"></span>
+                        </span>
+                        <span class="badge bg-success me-2">
+                            <i class="fas fa-concierge-bell me-1"></i>
+                            Услуги: <span th:text="${totalServices}"></span>
+                        </span>
+                        <span class="badge bg-danger">
+                            <i class="fas fa-briefcase me-1"></i>
+                            Вакансии: <span th:text="${totalVacancies}"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладки для переключения между категориями -->
+        <div class="category-tabs mb-4">
+            <ul class="nav nav-tabs" id="categoryTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="products-tab"
+                            data-bs-toggle="tab" data-bs-target="#products-content"
+                            type="button" role="tab" data-type="products">
+                        <i class="fas fa-shopping-bag me-2"></i>Товары
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="services-tab"
+                            data-bs-toggle="tab" data-bs-target="#services-content"
+                            type="button" role="tab" data-type="services">
+                        <i class="fas fa-concierge-bell me-2"></i>Услуги
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="vacancies-tab"
+                            data-bs-toggle="tab" data-bs-target="#vacancies-content"
+                            type="button" role="tab" data-type="vacancies">
+                        <i class="fas fa-briefcase me-2"></i>Вакансии
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Контент вкладок -->
+        <div class="tab-content" id="categoryTabContent">
+
+            <!-- Вкладка товаров -->
+            <div class="tab-pane fade show active" id="products-content" role="tabpanel">
+                <h2 class="mb-3" style="color: #007bff;">
+                    <i class="fas fa-shopping-bag me-2"></i>Товары пользователя
+                </h2>
+
+                <div class="row" id="productsContainer">
+                    <div th:each="post : ${posts}" class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div th:class="${post.premium} ? 'post-card-premium' : (${post.donate} ? 'post-card-donate' : 'post-card')">
+
+                            <img th:if="${post.firstImagePath}"
+                                 th:src="${post.firstImagePath}"
+                                 onerror="this.onerror=null; this.src='/images/no-image.png'"
+                                 class="post-image img-fluid"
+                                 th:alt="${post.title}"
+                                 loading="lazy">
+                            <div th:unless="${post.firstImagePath}"
+                                 class="post-image-placeholder d-flex align-items-center justify-content-center bg-light">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            </div>
+
+                            <h5 class="post-title" th:text="${post.title}"></h5>
+
+                            <div class="post-content">
+                                <div class="post-user-info mb-2">
+                                    <small class="text-muted d-block">
+                                        <strong>Цена:</strong>
+                                        <span th:text="${post.price}"></span> ₽
+                                    </small>
+                                </div>
+                                <div class="action-buttons">
+                                    <a th:href="@{/postidviews/{hashId}(hashId=${post.hashId})}" class="btn btn-primary btn-mod">
+                                        <i class="fas fa-eye"></i> Просмотр
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${hasMoreProducts}" class="text-center mt-4" id="loadMoreProductsContainer">
+                    <button id="loadMoreProductsBtn" class="btn btn-primary" data-current-page="1">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще товары
+                    </button>
+                </div>
+
+                <div th:if="${#lists.isEmpty(posts)}" class="text-center py-5">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        У пользователя нет товаров для отображения
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка услуг -->
+            <div class="tab-pane fade" id="services-content" role="tabpanel">
+                <h2 class="mb-3" style="color: #28a745;">
+                    <i class="fas fa-concierge-bell me-2"></i>Услуги пользователя
+                </h2>
+
+                <div class="row" id="servicesContainer">
+                    <div th:each="postJob : ${postsJob}" class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div th:class="${postJob.premium} ? 'post-card-premium' : (${postJob.donate} ? 'post-card-donate' : 'post-card')">
+
+                            <img th:if="${postJob.firstImagePath}"
+                                 th:src="${postJob.firstImagePath}"
+                                 onerror="this.onerror=null; this.src='/images/no-image.png'"
+                                 class="post-image img-fluid"
+                                 th:alt="${postJob.title}"
+                                 loading="lazy">
+                            <div th:unless="${postJob.firstImagePath}"
+                                 class="post-image-placeholder d-flex align-items-center justify-content-center bg-light">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            </div>
+
+                            <h5 class="post-title" th:text="${postJob.title}"></h5>
+
+                            <div class="post-content">
+                                <div class="post-user-info mb-2">
+                                    <small class="text-muted d-block">
+                                        <strong>Цена:</strong>
+                                        <span th:text="${postJob.price}"></span> ₽
+                                    </small>
+                                </div>
+                                <div class="action-buttons">
+                                    <a th:href="@{/postidviewsjob/{hashId}(hashId=${postJob.hashId})}" class="btn btn-primary btn-mod">
+                                        <i class="fas fa-eye"></i> Просмотр
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${hasMoreServices}" class="text-center mt-4" id="loadMoreServicesContainer">
+                    <button id="loadMoreServicesBtn" class="btn btn-primary" data-current-page="1">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще услуги
+                    </button>
+                </div>
+
+                <div th:if="${#lists.isEmpty(postsJob)}" class="text-center py-5">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        У пользователя нет услуг для отображения
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка вакансий -->
+            <div class="tab-pane fade" id="vacancies-content" role="tabpanel">
+                <h2 class="mb-3" style="color: #dc3545;">
+                    <i class="fas fa-briefcase me-2"></i>Вакансии пользователя
+                </h2>
+
+                <div class="row" id="vacanciesContainer">
+                    <div th:each="vacancy : ${vacancies}" class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div th:class="${vacancy.premium} ? 'post-card-premium' : (${vacancy.donate} ? 'post-card-donate' : 'post-card')">
+
+                            <img th:if="${vacancy.firstImagePath}"
+                                 th:src="${vacancy.firstImagePath}"
+                                 onerror="this.onerror=null; this.src='/images/no-image.png'"
+                                 class="post-image img-fluid"
+                                 th:alt="${vacancy.title}"
+                                 loading="lazy">
+                            <div th:unless="${vacancy.firstImagePath}"
+                                 class="post-image-placeholder d-flex align-items-center justify-content-center bg-light">
+                                <i class="fas fa-image fa-3x text-muted"></i>
+                            </div>
+
+                            <h5 class="post-title" th:text="${vacancy.title}"></h5>
+
+                            <div class="post-content">
+                                <div class="post-user-info mb-2">
+                                    <small class="text-muted d-block">
+                                        <strong>Зарплата:</strong>
+                                        <span th:text="${vacancy.cash}"></span>
+                                    </small>
+                                </div>
+                                <div class="action-buttons">
+                                    <a th:href="@{/postidviewsvac/{hashId}(hashId=${vacancy.hashId})}" class="btn btn-primary btn-mod">
+                                        <i class="fas fa-eye"></i> Просмотр
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${hasMoreVacancies}" class="text-center mt-4" id="loadMoreVacanciesContainer">
+                    <button id="loadMoreVacanciesBtn" class="btn btn-primary" data-current-page="1">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще вакансии
+                    </button>
+                </div>
+
+                <div th:if="${#lists.isEmpty(vacancies)}" class="text-center py-5">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        У пользователя нет вакансий для отображения
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/users/load-more-user.js"></script>
+<script type="text/javascript" src="/js/functions/rating.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title text-center">Подтверждение email</h2>
+                        <p class="text-center">Код подтверждения отправлен на: <strong th:text="${email}"></strong></p>
+
+                        <form th:action="@{/verify-registration}" method="post">
+                            <input type="hidden" name="email" th:value="${email}">
+
+                            <div class="mb-3">
+                                <label class="form-label">Введите код подтверждения</label>
+                                <input type="text" name="code" class="form-control"
+                                       maxlength="6" required
+                                       placeholder="000000">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Подтвердить</button>
+                        </form>
+
+                        <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование пользователя</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylereditadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <style>
+        /* Дополнительные стили для формы */
+        .edit-form .card .card-body form .mb-3 {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .edit-form .card .card-body form .mb-3 .form-label {
+            width: 180px;
+            flex-shrink: 0;
+            margin-bottom: 0 !important;
+        }
+
+        .edit-form .card .card-body form .mb-3 .form-control,
+        .edit-form .card .card-body form .mb-3 .form-select,
+        .edit-form .card .card-body form .mb-3 .custom-select-wrapper,
+        .edit-form .card .card-body form .mb-3 > div:not(.form-check) {
+            flex: 1;
+        }
+
+        .edit-form .card .card-body form .mb-3 .form-check {
+            margin-left: 180px;
+        }
+
+        .edit-form .card .card-body form .d-flex {
+            margin-left: 180px;
+        }
+
+        @media (max-width: 768px) {
+            .edit-form .card .card-body form .mb-3 {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .edit-form .card .card-body form .mb-3 .form-label {
+                width: 100%;
+                margin-bottom: 6px !important;
+            }
+            .edit-form .card .card-body form .mb-3 .form-control,
+            .edit-form .card .card-body form .mb-3 .form-select,
+            .edit-form .card .card-body form .mb-3 .custom-select-wrapper {
+                width: 100% !important;
+            }
+            .edit-form .card .card-body form .mb-3 .form-check {
+                margin-left: 0;
+            }
+            .edit-form .card .card-body form .d-flex {
+                margin-left: 0;
+            }
+        }
+
+        /* Стили для кастомного select в форме */
+        .edit-form .card .card-body form .mb-3 .custom-select-wrapper {
+            width: 50%;
+            max-width: 500px;
+            min-width: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .edit-form .card .card-body form .mb-3 .custom-select-wrapper {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="edit-form">
+        <div class="mb-4">
+            <a th:href="@{/users}" class="btn btn-secondary btn-sm">
+                ← Назад к списку пользователей
+            </a>
+        </div>
+
+        <!-- Блок для отображения ошибок -->
+        <div th:if="${param.error != null}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:if="${param.error[0] == 'size_limit'}">
+                Ошибка: общий размер файлов превышает 10 MB. Пожалуйста, выберите файлы меньшего размера.
+            </span>
+            <span th:unless="${param.error[0] == 'size_limit'}">
+                Произошла ошибка при обработке запроса.
+            </span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div th:each="user : ${user}">
+            <!-- Карточка информации о пользователе -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-circle me-2"></i>Информация о пользователе
+                    </h5>
+                    <div th:if="${user.role == 'ROLE_SUPER'}" class="badge bg-warning text-dark mt-1">
+                        <i class="fas fa-star"></i> Супер-пользователь
+                    </div>
+                    <div th:if="${user.role == 'ROLE_ADMIN'}" class="badge bg-info text-dark mt-1">
+                        <i class="fas fa-shield-alt"></i> Администратор
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>ID:</strong>
+                                <span th:text="${user.id}" th:if="${#authorization.expression('hasRole(''ROLE_SUPER'')')}"></span>
+                            </p>
+                            <p class="mb-2"><strong>Login:</strong> <span th:text="${user.username}"></span></p>
+                            <p class="mb-2"><strong>Имя:</strong> <span th:text="${user.nameuse}"></span></p>
+                            <p class="mb-2"><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                            <p class="mb-2"><strong>Телефон:</strong> <span th:text="${user.phone}"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Телефон (объявления):</strong> <span th:text="${user.phonePost}"></span></p>
+                            <p class="mb-2"><strong>Дата регистрации:</strong> <span th:text="${#temporals.format(user.registrationDate, 'dd.MM.yyyy HH:mm')}"></span></p>
+                            <p class="mb-2"><strong>Регион:</strong> <span th:text="${@regionsConfig.getRegionDisplayName(user.region)}"></span></p>
+                            <p class="mb-2"><strong>Город:</strong> <span th:text="${user.city != null && user.city != 'other' ? user.city : 'Не указан'}"></span></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-3 col-6">
+                            <div class="stat-badge"><i class="fas fa-box"></i> Товаров: <strong th:text="${totalProducts}"></strong></div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-badge"><i class="fas fa-concierge-bell"></i> Услуг: <strong th:text="${totalServices}"></strong></div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-badge"><i class="fas fa-briefcase"></i> Вакансий: <strong th:text="${totalVacancies}"></strong></div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="stat-badge"><i class="fas fa-file-alt"></i> Резюме: <strong th:text="${totalResume}"></strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма редактирования пользователя -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-edit me-2"></i>Редактирование профиля</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="'/users/' + ${user.hashId} + '/page_two/admin_edit_user/update'">
+
+                        <!-- Поле Login -->
+                        <div th:if="${#authorization.expression('hasRole(''ROLE_SUPER'')')}">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Login</label>
+                                <input type="text" id="username" th:value="${user.username}" name="username"
+                                       class="form-control" required>
+                            </div>
+                        </div>
+                        <div th:unless="${#authorization.expression('hasRole(''ROLE_SUPER'')')}">
+                            <input type="hidden" name="username" th:value="${user.username}"/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nameuse" class="form-label">Имя пользователя</label>
+                            <input type="text" id="nameuse" th:value="${user.nameuse}" name="nameuse"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" th:value="${user.email}" name="email"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phoneInput" class="form-label">Телефон</label>
+                            <input type="tel" name="phone" id="phoneInput" th:value="${user.phone}"
+                                   class="form-control" placeholder="Введите номер" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phonePostInput" class="form-label">Телефон (Для отображения в объявлениях)</label>
+                            <input type="tel" name="phonePost" id="phonePostInput" th:value="${user.phonePost}"
+                                   class="form-control" placeholder="Введите номер" required>
+                        </div>
+
+                        <!-- Регион -->
+                        <div class="mb-3">
+                            <label for="regionSelect" class="form-label">Регион</label>
+                            <select id="regionSelect" name="region" class="form-select" required>
+                                <option value="" disabled>Загрузка регионов...</option>
+                            </select>
+                            <input type="hidden" id="selectedRegionValue" th:value="${user.region}">
+                        </div>
+
+                        <!-- Город -->
+                        <div class="mb-3">
+                            <label class="form-label">Город/Населенный пункт</label>
+                            <div id="cityContainer">
+                                <select name="city" id="citySelect" class="form-select">
+                                    <option value="" selected>Сначала выберите регион</option>
+                                </select>
+                                <div class="form-text">Необязательное поле. Если вашего города нет в списке, выберите "Ввести вручную"</div>
+                            </div>
+                            <input type="hidden" id="selectedCityValue" th:value="${user.city}">
+                        </div>
+
+                        <!-- Роль -->
+                        <div class="mb-3">
+                            <label for="roleSelect" class="form-label">Роль</label>
+                            <div th:if="${#authorization.expression('hasRole(''ROLE_SUPER'')')}">
+                                <select id="roleSelect" name="role" class="form-select" required>
+                                    <option value="ROLE_USER" th:selected="${user.role == 'ROLE_USER'}">Пользователь</option>
+                                    <option value="ROLE_ADMIN" th:selected="${user.role == 'ROLE_ADMIN'}">Администратор</option>
+                                    <option value="ROLE_SUPER" th:selected="${user.role == 'ROLE_SUPER'}">Супер-администратор</option>
+                                </select>
+                            </div>
+                            <div th:unless="${#authorization.expression('hasRole(''ROLE_SUPER'')')}" class="form-control-plaintext">
+                                <strong>Текущая роль:</strong>
+                                <span th:text="${user.role == 'ROLE_USER'} ? 'Пользователь' :
+                                    (${user.role == 'ROLE_ADMIN'} ? 'Администратор' : 'Супер-администратор')"></span>
+                                <input type="hidden" name="role" th:value="${user.role}"/>
+                                <small class="text-muted d-block mt-1">
+                                    <i class="fas fa-info-circle"></i> Только супер-администратор может изменять роли
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Статус аккаунта -->
+                        <div class="mb-3">
+                            <label for="activeSelect" class="form-label">Статус аккаунта</label>
+                            <select id="activeSelect" name="active" class="form-select" required>
+                                <option value="true" th:selected="${user.active}">Активен</option>
+                                <option value="false" th:selected="${!user.active}">Заблокирован</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" id="resetPassword" name="resetPassword" value="true" class="form-check-input">
+                                <label for="resetPassword" class="form-check-label">Сбросить пароль (новый пароль: 123456)</label>
+                            </div>
+                        </div>
+
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">Сохранить изменения</button>
+                            <a th:href="@{/users}" class="btn btn-secondary">Отмена</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Секция объявлений пользователя -->
+            <div class="user-posts-section mt-4">
+                <h6 class="mb-3">Объявления пользователя</h6>
+
+                <div class="category-tabs mb-3">
+                    <ul class="nav nav-tabs" id="userPostsTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="products-tab"
+                                    data-bs-toggle="tab" data-bs-target="#products-content"
+                                    type="button" role="tab" data-type="products">
+                                <i class="fas fa-shopping-bag me-2"></i>Товары
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="services-tab"
+                                    data-bs-toggle="tab" data-bs-target="#services-content"
+                                    type="button" role="tab" data-type="services">
+                                <i class="fas fa-concierge-bell me-2"></i>Услуги
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="vacancies-tab"
+                                    data-bs-toggle="tab" data-bs-target="#vacancies-content"
+                                    type="button" role="tab" data-type="vacancies">
+                                <i class="fas fa-briefcase me-2"></i>Вакансии
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="resume-tab"
+                                    data-bs-toggle="tab" data-bs-target="#resume-content"
+                                    type="button" role="tab" data-type="resume">
+                                <i class="fas fa-file-alt me-2"></i>Резюме
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="tab-content" id="userPostsTabContent">
+                    <!-- Товары -->
+                    <div class="tab-pane fade show active" id="products-content" role="tabpanel">
+                        <div class="row" id="productsContainerStatic" style="display: none;">
+                            <div th:each="post : ${userPosts}" th:remove="all"></div>
+                        </div>
+                        <div class="row" id="productsContainer"></div>
+                        <div class="text-center mt-3" id="loadMoreProductsContainer">
+                            <button id="loadMoreProductsBtn" class="btn btn-primary" data-current-page="0">
+                                <i class="fas fa-plus-circle me-2"></i>Показать еще товары
+                            </button>
+                        </div>
+                        <div id="allLoadedProductsMessage" class="text-center mt-3 mb-4" style="display: none;">
+                            <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все товары загружены</p>
+                        </div>
+                    </div>
+
+                    <!-- Услуги -->
+                    <div class="tab-pane fade" id="services-content" role="tabpanel">
+                        <div class="row" id="servicesContainerStatic" style="display: none;">
+                            <div th:each="post : ${userPostsJob}" th:remove="all"></div>
+                        </div>
+                        <div class="row" id="servicesContainer"></div>
+                        <div class="text-center mt-3" id="loadMoreServicesContainer">
+                            <button id="loadMoreServicesBtn" class="btn btn-primary" data-current-page="0">
+                                <i class="fas fa-plus-circle me-2"></i>Показать еще услуги
+                            </button>
+                        </div>
+                        <div id="allLoadedServicesMessage" class="text-center mt-3 mb-4" style="display: none;">
+                            <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все услуги загружены</p>
+                        </div>
+                    </div>
+
+                    <!-- Вакансии -->
+                    <div class="tab-pane fade" id="vacancies-content" role="tabpanel">
+                        <div class="row" id="vacanciesContainerStatic" style="display: none;">
+                            <div th:each="vacancy : ${userVacancies}" th:remove="all"></div>
+                        </div>
+                        <div class="row" id="vacanciesContainer"></div>
+                        <div class="text-center mt-3" id="loadMoreVacanciesContainer">
+                            <button id="loadMoreVacanciesBtn" class="btn btn-primary" data-current-page="0">
+                                <i class="fas fa-plus-circle me-2"></i>Показать еще вакансии
+                            </button>
+                        </div>
+                        <div id="allLoadedVacanciesMessage" class="text-center mt-3 mb-4" style="display: none;">
+                            <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все вакансии загружены</p>
+                        </div>
+                    </div>
+
+                    <!-- Резюме -->
+                    <div class="tab-pane fade" id="resume-content" role="tabpanel">
+                        <div class="row" id="resumeContainerStatic" style="display: none;">
+                            <div th:each="resume : ${userResume}" th:remove="all"></div>
+                        </div>
+                        <div class="row" id="resumeContainer"></div>
+                        <div class="text-center mt-3" id="loadMoreResumeContainer">
+                            <button id="loadMoreResumeBtn" class="btn btn-primary" data-current-page="0">
+                                <i class="fas fa-plus-circle me-2"></i>Показать еще резюме
+                            </button>
+                        </div>
+                        <div id="allLoadedResumeMessage" class="text-center mt-3 mb-4" style="display: none;">
+                            <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все резюме загружены</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="loadingSpinner" class="text-center mt-2" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Загрузка...</span>
+                    </div>
+                    <p class="text-muted mt-2">Загружаем...</p>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/all.min.js"></script>
+<script type="text/javascript" src="/js/phone.js"></script>
+<script type="text/javascript" src="/js/functions/region_config.js"></script>
+<script type="text/javascript" src="/js/functions/city_config.js"></script>
+<script type="text/javascript" src="/js/users/admin_user_pagination.js"></script>
+<script type="text/javascript" src="/js/functions/custom-select.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Инициализация кастомного select для статуса аккаунта
+        const activeSelect = document.getElementById('activeSelect');
+        if (activeSelect && activeSelect.options.length > 0 && !activeSelect.hasAttribute('data-custom-init')) {
+            if (typeof CustomSelect !== 'undefined') {
+                new CustomSelect(activeSelect, { searchable: false, maxHeight: 200 });
+                activeSelect.setAttribute('data-custom-init', 'true');
+            }
+        }
+
+        // Инициализация кастомного select для роли (только для супер-администратора)
+        const roleSelect = document.getElementById('roleSelect');
+        if (roleSelect && roleSelect.options.length > 0 && !roleSelect.hasAttribute('data-custom-init')) {
+            if (typeof CustomSelect !== 'undefined') {
+                new CustomSelect(roleSelect, { searchable: false, maxHeight: 200 });
+                roleSelect.setAttribute('data-custom-init', 'true');
+            }
+        }
+
+        // Восстановление региона
+        const selectedRegion = document.getElementById('selectedRegionValue');
+        const regionSelect = document.getElementById('regionSelect');
+
+        if (selectedRegion && selectedRegion.value && selectedRegion.value !== '' && regionSelect) {
+            setTimeout(function() {
+                for (let i = 0; i < regionSelect.options.length; i++) {
+                    if (regionSelect.options[i].value === selectedRegion.value) {
+                        regionSelect.selectedIndex = i;
+                        if (typeof updateCities === 'function') {
+                            updateCities();
+                        }
+                        break;
+                    }
+                }
+            }, 200);
+        }
+
+// Восстановление города
+        const selectedCity = document.getElementById('selectedCityValue');
+        if (selectedCity && selectedCity.value && selectedCity.value !== '') {
+            setTimeout(function() {
+                const citySelect = document.getElementById('citySelect');
+                if (citySelect && citySelect.options) {
+                    let cityFound = false;
+                    for (let i = 0; i < citySelect.options.length; i++) {
+                        if (citySelect.options[i].value === selectedCity.value) {
+                            citySelect.selectedIndex = i;
+                            cityFound = true;
+                            break;
+                        }
+                    }
+
+                    // Если город не найден в select и это не ручной ввод
+                    if (!cityFound && selectedCity.value !== '' && selectedCity.value !== 'manual_input') {
+                        const manualOption = Array.from(citySelect.options).find(opt => opt.value === 'manual_input');
+                        if (manualOption) {
+                            citySelect.value = 'manual_input';
+                            // Триггерим событие change для создания поля ручного ввода
+                            citySelect.dispatchEvent(new Event('change'));
+                            // Устанавливаем значение после создания поля
+                            setTimeout(() => {
+                                const manualInput = document.getElementById('cityManualInput');
+                                if (manualInput) manualInput.value = selectedCity.value;
+                            }, 100);
+                        }
+                    }
+                }
+            }, 500);
+        }
+    });
+</script>
+
+<!-- Модальные окна -->
+<div class="modal fade" id="toggleBlockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтверждение действия</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="toggleBlockModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="toggleBlockForm" method="post">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn" id="toggleBlockConfirmBtn">Подтвердить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deletePostModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Подтверждение удаления</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="deletePostModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="deletePostForm" method="post">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

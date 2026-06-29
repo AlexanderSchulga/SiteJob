@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Выход</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/css/stylelogout.css}">
+  <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+<body>
+<div class="container-wrapper">
+  <div class="logout-form">
+    <h2 class="form-title">Выйти из системы</h2>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit" class="btn btn-danger btn-logout">Выйти</button>
+    </form>
+  </div>
+</div>
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

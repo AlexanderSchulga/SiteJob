@@ -1,0 +1,589 @@
+/* Базовые стили - единые с stylereviews.css */
+body, .container-wrapper, .create-form-card,
+.card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Компенсация sticky-шапки */
+body.has-sticky-header .container-wrapper {
+    padding-top: 90px !important;
+}
+
+@media (max-width: 768px) {
+    body.has-sticky-header .container-wrapper {
+        padding-top: 120px !important;
+    }
+}
+
+/* Плавный переход */
+.container-wrapper {
+    transition: padding-top 0.2s ease;
+}
+
+/* ГЛАВНЫЙ КОНТЕЙНЕР - исходная ширина как было */
+.container-wrapper {
+    max-width: 800px;
+    margin: 5px auto;
+    padding: 0 15px;
+    min-height: calc(100vh - 160px);
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    .container-wrapper {
+        padding: 0 10px;
+        max-width: 100%;
+    }
+}
+
+/* КАРТОЧКИ */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 16px !important;
+    border: 1px solid #dee2e6 !important;
+    background-color: #ffffff !important;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Шапка карточки */
+.card-header {
+    background: #00BFFF !important;
+    border: none;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 12px 20px;
+}
+
+.card-header h5 {
+    color: #360b0b !important;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* КНОПКИ - единые с отзывами */
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    padding: 6px 18px;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background-color: #17c75c;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-primary:hover {
+    background-color: #17c75c;
+    border-color: #b0ece0;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+    color: #000000;
+    border-color: #95e5d3;
+    background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+    background-color: #95e5d3;
+    border-color: #95e5d3;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: #17c75c;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-success:hover {
+    background-color: #b0ece0;
+    border-color: #b0ece0;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.btn-outline-success {
+    color: #17c75c;
+    border-color: #95e5d3;
+}
+
+.btn-outline-success:hover {
+    background-color: #17c75c;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-outline-secondary {
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #95e5d3;
+    border-color: #95e5d3;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+/* ФОРМЫ - уменьшенная высота на десктопе */
+.form-label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 6px !important;
+    font-size: 0.9rem;
+}
+
+.form-control,
+.form-select,
+textarea {
+    border: 2px solid #6c757d !important;
+    background-color: #fefefe !important;
+    transition: all 0.2s ease-in-out !important;
+    border-radius: 10px !important;
+    padding: 8px 12px !important;
+    font-size: 0.9rem;
+}
+
+textarea.form-control {
+    padding: 8px 12px !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: #0d6efd !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25) !important;
+    outline: none !important;
+}
+
+.input-group-text {
+    border-radius: 10px 0 0 10px !important;
+    background-color: #f8f9fa;
+    border: 2px solid #6c757d !important;
+    border-right: none !important;
+    padding: 8px 12px;
+}
+
+.input-group .form-control {
+    border-radius: 0 10px 10px 0 !important;
+}
+
+.form-text {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+/* ХЛЕБНЫЕ КРОШКИ */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.5rem 0;
+}
+
+.breadcrumb-item a {
+    color: #6c757d;
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: #5a9e6e;
+}
+
+.breadcrumb-item.active {
+    color: #495057;
+}
+
+/* АЛЕРТЫ */
+.alert {
+    border: none;
+    border-radius: 12px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24 !important;
+}
+
+/* КАРТА */
+.map-container {
+    width: 100%;
+    height: 350px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #dee2e6;
+    margin-top: 10px;
+}
+
+/* Планшеты */
+@media (max-width: 768px) {
+    .container-wrapper {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-header {
+        padding: 10px 16px;
+    }
+
+    .card-header h5 {
+        font-size: 1rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        margin-bottom: 5px !important;
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+        padding: 8px 12px !important;
+        font-size: 0.85rem;
+    }
+
+    .btn {
+        padding: 6px 16px;
+        font-size: 0.85rem;
+    }
+
+    .map-container {
+        height: 300px;
+    }
+}
+
+/* Мобильные телефоны */
+@media (max-width: 576px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .form-label {
+        font-size: 0.8rem;
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+        padding: 8px 10px !important;
+        font-size: 0.85rem;
+    }
+
+    /* Исправление выпадающего списка */
+    select.form-select,
+    select.form-select option,
+    #category,
+    #category option {
+        max-width: calc(100vw - 40px) !important;
+        width: auto !important;
+        min-width: 0 !important;
+        overflow-wrap: break-word !important;
+        word-wrap: break-word !important;
+        word-break: break-all !important;
+        white-space: normal !important;
+    }
+
+    .btn {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+
+    /* Кнопки - не растянуты */
+    .d-flex.gap-3 {
+        flex-direction: column;
+        gap: 10px !important;
+        align-items: center;
+    }
+
+    .d-flex.gap-3 .btn {
+        width: 70%;
+        min-width: 180px;
+        max-width: 250px;
+    }
+
+    .breadcrumb {
+        font-size: 0.8rem;
+    }
+
+    .input-group-text {
+        padding: 6px 10px;
+    }
+
+    .map-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container-wrapper {
+        padding: 0 8px;
+    }
+
+    .card-body {
+        padding: 12px;
+    }
+
+    .form-label {
+        font-size: 0.75rem;
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+        padding: 6px 8px !important;
+        font-size: 0.8rem;
+    }
+
+    .btn {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+    }
+
+    .d-flex.gap-3 .btn {
+        width: 75%;
+        min-width: 150px;
+        max-width: 220px;
+    }
+
+    .breadcrumb {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .card-header h5 {
+        font-size: 0.85rem;
+    }
+
+    .form-label {
+        font-size: 0.7rem;
+    }
+
+    .btn {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+    }
+
+    .form-control,
+    .form-select,
+    textarea {
+        padding: 5px 8px !important;
+        font-size: 0.75rem;
+    }
+
+    .d-flex.gap-3 .btn {
+        width: 80%;
+        min-width: 140px;
+        max-width: 200px;
+    }
+}
+
+/* Планшеты в ландшафтной ориентации */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container-wrapper {
+        max-width: 90%;
+    }
+}
+
+/* Стили для обязательных полей */
+.form-label .text-danger {
+    font-size: 1em;
+}
+
+/* Анимация для карты */
+#map {
+    transition: all 0.3s ease;
+}
+
+/* Стили для disabled состояний */
+.btn:disabled {
+    opacity: 0.6;
+    transform: none;
+}
+
+/* Стили для файлового инпута */
+input[type="file"].form-control {
+    padding: 6px 8px !important;
+}
+
+input[type="file"].form-control::file-selector-button {
+    border-radius: 8px;
+    padding: 5px 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    margin-right: 10px;
+    font-size: 0.85rem;
+}
+
+/* ========== КАСТОМНЫЙ SELECT (как в регистрации, не сдвигает контент) ========== */
+.custom-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #fefefe;
+    border: 2px solid #6c757d;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    min-height: 42px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.custom-select-trigger:hover {
+    border-color: #0d6efd;
+}
+
+.custom-select-trigger.active {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+
+.custom-select-trigger .selected-value {
+    color: #2c3e50;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom-select-trigger .arrow {
+    margin-left: 10px;
+    transition: transform 0.2s;
+    color: #6c757d;
+}
+
+.custom-select-trigger.active .arrow {
+    transform: rotate(180deg);
+}
+
+/* Важно: dropdown позиционируется абсолютно, НЕ сдвигает контент */
+.custom-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #0d6efd;
+    border-radius: 10px;
+    margin-top: 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 10000;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: opacity 0.15s ease-in-out;
+    opacity: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.custom-dropdown.show {
+    display: block;
+    opacity: 1;
+}
+
+.custom-dropdown-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    white-space: normal;
+    word-break: break-word;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.custom-dropdown-option:last-child {
+    border-bottom: none;
+}
+
+.custom-dropdown-option:hover {
+    background: #e8f0fe;
+}
+
+.custom-dropdown-option.selected {
+    background: #0d6efd;
+    color: white;
+}
+
+/* Мобильные адаптации для кастомного select */
+@media (max-width: 576px) {
+    .custom-select-trigger {
+        min-height: 44px;
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+
+    .custom-select-trigger .selected-value {
+        font-size: 0.85rem;
+        white-space: normal;
+        word-break: break-word;
+        line-height: 1.4;
+    }
+
+    .custom-dropdown {
+        max-height: 200px;
+    }
+
+    .custom-dropdown-option {
+        padding: 12px;
+        font-size: 0.85rem;
+        min-height: 44px;
+    }
+}
+
+/* Увеличение шрифта в textarea на мобильных устройствах */
+@media (max-width: 768px) {
+    textarea.form-control,
+    #full_text,
+    textarea#full_text {
+        font-size: 16px !important;  /* 16px предотвращает автоматический зум на iOS */
+        line-height: 1.5 !important;
+    }
+}
+
+@media (max-width: 576px) {
+    textarea.form-control,
+    #full_text,
+    textarea#full_text {
+        font-size: 15px !important;
+        padding: 10px 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    textarea.form-control,
+    #full_text,
+    textarea#full_text {
+        font-size: 15px !important;
+    }
+}

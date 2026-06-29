@@ -1,0 +1,675 @@
+/* ========== ОСНОВНЫЕ СТИЛИ ========== */
+
+body, .messages-container, h1, .message-ticket, .btn-go,
+.flash-message, .no-messages, .loading-spinner, .load-more-btn {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ========== КОНТЕЙНЕР-ОБЕРТКА ========== */
+.container-wrapper {
+    max-width: 1300px;
+    margin: 5px auto;
+    padding: 0 15px;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 10px);
+}
+
+@media (min-width: 1200px) {
+    .container-wrapper {
+        max-width: 1300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+}
+
+/* ========== ОБЕРТКА ДЛЯ КОНТЕНТА - ПРИЖИМАЕТ ФУТЕР ========== */
+.content-wrap {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========== КОМПЕНСАЦИЯ STICKY-ШАПКИ ========== */
+body.has-sticky-header .container-wrapper {
+    padding-top: 90px !important;
+}
+
+@media (max-width: 768px) {
+    body.has-sticky-header .container-wrapper {
+        padding-top: 120px !important;
+    }
+}
+
+.container-wrapper {
+    transition: padding-top 0.2s ease;
+}
+
+/* ========== СТИЛИ ДЛЯ КОНТЕЙНЕРА С СООБЩЕНИЯМИ ========== */
+.container.mt-4 {
+    max-width: 83.333333% !important;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    min-height: 400px;
+    flex: 1;
+}
+
+@media (max-width: 991px) {
+    .container.mt-4 {
+        max-width: 100% !important;
+        padding: 0 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container.mt-4 {
+        padding: 0 10px;
+    }
+}
+
+/* ========== ЗАГОЛОВОК ========== */
+h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+h1 i {
+    color: #17c75c;
+    margin-right: 10px;
+}
+
+/* ========== КАРТОЧКИ ТИКЕТОВ ========== */
+
+.message-ticket {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.message-ticket.unread {
+    border-left: 4px solid #dc3545;
+    background: #fff8f8;
+}
+
+.message-ticket:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #17c75c;
+}
+
+.message-info {
+    flex: 1;
+}
+
+.message-from {
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+.message-from i {
+    color: #17c75c;
+    width: 20px;
+}
+
+.message-from span:first-of-type {
+    color: #1a1a2e;
+    font-weight: 600;
+}
+
+.message-post {
+    color: #2c3e50;
+    margin-bottom: 6px;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.message-post i {
+    margin-right: 6px;
+    color: #17c75c;
+}
+
+.message-post span {
+    color: #2c3e50;
+}
+
+.message-preview {
+    color: #34495e;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.message-preview i {
+    margin-right: 6px;
+    color: #17c75c;
+}
+
+.message-preview span {
+    color: #34495e;
+}
+
+.message-time {
+    color: #5a6e7e;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.message-time i {
+    margin-right: 4px;
+    color: #17c75c;
+}
+
+.message-time span {
+    color: #5a6e7e;
+}
+
+/* ========== БАДЖИ ТИПОВ ПОСТОВ ========== */
+
+.post-type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: 500;
+    color: white;
+}
+
+.type-product { background: #28a745; }
+.type-service { background: #17a2b8; }
+.type-vacancy { background: #ffc107; color: #212529; }
+.type-resume { background: #6f42c1; }
+
+/* ========== КНОПКА ПЕРЕХОДА ========== */
+
+.btn-go {
+    background: #17c75c;
+    color: #000000 !important;
+    padding: 8px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.85em;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: 15px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #95e5d3;
+    cursor: pointer;
+}
+
+.btn-go i {
+    color: #000000;
+}
+
+.btn-go:hover {
+    background: #b0ece0;
+    color: #000000 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(23, 199, 92, 0.2);
+    border-color: #95e5d3;
+}
+
+.btn-go:hover i {
+    color: #000000;
+}
+
+.btn-go:active {
+    transform: translateY(0);
+}
+
+/* ========== ПУСТОЕ СОСТОЯНИЕ ========== */
+
+.no-messages {
+    text-align: center;
+    padding: 60px 20px;
+    color: #adb5bd;
+}
+
+.no-messages i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: #dee2e6;
+}
+
+.no-messages p {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+/* ========== ЗАГРУЗЧИК ========== */
+
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 30px;
+}
+
+.loading-spinner.active {
+    display: block;
+}
+
+.loading-spinner i {
+    color: #17c75c;
+}
+
+.loading-spinner p {
+    margin-top: 10px;
+    color: #6c757d;
+}
+
+/* ========== КНОПКА "ПОКАЗАТЬ ЕЩЕ" ========== */
+
+.load-more-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background: #17c75c;
+    color: #000000 !important;
+    border: 1px solid #95e5d3;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.load-more-btn i {
+    margin-right: 0;
+    color: #000000;
+}
+
+.load-more-btn:hover {
+    background: #17c75c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 199, 92, 0.3);
+    color: #000000 !important;
+}
+
+.load-more-btn:hover i {
+    color: #000000;
+}
+
+.load-more-btn:disabled {
+    background: #c0c0c0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    color: #333 !important;
+}
+
+/* ========== СООБЩЕНИЕ "БОЛЬШЕ НЕТ" ========== */
+
+.no-more-messages {
+    text-align: center;
+    color: #6c757d;
+    padding: 20px;
+    display: none;
+}
+
+.no-more-messages.active {
+    display: block;
+}
+
+.no-more-messages i {
+    color: #28a745;
+    margin-right: 8px;
+}
+
+.button-container {
+    text-align: center;
+}
+
+/* ========== FLASH СООБЩЕНИЯ ========== */
+
+.flash-message {
+    position: relative;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: slideDown 0.3s ease;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.flash-error {
+    background-color: #fef2f2;
+    border-left: 4px solid #dc2626;
+    color: #991b1b;
+}
+
+.flash-warning {
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    color: #92400e;
+}
+
+.flash-info {
+    background-color: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    color: #1e40af;
+}
+
+.flash-icon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.flash-error .flash-icon {
+    color: #dc2626;
+}
+
+.flash-warning .flash-icon {
+    color: #f59e0b;
+}
+
+.flash-info .flash-icon {
+    color: #3b82f6;
+}
+
+.flash-content {
+    flex: 1;
+}
+
+.flash-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.flash-text {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.flash-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: currentColor;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    padding: 4px 8px;
+}
+
+.flash-close:hover {
+    opacity: 1;
+}
+
+/* ========== ПРИЖАТИЕ ФУТЕРА ========== */
+.container-wrapper {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrap {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+
+/* Планшеты (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    h1 {
+        font-size: 1.4rem;
+    }
+
+    .message-ticket {
+        padding: 12px 16px;
+    }
+
+    .message-from {
+        font-size: 1.05rem;
+    }
+
+    .message-post {
+        font-size: 0.95rem;
+    }
+
+    .message-preview {
+        font-size: 0.9rem;
+    }
+
+    .message-time {
+        font-size: 0.8rem;
+    }
+}
+
+/* Мобильные (до 767px) */
+@media (max-width: 767px) {
+    h1 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+
+    .message-ticket {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 15px;
+    }
+
+    .message-info {
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    .message-from {
+        font-size: 1rem;
+    }
+
+    .message-post {
+        font-size: 0.9rem;
+    }
+
+    .message-preview {
+        font-size: 0.85rem;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+    }
+
+    .btn-go {
+        margin-left: 0;
+        margin-top: 5px;
+        width: auto;
+        min-width: 120px;
+        justify-content: center;
+        padding: 8px 16px;
+        align-self: center;
+    }
+
+    .post-type-badge {
+        font-size: 0.65em;
+        padding: 2px 6px;
+    }
+
+    .load-more-btn {
+        width: 180px;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Очень маленькие телефоны (до 480px) */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    h1 i {
+        font-size: 1rem;
+    }
+
+    .message-ticket {
+        padding: 10px 12px;
+        margin-bottom: 10px;
+    }
+
+    .message-from {
+        font-size: 0.95rem;
+        gap: 5px;
+    }
+
+    .message-post {
+        font-size: 0.85rem;
+    }
+
+    .message-preview {
+        font-size: 0.8rem;
+    }
+
+    .message-time {
+        font-size: 0.7rem;
+    }
+
+    .btn-go {
+        min-width: 100px;
+        padding: 6px 14px;
+        font-size: 0.8rem;
+    }
+
+    .post-type-badge {
+        font-size: 0.6em;
+        padding: 1px 5px;
+    }
+
+    .flash-message {
+        padding: 12px 15px;
+        gap: 10px;
+    }
+
+    .flash-icon {
+        font-size: 18px;
+    }
+
+    .flash-title {
+        font-size: 14px;
+    }
+
+    .flash-text {
+        font-size: 12px;
+    }
+}
+
+/* Телефоны меньше 400px */
+@media (max-width: 400px) {
+    .no-messages i {
+        font-size: 48px;
+    }
+
+    .no-messages p {
+        font-size: 0.9rem;
+    }
+
+    .btn-go {
+        min-width: 90px;
+        padding: 5px 12px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Телефоны меньше 340px */
+@media (max-width: 340px) {
+    .btn-go {
+        min-width: 80px;
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Альбомная ориентация */
+@media (max-width: 767px) and (orientation: landscape) {
+    .message-ticket {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .btn-go {
+        width: auto;
+        min-width: 100px;
+        margin-left: 15px;
+        margin-top: 0;
+        align-self: center;
+    }
+
+    .message-info {
+        margin-bottom: 0;
+    }
+}
+
+/* Retina экраны */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .message-ticket {
+        border-width: 0.5px;
+    }
+}
+
+/* iOS fix */
+@supports (-webkit-touch-callout: none) {
+    .btn-go {
+        padding: 10px 16px;
+    }
+}

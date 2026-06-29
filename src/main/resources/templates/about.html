@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/css/styleabout.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="about-content">
+        <h1 class="about-title" th:text="${title}"></h1>
+
+        <p class="text-center mb-4" style="color: #6c757d; font-size: 1.1rem;">
+            <i class="bi bi-info-circle"></i> Информация о проекте и команде
+        </p>
+
+        <!-- Блок 1: О проекте -->
+        <div class="content-block">
+            <h3><i class="bi bi-rocket-takeoff"></i> О проекте Biranaku</h3>
+            <p>
+                <strong>Biranaku</strong> — это бесплатная доска объявлений, созданная для удобного поиска
+                товаров, услуг, работы и сотрудников. Мы объединяем людей и помогаем им достигать своих целей
+                быстро, просто и безопасно.
+            </p>
+            <p>
+                Наша миссия — сделать процесс поиска и предложения максимально прозрачным и доступным для каждого.
+                Мы постоянно развиваем платформу, добавляем новые функции и улучшаем пользовательский опыт.
+            </p>
+
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="bi bi-box-seam" style="font-size: 2rem; color: #0d6efd;"></i>
+                            <h5 class="card-title mt-2">Товары</h5>
+                            <p class="card-text">Продажа и покупка любых товаров</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="bi bi-tools" style="font-size: 2rem; color: #198754;"></i>
+                            <h5 class="card-title mt-2">Услуги</h5>
+                            <p class="card-text">Поиск исполнителей и предложение услуг</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            <i class="bi bi-briefcase" style="font-size: 2rem; color: #fd7e14;"></i>
+                            <h5 class="card-title mt-2">Работа</h5>
+                            <p class="card-text">Вакансии и резюме для соискателей</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок 2: Наши ценности -->
+        <div class="content-block">
+            <h3><i class="bi bi-gem"></i> Наши ценности</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-check-circle-fill text-success"></i> <strong>Прозрачность</strong> — честные условия и открытая модерация</li>
+                        <li><i class="bi bi-check-circle-fill text-success"></i> <strong>Безопасность</strong> — защита данных и чёрные списки нарушителей</li>
+                        <li><i class="bi bi-check-circle-fill text-success"></i> <strong>Доступность</strong> — полная бесплатность для всех пользователей</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-check-circle-fill text-success"></i> <strong>Надёжность</strong> — система блокировок и логирование всех действий</li>
+                        <li><i class="bi bi-check-circle-fill text-success"></i> <strong>Развитие</strong> — мы постоянно улучшаем сервис</li>
+                        <li><i class="bi bi-check-circle-fill text-success"></i> <strong>Открытость</strong> — мы всегда на связи через поддержку</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок 3: Правила и безопасность -->
+        <div class="content-block">
+            <h3><i class="bi bi-shield-check"></i> Правила и безопасность</h3>
+            <p>
+                Для обеспечения безопасности и порядка на платформе мы внедрили систему модерации и блокировок.
+                Все пользователи обязаны соблюдать <a href="/confiden_agr/agreement" target="_blank">Пользовательское соглашение</a>
+                и <a href="/confiden_agr/confidential" target="_blank">Политику конфиденциальности</a>.
+            </p>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-exclamation-triangle text-warning"></i> Запрещено</h5>
+                            <ul>
+                                <li>Наркотики, оружие, экстремизм</li>
+                                <li>Интим-услуги и финансовые пирамиды</li>
+                                <li>Контрафакт и мошенничество</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-shield-plus text-success"></i> Мы защищаем</h5>
+                            <ul>
+                                <li>Лестничная блокировка: 1→3→5→30 дней</li>
+                                <li>Чёрный список телефонов</li>
+                                <li>Журнал всех действий модерации</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="mt-3 text-muted small">
+                <i class="bi bi-info-circle"></i> Подробнее о правилах читайте в
+                <a href="/confiden_agr/agreement" target="_blank">Пользовательском соглашении</a>.
+            </p>
+        </div>
+
+        <!-- Блок 4: Контакты -->
+        <div class="content-block">
+            <h3><i class="bi bi-envelope-at"></i> Контакты</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-headset"></i> Поддержка</h5>
+                            <p class="card-text">
+                                По вопросам работы сайта, модерации, блокировок и техническим проблемам
+                                вы можете обратиться через страницу <strong>«Поддержка».</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-envelope-paper"></i> Юридические обращения</h5>
+                            <p class="card-text">
+                                Для юридически значимых запросов, вопросов по персональным данным
+                                и предложений о сотрудничестве:<br />
+                                <strong><i class="bi bi-envelope"></i> biranaku-connection@yandex.ru</strong>
+                            </p>
+                            <p class="card-text text-muted small mt-2">
+                                <i class="bi bi-person-badge"></i> Владелец: Самозанятый (плательщик НПД)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок 5: Команда / Разработка -->
+        <div class="content-block">
+            <h3><i class="bi bi-people"></i> О команде</h3>
+            <p>
+                Над проектом <strong>Biranaku</strong> работает команда энтузиастов, объединённых общей целью —
+                создать лучшую площадку для объявлений в рунете. Мы любим своё дело и ценим каждого пользователя.
+            </p>
+            <p class="text-muted small">
+                <i class="bi bi-calendar3"></i> Версия сайта: 1.0 | Редакция документов: 16.06.2026
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

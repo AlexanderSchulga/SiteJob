@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">Редактор объявлений</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/styleredactor.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <meta name="is-super" th:content="${isSuper}">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="container mt-4">
+
+        <!-- Заголовок -->
+        <div class="user-header mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">
+                        <i class="fas fa-edit me-2"></i>
+                        Управление объявлениями
+                    </h4>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <div class="category-tabs mb-4">
+            <ul class="nav nav-tabs" id="categoryTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="products-tab"
+                            data-bs-toggle="tab" data-bs-target="#products-content"
+                            type="button" role="tab" data-type="products">
+                        <i class="fas fa-shopping-bag me-2"></i>Товары
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="services-tab"
+                            data-bs-toggle="tab" data-bs-target="#services-content"
+                            type="button" role="tab" data-type="services">
+                        <i class="fas fa-concierge-bell me-2"></i>Услуги
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="vacancies-tab"
+                            data-bs-toggle="tab" data-bs-target="#vacancies-content"
+                            type="button" role="tab" data-type="vacancies">
+                        <i class="fas fa-briefcase me-2"></i>Вакансии
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="resume-tab"
+                            data-bs-toggle="tab" data-bs-target="#resume-content"
+                            type="button" role="tab" data-type="resume">
+                        <i class="fas fa-file-alt me-2"></i>Резюме
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Контент вкладок -->
+        <div class="tab-content" id="categoryTabContent">
+
+            <!-- Вкладка товаров -->
+            <div class="tab-pane fade show active" id="products-content" role="tabpanel">
+                <div class="row" id="productsContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreProductsContainer">
+                    <button id="loadMoreProductsBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще товары
+                    </button>
+                </div>
+
+                <div id="allLoadedProductsMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все товары загружены
+                    </p>
+                </div>
+            </div>
+
+            <!-- Вкладка услуг -->
+            <div class="tab-pane fade" id="services-content" role="tabpanel">
+                <div class="row" id="servicesContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreServicesContainer">
+                    <button id="loadMoreServicesBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще услуги
+                    </button>
+                </div>
+
+                <div id="allLoadedServicesMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все услуги загружены
+                    </p>
+                </div>
+            </div>
+
+            <!-- Вкладка вакансий -->
+            <div class="tab-pane fade" id="vacancies-content" role="tabpanel">
+                <div class="row" id="vacanciesContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreVacanciesContainer">
+                    <button id="loadMoreVacanciesBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще вакансии
+                    </button>
+                </div>
+
+                <div id="allLoadedVacanciesMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все вакансии загружены
+                    </p>
+                </div>
+            </div>
+
+            <!-- Вкладка резюме -->
+            <div class="tab-pane fade" id="resume-content" role="tabpanel">
+                <div class="row" id="resumeContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreResumeContainer">
+                    <button id="loadMoreResumeBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще резюме
+                    </button>
+                </div>
+
+                <div id="allLoadedResumeMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все резюме загружены
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Спиннер загрузки -->
+        <div id="loadingSpinner" class="text-center mt-4" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="text-muted mt-2">Загружаем объявления...</p>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/ok_messag.js"></script>
+<script type="text/javascript" src="/js/ok_messag_job.js"></script>
+<script type="text/javascript" src="/js/ok_messag_vac.js"></script>
+<script type="text/javascript" src="/js/ok_messag_res.js"></script>
+<script type="text/javascript" src="/js/paginationPost/load-more-redact.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Обработка кнопок блокировки/разблокировки
+        document.body.addEventListener('click', function(e) {
+            if (e.target.closest('.toggle-block-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.toggle-block-btn');
+                const form = button.closest('form');
+                const action = form.getAttribute('action');
+                const isBlocked = button.innerHTML.includes('Разблок');
+                const postType = button.getAttribute('data-post-type') || 'объявление';
+                const actionText = isBlocked ? 'разблокировать' : 'заблокировать';
+
+                const modalBody = document.getElementById('toggleBlockModalBody');
+                if (modalBody) {
+                    modalBody.innerHTML = `Вы уверены, что хотите <strong>${actionText}</strong> это ${postType}?`;
+                }
+
+                const confirmBtn = document.getElementById('toggleBlockConfirmBtn');
+                if (confirmBtn) {
+                    confirmBtn.className = isBlocked ? 'btn btn-success' : 'btn btn-secondary';
+                    confirmBtn.textContent = isBlocked ? 'Разблокировать' : 'Заблокировать';
+                }
+
+                const modalForm = document.getElementById('toggleBlockForm');
+                if (modalForm) {
+                    modalForm.setAttribute('action', action);
+                }
+
+                const csrfInput = form.querySelector('input[name="_csrf"]');
+                if (csrfInput) {
+                    const modalCsrfInput = modalForm.querySelector('input[name="_csrf"]');
+                    if (modalCsrfInput) modalCsrfInput.value = csrfInput.value;
+                }
+
+                const modalElement = document.getElementById('toggleBlockModal');
+                if (modalElement && window.bootstrap) {
+                    const openModals = document.querySelectorAll('.modal.show');
+                    openModals.forEach(openModal => {
+                        const bsModal = bootstrap.Modal.getInstance(openModal);
+                        if (bsModal) bsModal.hide();
+                    });
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                }
+            }
+
+            // Обработка кнопок удаления
+            if (e.target.closest('.delete-post-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.delete-post-btn');
+                const form = button.closest('form');
+                const action = form.getAttribute('action');
+                const postType = button.getAttribute('data-post-type') || 'объявление';
+                const postId = button.getAttribute('data-post-id');
+
+                const modalBody = document.getElementById('deletePostModalBody');
+                if (modalBody) {
+                    modalBody.innerHTML = `Вы уверены, что хотите <strong>удалить</strong> это ${postType}? Это действие нельзя отменить!`;
+                }
+
+                const modalForm = document.getElementById('deletePostForm');
+                if (modalForm) {
+                    modalForm.setAttribute('action', action);
+                    // Сохраняем ID поста для события
+                    modalForm.setAttribute('data-post-id', postId || '');
+                }
+
+                const csrfInput = form.querySelector('input[name="_csrf"]');
+                if (csrfInput) {
+                    const modalCsrfInput = modalForm.querySelector('input[name="_csrf"]');
+                    if (modalCsrfInput) modalCsrfInput.value = csrfInput.value;
+                }
+
+                const modalElement = document.getElementById('deletePostModal');
+                if (modalElement && window.bootstrap) {
+                    const openModals = document.querySelectorAll('.modal.show');
+                    openModals.forEach(openModal => {
+                        const bsModal = bootstrap.Modal.getInstance(openModal);
+                        if (bsModal) bsModal.hide();
+                    });
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                }
+            }
+
+            // Обработка кнопок архивации
+            if (e.target.closest('.archive-post-btn')) {
+                e.preventDefault();
+                const button = e.target.closest('.archive-post-btn');
+                const form = button.closest('form');
+                const action = form.getAttribute('action');
+                const postType = button.getAttribute('data-post-type') || 'объявление';
+
+                const modalBody = document.getElementById('archivePostModalBody');
+                if (modalBody) {
+                    modalBody.innerHTML = `Вы уверены, что хотите <strong>отправить в архив</strong> это ${postType}?<br><small class="text-muted">Вы сможете восстановить его через редактирование.</small>`;
+                }
+
+                const modalForm = document.getElementById('archivePostForm');
+                if (modalForm) {
+                    modalForm.setAttribute('action', action);
+                }
+
+                const csrfInput = form.querySelector('input[name="_csrf"]');
+                if (csrfInput) {
+                    const modalCsrfInput = modalForm.querySelector('input[name="_csrf"]');
+                    if (modalCsrfInput) modalCsrfInput.value = csrfInput.value;
+                }
+
+                const modalElement = document.getElementById('archivePostModal');
+                if (modalElement && window.bootstrap) {
+                    const openModals = document.querySelectorAll('.modal.show');
+                    openModals.forEach(openModal => {
+                        const bsModal = bootstrap.Modal.getInstance(openModal);
+                        if (bsModal) bsModal.hide();
+                    });
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                }
+            }
+        });
+
+        // Закрытие бэкдропа
+        document.querySelectorAll('.modal').forEach(modalElement => {
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                document.body.classList.remove('modal-open');
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            });
+        });
+
+        // Восстанавливаем активную вкладку из localStorage
+        const savedTab = localStorage.getItem('redactor_active_tab');
+        if (savedTab) {
+            const tabButton = document.querySelector(`#categoryTab button[data-type="${savedTab}"]`);
+            if (tabButton && window.bootstrap) {
+                const tab = new bootstrap.Tab(tabButton);
+                tab.show();
+            }
+        }
+
+        // Обработчик подтверждения удаления
+        const deleteForm = document.getElementById('deletePostForm');
+        if (deleteForm) {
+            deleteForm.addEventListener('submit', function() {
+                // Очищаем кеш карусели перед удалением
+                if (window.pagination && window.pagination.clearCarouselCache) {
+                    window.pagination.clearCarouselCache();
+                }
+                // Отправляем событие об удалении
+                document.dispatchEvent(new CustomEvent('postDeleted'));
+            });
+        }
+    });
+</script>
+
+<!-- Модальное окно блокировки/разблокировки -->
+<div class="modal fade" id="toggleBlockModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтверждение действия</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="toggleBlockModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="toggleBlockForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn" id="toggleBlockConfirmBtn">Подтвердить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно удаления -->
+<div class="modal fade" id="deletePostModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Подтверждение удаления</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="deletePostModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="deletePostForm" method="post" style="display: inline;" data-post-id="">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно архивации -->
+<div class="modal fade" id="archivePostModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title">Подтверждение архивации</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="archivePostModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="archivePostForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-secondary">В архив</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

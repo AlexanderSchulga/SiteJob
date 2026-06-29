@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Debug Users</title>
+</head>
+<body>
+<h1>Все пользователи в базе</h1>
+<div th:each="user : ${users}">
+    <p>ID: <span th:text="${user.id}"></span></p>
+    <p>Username: <span th:text="${user.username}"></span></p>
+    <p>Nameuse: <span th:text="${user.nameuse}"></span></p>
+    <p>Email: <span th:text="${user.email}"></span></p>
+    <p>Active: <span th:text="${user.active}"></span></p>
+    <p>Role: <span th:text="${user.role}"></span></p>
+    <hr>
+</div>
+</body>
+</html>

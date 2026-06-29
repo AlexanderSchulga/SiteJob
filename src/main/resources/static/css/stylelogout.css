@@ -1,0 +1,35 @@
+
+
+.container-wrapper {
+    max-width: 500px;
+    margin: 5px auto;
+    padding: 0 15px;
+}
+
+.logout-form {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.form-title {
+    color: #343a40;
+    margin-bottom: 25px;
+}
+
+.btn-logout {
+    padding: 10px 25px;
+    font-weight: 500;
+}
+
+@media (max-width: 576px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+
+    .logout-form {
+        padding: 20px;
+    }
+}

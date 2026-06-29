@@ -1,0 +1,521 @@
+/* support_service.css - Унифицированная версия с reviews.html */
+body, .container-wrapper, .admin-panel, .content-block,
+.card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Компенсация sticky-шапки - как в index и reviews */
+body.has-sticky-header .container-wrapper {
+    padding-top: 90px !important;
+    transition: padding-top 0.2s ease;
+}
+
+@media (max-width: 768px) {
+    body.has-sticky-header .container-wrapper {
+        padding-top: 120px !important;
+    }
+}
+
+/* ГЛАВНЫЙ КОНТЕЙНЕР - как в reviews */
+.container-wrapper {
+    max-width: 1300px;
+    margin: 5px auto;
+    padding: 0 15px;
+    min-height: calc(100vh - 160px);
+    overflow-x: hidden;
+}
+
+@media (min-width: 1200px) {
+    .container-wrapper {
+        max-width: 1300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+}
+
+/* about-content - как основной блок в reviews */
+.about-content {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.about-title {
+    color: #343a40;
+    font-weight: 600;
+    font-size: 1.75rem;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 12px;
+}
+
+/* КАРТОЧКИ КАТЕГОРИЙ - адаптивные для мобильных */
+.category-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 16px !important;
+    border: 1px solid #dee2e6 !important;
+    background-color: #ffffff !important;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.category-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.category-card.border-warning {
+    border: 2px solid #ffc107 !important;
+    background-color: #fffef7;
+}
+
+.category-card .card-title {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+/* Адаптация категорий для мобильных */
+@media (max-width: 768px) {
+    .category-card .card-body {
+        padding: 10px 8px !important;
+    }
+
+    .category-card .card-title {
+        font-size: 0.95rem !important;
+    }
+
+    .category-card .fa-folder-open {
+        font-size: 1.25rem !important;
+        margin-bottom: 6px !important;
+    }
+
+    .category-card .fa-bell {
+        font-size: 0.7rem !important;
+        margin-top: 4px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .category-card .card-body {
+        padding: 8px 6px !important;
+    }
+
+    .category-card .card-title {
+        font-size: 0.85rem !important;
+    }
+
+    .category-card .fa-folder-open {
+        font-size: 1rem !important;
+    }
+}
+
+/* УНИФИЦИРОВАННЫЕ КНОПКИ - как в reviews */
+.btn {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    padding: 6px 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background-color: #17c75c;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-primary:hover {
+    background-color: #17c75c;
+    border-color: #b0ece0;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+    color: #000000;
+    border-color: #95e5d3;
+    background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+    background-color: #95e5d3;
+    border-color: #95e5d3;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: #17c75c;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-success:hover {
+    background-color: #b0ece0;
+    border-color: #b0ece0;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white !important;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white !important;
+}
+
+.btn-outline-secondary {
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #95e5d3;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+/* Специфичные кнопки для поддержки */
+.btn-take-ticket {
+    background-color: #17c75c;
+    border-color: #95e5d3;
+    color: #000000;
+}
+
+.btn-take-ticket:hover {
+    background-color: #b0ece0;
+    border-color: #b0ece0;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.btn-unassign {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white !important;
+}
+
+.btn-unassign:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* ЖЕЛТЫЙ БЕЙДЖ "В РАБОТЕ" */
+.badge-warning-custom {
+    background-color: #ffc107 !important;
+    color: #000000 !important;
+    font-weight: 600 !important;
+}
+
+/* Старый класс тоже поддерживаем */
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000000 !important;
+}
+
+/* Кнопка "Ответить" - как в reviews */
+.reply-btn {
+    font-size: 0.875rem;
+    padding: 4px 12px;
+    border-radius: 10px;
+    background: #17c75c;
+    color: #000000;
+    border: 1px solid #95e5d3;
+}
+
+.reply-btn:hover {
+    background: #b0ece0;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.toggle-replies-btn {
+    width: auto;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #17c75c !important;
+    border: 1px solid #95e5d3 !important;
+    border-radius: 10px;
+    color: #000000 !important;
+}
+
+.toggle-replies-btn:hover {
+    background-color: #b0ece0 !important;
+    transform: translateY(-1px);
+}
+
+.replies-count-badge {
+    display: inline-block;
+    min-width: 20px;
+    height: 20px;
+    line-height: 18px;
+    padding: 0 6px;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: #000000;
+    border-radius: 10px;
+    font-size: 11px;
+    margin-left: 4px;
+}
+
+/* ФОРМЫ - как в reviews */
+.form-control,
+textarea {
+    border: 2px solid #6c757d !important;
+    background-color: #fefefe !important;
+    transition: all 0.2s ease-in-out !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+}
+
+.form-control:focus,
+textarea:focus {
+    border-color: #0d6efd !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25) !important;
+    outline: none !important;
+}
+
+.form-label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 8px !important;
+}
+
+/* КАРТОЧКИ КОММЕНТАРИЕВ - как карточки отзывов */
+.comment-card {
+    border: 1px solid #e9ecef;
+    border-radius: 16px !important;
+    margin-bottom: 1.5rem;
+    transition: box-shadow 0.2s ease-in-out;
+    background: white;
+}
+
+.comment-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comment-card .card {
+    border: none;
+    border-radius: 16px;
+    background: transparent;
+}
+
+.comment-card .card-body {
+    padding: 1.25rem;
+}
+
+/* Ответы на комментарии */
+.comment-replies {
+    margin-left: 2rem;
+    margin-top: 1rem;
+    padding-left: 1rem;
+    border-left: 3px solid #17c75c;
+}
+
+.reply-comment {
+    margin-bottom: 0.75rem;
+}
+
+.reply-comment .card {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+}
+
+.reply-comment .card-body {
+    padding: 0.875rem 1rem;
+}
+
+/* Статус онлайн */
+.status-indicator {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 0.7rem !important;
+    padding: 2px 8px !important;
+    border-radius: 6px !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    cursor: default !important;
+}
+
+.status-online {
+    color: #28a745 !important;
+}
+
+.status-offline {
+    color: #6c757d !important;
+}
+
+/* Бейджи общие */
+.badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.25em 0.6em;
+    border-radius: 6px;
+}
+
+/* Блок ответа */
+#replyTo {
+    background-color: #e8f5e9;
+    border: 1px solid #17c75c;
+    border-radius: 12px;
+}
+
+/* Алерты - как в reviews */
+.alert {
+    border: none;
+    border-radius: 12px;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404 !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460 !important;
+}
+
+/* Анимация новых комментариев */
+.comment-card.new-comment {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === АДАПТИВНОСТЬ как в reviews === */
+
+/* Планшеты */
+@media (max-width: 768px) {
+    .about-content {
+        padding: 15px 18px;
+    }
+
+    .about-title {
+        font-size: 1.5rem;
+    }
+
+    .comment-replies {
+        margin-left: 1rem;
+        padding-left: 0.75rem;
+    }
+
+    .reply-btn {
+        padding: 4px 10px;
+        font-size: 0.8rem;
+    }
+
+    /* Уменьшение отступов между категориями */
+    .row.g-4 {
+        --bs-gutter-y: 0.75rem !important;
+        --bs-gutter-x: 0.75rem !important;
+    }
+}
+
+/* Мобильные телефоны */
+@media (max-width: 576px) {
+    .container-wrapper {
+        padding: 0 10px;
+    }
+
+    .about-content {
+        padding: 12px 15px;
+    }
+
+    .about-title {
+        font-size: 1.3rem;
+    }
+
+    .category-card .card-body {
+        padding: 8px 6px !important;
+    }
+
+    .comment-card .card-body {
+        padding: 0.875rem;
+    }
+
+    .reply-comment .card-body {
+        padding: 0.7rem;
+    }
+
+    .btn {
+        font-size: 0.8rem;
+        padding: 5px 12px;
+    }
+
+    .reply-btn {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+
+    .comment-replies {
+        margin-left: 0.5rem;
+        padding-left: 0.5rem;
+    }
+
+    /* Еще меньше категории */
+    .row.g-4 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
+    }
+}
+
+/* Очень маленькие телефоны */
+@media (max-width: 480px) {
+    .about-content {
+        padding: 10px 12px;
+    }
+
+    .btn {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+
+    .reply-btn {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+    }
+}
+
+/* Модальное окно */
+.modal-content {
+    border-radius: 16px;
+}
+
+/* Скрытие статических комментариев */
+.reviews-tree {
+    display: none !important;
+}

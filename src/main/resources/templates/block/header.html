@@ -1,0 +1,173 @@
+<div th:fragment="headerhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <head>
+    <link rel="stylesheet" th:href="@{/css/styleheader.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="icon" type="image/png" th:href="@{/favicon.png}">
+    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.png}">
+    <meta name="user-hash-id" th:content="${#authentication.principal.hashId}" sec:authorize="isAuthenticated()">
+  </head>
+
+  <script sec:authorize="isAuthenticated()">
+    window.currentUserHashId = '[[${#authentication.principal.hashId}]]';
+    window.currentUserRole = '[[${#authentication.principal.authorities[0]}]]';
+  </script>
+
+  <header class="site-header" id="site-header">
+    <div class="nav-container">
+      <!-- Мобильная версия: верхний ряд -->
+      <div class="nav-row-top">
+        <div class="burger-wrapper" sec:authorize="isAuthenticated()">
+          <button class="sidebar-toggle" id="sidebarToggleBtnMobile" type="button">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="burger-wrapper" sec:authorize="!isAuthenticated()">
+          <div style="width: 36px;"></div>
+        </div>
+        <div class="nav-item" id="backButtonContainerMobile" style="display: none;">
+          <a class="nav-link btn-back" href="javascript:void(0);" id="backButtonMobile">
+            <i class="fas fa-arrow-left"></i> Назад
+          </a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" href="/"><i class="fas fa-home"></i> Главная</a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" href="/page_one/reviews"><i class="fas fa-star"></i> Отзывы</a>
+        </div>
+      </div>
+
+      <!-- Мобильная версия: нижний ряд -->
+      <div class="nav-row-bottom">
+        <div sec:authorize="!isAuthenticated()" class="auth-group">
+          <div class="nav-item">
+            <a class="nav-link" href="/register"><i class="fas fa-user-plus"></i> Регистрация</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> Вход</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> О нас</a>
+          </div>
+        </div>
+
+        <div sec:authorize="isAuthenticated()" class="auth-group">
+          <div class="nav-item">
+            <a class="nav-link" th:href="@{/user/notifications_message}" id="messagesLink">
+              <i class="fas fa-envelope"></i> Сообщения
+              <span id="userNotificationBell" class="notification-pulse" style="display: none;"></span>
+              <span id="unreadMessagesCount" class="unread-badge" style="display: none;">0</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link" th:href="@{/support_service}">
+              <i class="fas fa-headset"></i> Поддержка
+              <span id="supportNotificationBell" class="notification-pulse" style="display: none;"></span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+              <button type="submit" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Выход
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Десктопная версия -->
+      <div class="nav-row-desktop">
+        <div class="burger-wrapper" sec:authorize="isAuthenticated()">
+          <button class="sidebar-toggle" id="sidebarToggleBtnDesktop" type="button">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="burger-wrapper" sec:authorize="!isAuthenticated()">
+          <div style="width: 36px;"></div>
+        </div>
+        <div class="nav-item" id="backButtonContainerDesktop" style="display: none;">
+          <a class="nav-link btn-back" href="javascript:void(0);" id="backButtonDesktop">
+            <i class="fas fa-arrow-left"></i> Назад
+          </a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" href="/"><i class="fas fa-home"></i> Главная</a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" href="/page_one/reviews"><i class="fas fa-star"></i> Отзывы</a>
+        </div>
+
+        <div sec:authorize="!isAuthenticated()" class="desktop-auth-group">
+          <div class="nav-item">
+            <a class="nav-link" href="/register"><i class="fas fa-user-plus"></i> Регистрация</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt"></i> Вход</a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link" href="/about"><i class="fas fa-info-circle"></i> О нас</a>
+          </div>
+        </div>
+
+        <div sec:authorize="isAuthenticated()" class="desktop-auth-group">
+          <div class="nav-item">
+            <a class="nav-link" th:href="@{/user/notifications_message}" id="messagesLinkDesktop">
+              <i class="fas fa-envelope"></i> Сообщения
+              <span id="userNotificationBellDesktop" class="notification-pulse" style="display: none;"></span>
+              <span id="unreadMessagesCountDesktop" class="unread-badge" style="display: none;">0</span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <a class="nav-link" th:href="@{/support_service}">
+              <i class="fas fa-headset"></i> Поддержка
+              <span id="supportNotificationBellDesktop" class="notification-pulse" style="display: none;"></span>
+            </a>
+          </div>
+
+          <div class="nav-item">
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+              <button type="submit" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Выход
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <script type="text/javascript" src="/js/header_back.js"></script>
+  <script type="text/javascript" src="/js/header_stop.js"></script>
+  <script type="text/javascript" src="/js/functions/main_sidebar.js"></script>
+  <script type="text/javascript" src="/js/supportAndfavor/global_support_notifications.js"></script>
+  <script type="text/javascript" src="/js/supports/sse_support_notifications.js"></script>
+  <script type="text/javascript" src="/js/message_notifications.js"></script>
+  <script type="text/javascript" src="/js/users/delete_user_service_me.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      function syncSidebar() {
+        if (window.mainSidebar) {
+          const countSpan = document.getElementById('unreadMessagesCount') || document.getElementById('unreadMessagesCountDesktop');
+          if (countSpan) {
+            const count = parseInt(countSpan.textContent) || 0;
+            window.mainSidebar.updateMessageCount(count);
+          }
+          const supportBell = document.getElementById('supportNotificationBell') || document.getElementById('supportNotificationBellDesktop');
+          if (supportBell) {
+            const hasNotification = supportBell.style.display === 'inline-block';
+            window.mainSidebar.updateSupportNotification(hasNotification);
+          }
+          const favBell = document.getElementById('favorBellHome');
+          if (favBell && window.mainSidebar) {
+            const hasFavNotification = favBell.style.display === 'inline-block';
+            window.mainSidebar.updateFavNotification(hasFavNotification);
+          }
+        }
+      }
+      setInterval(syncSidebar, 1000);
+    });
+  </script>
+
+</div>

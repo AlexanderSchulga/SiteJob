@@ -1,0 +1,463 @@
+.carousel-paid {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 5px 0;
+    margin: 5px 0 12px 0;
+    touch-action: pan-y pinch-zoom;
+}
+
+.carousel-paid__title {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #360b0b;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #78acb3;
+    display: inline-block;
+    width: auto;
+}
+
+.carousel-paid__title-wrapper {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.carousel-paid__container {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.carousel-paid__track {
+    display: flex;
+    align-items: stretch;
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    will-change: transform;
+    gap: 15px;
+    padding: 10px 0;
+}
+
+/* Каждый слайд - фиксированная ширина */
+.carousel-paid__slide {
+    flex-shrink: 0;
+    flex-grow: 0;
+    width: 200px;
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    background: transparent;
+}
+
+/* Карточка объявления */
+.carousel-paid__card {
+    position: relative;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    cursor: pointer;
+}
+
+.carousel-paid__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Эффекты для центрального/боковых слайдов */
+.carousel-paid__slide--center .carousel-paid__card {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+.carousel-paid__slide--side .carousel-paid__card {
+    transform: scale(0.95);
+    opacity: 0.85;
+}
+
+.carousel-paid__slide--far .carousel-paid__card {
+    transform: scale(0.85);
+    opacity: 0.65;
+}
+
+/* Обертка для изображения */
+.carousel-paid__img-wrapper {
+    position: relative;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+}
+
+.carousel-paid__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.carousel-paid__card:hover .carousel-paid__img {
+    transform: scale(1.05);
+}
+
+/* Заглушка для объявлений без фото */
+.carousel-paid__img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    font-weight: bold;
+}
+
+.premium-placeholder-content {
+    text-align: center;
+}
+
+.premium-placeholder-content i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.premium-placeholder-content span {
+    font-size: 0.9rem;
+    display: block;
+}
+
+/* Бейдж Premium */
+.carousel-paid__badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.carousel-paid__badge--premium {
+    background: linear-gradient(135deg, #ffd700, #ffb347);
+    color: #2c1810;
+}
+
+.carousel-paid__badge--ad {
+    background: #ff6b35;
+    color: white;
+}
+
+/* Контент карточки */
+.carousel-paid__content {
+    padding: 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
+
+.carousel-paid__content-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #2c3034;
+    margin-bottom: 6px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.carousel-paid__content-location {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.carousel-paid__content-location i {
+    margin-right: 3px;
+    color: #ff6b35;
+}
+
+/* Кнопка просмотра */
+.carousel-paid__btn {
+    margin-top: auto;
+    padding: 8px 12px;
+    background: #17c75c;
+    border: none;
+    border-radius: 8px;
+    color: #1a3a1a;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: block;
+}
+
+.carousel-paid__btn:hover {
+    background: linear-gradient(135deg, #7dd3c0, #65c3ae);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Индикаторы (точки) */
+.carousel-paid__dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding-bottom: 5px;
+}
+
+.carousel-paid__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ccc;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    padding: 0;
+}
+
+.carousel-paid__dot--active {
+    width: 24px;
+    border-radius: 4px;
+    background-color: #ff6b35;
+}
+
+/* Навигационные стрелки */
+.carousel-paid__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 20;
+    left: 0;
+    padding: 0 10px;
+}
+
+.carousel-paid__nav-btn {
+    pointer-events: auto;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.carousel-paid__nav-btn:hover {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+}
+
+/* ========== ЗАГЛУШКА (ПЛЕЙСХОЛДЕР) - НЕ КЛИКАБЕЛЬНАЯ ========== */
+.carousel-paid__card--placeholder {
+    background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+    border: 2px dashed #adb5bd;
+    cursor: default !important;
+    pointer-events: none;
+    animation: pulseGlow 2s infinite;
+}
+
+.carousel-paid__card--placeholder .carousel-paid__img-placeholder--advert {
+    background: linear-gradient(135deg, #4158D0, #C850C0, #FFCC70);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.carousel-paid__card--placeholder .placeholder-title {
+    font-size: 1rem;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.carousel-paid__card--placeholder .placeholder-subtitle {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    display: block;
+    margin: 5px 0;
+}
+
+/* Скрываем кнопку у заглушки */
+.carousel-paid__card--placeholder .carousel-paid__btn,
+.carousel-paid__card--placeholder .placeholder-btn {
+    display: none;
+}
+
+/* Анимация пульсации для заглушки */
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(65, 88, 208, 0.2);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(65, 88, 208, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(65, 88, 208, 0);
+    }
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+
+@media (max-width: 1400px) {
+    .carousel-paid__slide {
+        width: 180px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .carousel-paid__slide {
+        width: 170px;
+    }
+}
+
+@media (max-width: 992px) {
+    .carousel-paid__slide {
+        width: 160px;
+    }
+    .carousel-paid__content {
+        padding: 10px;
+    }
+    .carousel-paid__content-title {
+        font-size: 0.9rem;
+    }
+    .carousel-paid__btn {
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-paid__slide {
+        width: 150px;
+    }
+    .carousel-paid {
+        padding: 10px 0;
+        margin: 12px 0;
+    }
+    .carousel-paid__slide--center .carousel-paid__card {
+        transform: scale(1.03);
+    }
+    .carousel-paid__slide--side .carousel-paid__card {
+        transform: scale(0.92);
+    }
+    .carousel-paid__slide--far .carousel-paid__card {
+        transform: scale(0.82);
+    }
+    .carousel-paid__nav-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    .carousel-paid__title {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-paid__slide {
+        width: 130px;
+    }
+    .carousel-paid {
+        padding: 8px 0;
+        margin: 8px 0;
+    }
+    .carousel-paid__slide--center .carousel-paid__card {
+        transform: scale(1);
+    }
+    .carousel-paid__slide--side .carousel-paid__card {
+        transform: scale(0.88);
+    }
+    .carousel-paid__slide--far .carousel-paid__card {
+        transform: scale(0.75);
+    }
+    .carousel-paid__content {
+        padding: 8px;
+    }
+    .carousel-paid__content-title {
+        font-size: 0.85rem;
+        margin-bottom: 3px;
+    }
+    .carousel-paid__content-location {
+        font-size: 0.7rem;
+        margin-bottom: 6px;
+    }
+    .carousel-paid__btn {
+        font-size: 0.65rem;
+        padding: 5px 8px;
+    }
+    .carousel-paid__nav-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    .carousel-paid__dots {
+        gap: 6px;
+        margin-top: 12px;
+    }
+    .carousel-paid__dot {
+        width: 6px;
+        height: 6px;
+    }
+    .carousel-paid__dot--active {
+        width: 18px;
+    }
+    .carousel-paid__badge {
+        font-size: 0.6rem;
+        padding: 3px 8px;
+        top: 5px;
+        right: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-paid__slide {
+        width: 120px;
+    }
+    .carousel-paid {
+        margin: 6px 0;
+        padding: 5px 0;
+    }
+    .carousel-paid__badge {
+        font-size: 0.55rem;
+        padding: 2px 6px;
+    }
+}

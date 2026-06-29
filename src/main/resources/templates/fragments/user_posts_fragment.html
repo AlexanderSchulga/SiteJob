@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Фрагмент для карточек пользователя (единый стиль со статикой) -->
+<div th:fragment="postsFragment">
+
+  <!-- Товары -->
+  <div th:if="${type == 'products'}">
+    <div th:each="post : ${posts}" class="col-md-6 col-lg-4 col-xl-3 mb-4">
+      <div class="post-card">
+        <!-- Изображение -->
+        <img th:if="${post.firstImagePath}"
+             th:src="${post.firstImagePath}"
+             onerror="this.onerror=null; this.src='/images/no-image.png'"
+             class="post-image img-fluid"
+             th:alt="${post.title}"
+             loading="lazy">
+        <div th:unless="${post.firstImagePath}"
+             class="post-image-placeholder d-flex align-items-center justify-content-center bg-light">
+          <i class="fas fa-image fa-3x text-muted"></i>
+        </div>
+
+        <h5 class="post-title" th:text="${post.title}"></h5>
+
+        <div class="post-content">
+          <div class="post-user-info mb-2">
+            <small class="text-muted d-block">
+              <strong>Цена:</strong>
+              <span th:text="${post.price}"></span> ₽
+            </small>
+          </div>
+          <div class="action-buttons">
+            <a th:href="@{/postidviews/{hashId}(hashId=${post.hashId})}" class="btn btn-primary btn-mod">
+              <i class="fas fa-eye"></i> Просмотр
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Услуги -->
+  <div th:if="${type == 'services'}">
+    <div th:each="postJob : ${postsJob}" class="col-md-6 col-lg-4 col-xl-3 mb-4">
+      <div class="post-card">
+        <img th:if="${postJob.firstImagePath}"
+             th:src="${postJob.firstImagePath}"
+             onerror="this.onerror=null; this.src='/images/no-image.png'"
+             class="post-image img-fluid"
+             th:alt="${postJob.title}"
+             loading="lazy">
+        <div th:unless="${postJob.firstImagePath}"
+             class="post-image-placeholder d-flex align-items-center justify-content-center bg-light">
+          <i class="fas fa-image fa-3x text-muted"></i>
+        </div>
+
+        <h5 class="post-title" th:text="${postJob.title}"></h5>
+
+        <div class="post-content">
+          <div class="post-user-info mb-2">
+            <small class="text-muted d-block">
+              <strong>Цена:</strong>
+              <span th:text="${postJob.price}"></span> ₽
+            </small>
+          </div>
+          <div class="action-buttons">
+            <a th:href="@{/postidviewsjob/{hashId}(hashId=${postJob.hashId})}" class="btn btn-primary btn-mod">
+              <i class="fas fa-eye"></i> Просмотр
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Вакансии -->
+  <div th:if="${type == 'vacancies'}">
+    <div th:each="vacancy : ${vacancies}" class="col-md-6 col-lg-4 col-xl-3 mb-4">
+      <div class="post-card">
+        <img th:if="${vacancy.firstImagePath}"
+             th:src="${vacancy.firstImagePath}"
+             onerror="this.onerror=null; this.src='/images/no-image.png'"
+             class="post-image img-fluid"
+             th:alt="${vacancy.title}"
+             loading="lazy">
+        <div th:unless="${vacancy.firstImagePath}"
+             class="post-image-placeholder d-flex align-items-center justify-content-center bg-light">
+          <i class="fas fa-image fa-3x text-muted"></i>
+        </div>
+
+        <h5 class="post-title" th:text="${vacancy.title}"></h5>
+
+        <div class="post-content">
+          <div class="post-user-info mb-2">
+            <small class="text-muted d-block">
+              <strong>Зарплата:</strong>
+              <span th:text="${vacancy.cash}"></span>
+            </small>
+          </div>
+          <div class="action-buttons">
+            <a th:href="@{/postidviewsvac/{hashId}(hashId=${vacancy.hashId})}" class="btn btn-primary btn-mod">
+              <i class="fas fa-eye"></i> Просмотр
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

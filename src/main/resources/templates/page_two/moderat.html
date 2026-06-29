@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Ожидание модерации</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/styleredactorblock.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div th:unless="${#authentication.principal.role == 'ROLE_SUPER' or #authentication.principal.role == 'ROLE_ADMIN'}">
+        <div class="alert alert-danger">
+            Доступ запрещен. Только администраторы могут просматривать эту страницу.
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <h1 class="text-center mb-4" style="color:#ffc107;">Ожидание модерации</h1>
+
+        <!-- Статистика модерации -->
+        <div class="alert alert-warning text-center">
+            <strong>Статистика:</strong>
+            Товаров на модерации: <span id="moderProductsCount" th:text="${moderPostCount}">0</span> |
+            Услуг на модерации: <span id="moderServicesCount" th:text="${moderPostsJobCount}">0</span> |
+            Вакансий на модерации: <span id="moderVacanciesCount" th:text="${moderVacanciesCount}">0</span> |
+            Резюме на модерации: <span id="moderResumeCount" th:text="${moderResumeCount}">0</span>
+        </div>
+
+        <!-- Поисковая строка -->
+        <div class="search-container mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-4 col-lg-3">
+                            <select id="searchType" class="form-select custom-select-init">
+                                <option value="all">По всем полям</option>
+                                <option value="title">По заголовку</option>
+                                <option value="nameuse">По имени автора</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 col-lg-7">
+                            <div class="input-group">
+                                <input type="text"
+                                       id="searchInput"
+                                       class="form-control"
+                                       placeholder="Поиск..."
+                                       autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary flex-grow-1" type="button" id="searchButton">
+                                    <i class="fas fa-search me-1"></i> Найти
+                                </button>
+                                <button class="btn btn-outline-secondary" type="button" id="clearSearchButton">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Введите минимум 2 символа для поиска
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладки для переключения между категориями -->
+        <div class="category-tabs mb-4">
+            <ul class="nav nav-tabs" id="categoryTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="products-tab"
+                            data-bs-toggle="tab" data-bs-target="#products-content"
+                            type="button" role="tab" data-type="products">
+                        <i class="fas fa-shopping-bag me-2"></i>Товары
+
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="services-tab"
+                            data-bs-toggle="tab" data-bs-target="#services-content"
+                            type="button" role="tab" data-type="services">
+                        <i class="fas fa-concierge-bell me-2"></i>Услуги
+
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="vacancies-tab"
+                            data-bs-toggle="tab" data-bs-target="#vacancies-content"
+                            type="button" role="tab" data-type="vacancies">
+                        <i class="fas fa-briefcase me-2"></i>Вакансии
+
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="resume-tab"
+                            data-bs-toggle="tab" data-bs-target="#resume-content"
+                            type="button" role="tab" data-type="resume">
+                        <i class="fas fa-file-alt me-2"></i>Резюме
+
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Контент вкладок -->
+        <div class="tab-content" id="categoryTabContent">
+            <!-- Вкладка товаров -->
+            <div class="tab-pane fade show active" id="products-content" role="tabpanel">
+                <div class="row" id="productsContainer"></div>
+                <div class="text-center mt-4" id="loadMoreProductsContainer">
+                    <button id="loadMoreProductsBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще товары
+                    </button>
+                </div>
+                <div id="allLoadedProductsMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все товары для модерации загружены</p>
+                </div>
+                <div id="noProductsMessage" class="text-center mt-4" style="display: none;">
+                    <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Нет товаров для модерации</div>
+                </div>
+            </div>
+
+            <!-- Вкладка услуг -->
+            <div class="tab-pane fade" id="services-content" role="tabpanel">
+                <div class="row" id="servicesContainer"></div>
+                <div class="text-center mt-4" id="loadMoreServicesContainer">
+                    <button id="loadMoreServicesBtn" class="btn btn-success" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще услуги
+                    </button>
+                </div>
+                <div id="allLoadedServicesMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все услуги для модерации загружены</p>
+                </div>
+                <div id="noServicesMessage" class="text-center mt-4" style="display: none;">
+                    <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Нет услуг для модерации</div>
+                </div>
+            </div>
+
+            <!-- Вкладка вакансий -->
+            <div class="tab-pane fade" id="vacancies-content" role="tabpanel">
+                <div class="row" id="vacanciesContainer"></div>
+                <div class="text-center mt-4" id="loadMoreVacanciesContainer">
+                    <button id="loadMoreVacanciesBtn" class="btn btn-danger" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще вакансии
+                    </button>
+                </div>
+                <div id="allLoadedVacanciesMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все вакансии для модерации загружены</p>
+                </div>
+                <div id="noVacanciesMessage" class="text-center mt-4" style="display: none;">
+                    <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Нет вакансий для модерации</div>
+                </div>
+            </div>
+
+            <!-- Вкладка резюме -->
+            <div class="tab-pane fade" id="resume-content" role="tabpanel">
+                <div class="row" id="resumeContainer"></div>
+                <div class="text-center mt-4" id="loadMoreResumeContainer">
+                    <button id="loadMoreResumeBtn" class="btn btn-danger" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i> Показать еще резюме
+                    </button>
+                </div>
+                <div id="allLoadedResumeMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted"><i class="fas fa-check-circle text-success me-2"></i>Все резюме для модерации загружены</p>
+                </div>
+                <div id="noResumeMessage" class="text-center mt-4" style="display: none;">
+                    <div class="alert alert-info"><i class="fas fa-info-circle me-2"></i>Нет резюме для модерации</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Общий спиннер загрузки -->
+        <div id="loadingSpinner" class="text-center mt-2" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="text-muted mt-2">Загружаем...</p>
+        </div>
+
+        <!-- Результаты поиска -->
+        <div id="searchResultsInfo" class="alert alert-info" style="display: none;">
+            <i class="fas fa-info-circle me-2"></i>
+            <span id="searchResultsText"></span>
+            <button type="button" class="btn-close float-end" onclick="document.getElementById('clearSearchButton').click()"></button>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" th:src="@{/js/paginationPost/load-more-moderat.js}"></script>
+<script type="text/javascript" src="/js/functions/custom-select-redblock.js"></script>
+
+<!-- Модальное окно для подтверждения публикации -->
+<div class="modal fade" id="publishModal" tabindex="-1" aria-labelledby="publishModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="publishModalLabel">
+                    <i class="fas fa-check-circle me-2"></i>Подтверждение публикации
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="publishModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="publishForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-success">Опубликовать</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для подтверждения блокировки/разблокировки -->
+<div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="blockModalLabel">
+                    <i class="fas fa-lock me-2"></i>Подтверждение действия
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="blockModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="blockForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-warning" id="blockConfirmBtn">Подтвердить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для подтверждения удаления -->
+<div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deletePostModalLabel">
+                    <i class="fas fa-trash me-2"></i>Подтверждение удаления
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="deletePostModalBody"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <form id="deletePostForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_csrf" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .premium-block {
+        background: rgba(255, 107, 53, 0.08);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-top: 8px;
+    }
+
+    .donate-block {
+        background: rgba(255, 107, 53, 0.08);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-top: 8px;
+    }
+
+    .premium-checkbox:checked {
+        background-color: #ff6b35;
+        border-color: #ff6b35;
+    }
+    .donate-checkbox:checked {
+        background-color: #ff6b35;
+        border-color: #ff6b35;
+    }
+    .form-check-input:checked {
+        background-color: #ff6b35;
+        border-color: #ff6b35;
+    }
+    .badge.bg-premium {
+        background-color: #ff6b35 !important;
+    }
+    .badge.bg-donate {
+        background-color: #ff6b35 !important;
+    }
+    .moderation-banner {
+        background: #ffc107;
+        color: #000;
+        border-radius: 0.6rem 0.6rem 0 0;
+        font-weight: 600;
+        z-index: 10;
+    }
+    .btn-unblock {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+    }
+    .btn-unblock:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+        color: white;
+    }
+    .alert-floating {
+        z-index: 10000;
+        min-width: 300px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideInRight 0.3s ease-out;
+    }
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+</body>
+</html>

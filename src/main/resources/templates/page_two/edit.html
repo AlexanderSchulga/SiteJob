@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <link rel="stylesheet" th:href="@{/css/styleedit.css}">
+
+    <!-- Яндекс.Карты (синхронно для надёжности) -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=a29aa5a3-6b5d-4e6e-a513-27f390d21ae1&lang=ru_RU" type="text/javascript"></script>
+</head>
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="container mt-4">
+        <!-- Хлебные крошки -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/index}" class="text-decoration-none">
+                        <i class="fas fa-home me-1"></i>Главная
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a th:href="@{/page_two/redactor}" class="text-decoration-none">
+                        <i class="fas fa-edit me-1"></i>Мои объявления
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Редактирование
+                </li>
+            </ol>
+        </nav>
+
+        <div class="edit-card card shadow-sm">
+            <div class="card-header bg-primary">
+                <h5 class="mb-0">
+                    <i class="fas fa-pen me-2"></i>Редактирование объявления
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Информационное сообщение -->
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Важно:</strong> Изменения и отмеченные для удаления изображения будут применены только после прохождения модерации.
+                </div>
+
+                <!-- ========== ФОРМА ДЛЯ ТОВАРОВ ========== -->
+                <div th:if="${type == 'product'}">
+                    <div th:each="el : ${postwo}">
+                        <form method="post" th:action="'/page_two/redactor/' + ${el.hashId} + '/page_two/edit'" enctype="multipart/form-data" id="productForm">
+                            <div class="mb-4">
+                                <label for="product_title" class="form-label">
+                                    <i class="fas fa-heading me-1 text-muted"></i>Название товара <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="product_title" th:value="${el.title}" name="title" placeholder="Введите название" class="form-control" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="product_anons" class="form-label">
+                                    <i class="fas fa-ruble-sign me-1 text-muted"></i>Цена <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₽</span>
+                                    <input type="number" id="product_anons" th:value="${el.price}" name="price" placeholder="Цена" class="form-control" required min="0" step="1">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="product_category" class="form-label">
+                                    <i class="fas fa-tag me-1 text-muted"></i>Категория <span class="text-danger">*</span>
+                                </label>
+                                <select id="product_category" name="category" class="form-select" required>
+                                    <option th:each="category : ${categories}"
+                                            th:if="${category.key != 'all'}"
+                                            th:value="${category.key}"
+                                            th:selected="${category.key == el.category}"
+                                            th:text="${category.value}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="product_full_text" class="form-label">
+                                    <i class="fas fa-align-left me-1 text-muted"></i>Описание <span class="text-danger">*</span>
+                                </label>
+                                <textarea id="product_full_text" name="full_text" placeholder="Полное описание" class="form-control" rows="5" required th:text="${el.full_text}"></textarea>
+                                <div class="form-text">Подробно опишите товар, его характеристики и преимущества.</div>
+                            </div>
+
+                            <!-- Местоположение (карта) -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i>Местоположение <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group mb-2">
+                                    <input type="text" id="product_locationInput" name="location"
+                                           class="form-control" placeholder="Введите адрес или выберите на карте"
+                                           th:value="${el?.location}" required>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearProductLocation()">
+                                        <i class="fas fa-times me-1"></i>Очистить
+                                    </button>
+                                </div>
+                                <div class="form-text mb-2">
+                                    <i class="fas fa-info-circle me-1"></i>📍 Введите адрес вручную или кликните на карте для выбора
+                                </div>
+                                <div id="product_map" class="map-container"></div>
+                            </div>
+
+                            <!-- Блок текущих изображений -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-images me-1 text-muted"></i>Изображения
+                                </label>
+                                <div th:if="${not #lists.isEmpty(el.images)}" class="row g-3 mb-3">
+                                    <div th:each="image, stat : ${el.images}" class="col-6 col-md-4 col-lg-3">
+                                        <div class="image-card position-relative border rounded p-2"
+                                             th:classappend="${image.markedForDeletion} ? 'marked-for-deletion' : ''">
+                                            <img th:src="${image.imagePath}" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                            <div class="form-check mt-2">
+                                                <input type="checkbox" name="deleteImages" th:value="${image.id}"
+                                                       class="form-check-input" th:checked="${image.markedForDeletion}"
+                                                       th:id="'productDeleteImg_' + ${stat.index}">
+                                                <label class="form-check-label small" th:for="'productDeleteImg_' + ${stat.index}"
+                                                       th:classappend="${image.markedForDeletion} ? 'text-danger fw-bold' : 'text-muted'">
+                                                    <i class="fas fa-trash-alt me-1"></i>
+                                                    <span th:if="${image.markedForDeletion}">Будет удалено</span>
+                                                    <span th:unless="${image.markedForDeletion}">Удалить</span>
+                                                </label>
+                                            </div>
+                                            <div th:if="${image.markedForDeletion}" class="small text-warning mt-1">
+                                                <i class="fas fa-clock me-1"></i>После модерации
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${#lists.isEmpty(el.images)}" class="alert alert-light mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Нет загруженных изображений
+                                </div>
+
+                                <label for="product_files" class="form-label mt-2">
+                                    <i class="fas fa-plus-circle me-1 text-muted"></i>Добавить новые изображения
+                                </label>
+                                <input type="file" id="product_files" name="files" class="form-control" multiple accept="image/*">
+                                <div class="form-text">Можно выбрать несколько файлов. Максимум 5 изображений.</div>
+                                <div class="small text-muted mt-1">
+                                    <i class="fas fa-images me-1"></i>
+                                    Всего изображений: <span th:text="${el.images.size()}">0</span>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="moderation" value="true">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                            <div class="d-flex gap-3 mt-4">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-2"></i>Обновить и отправить на модерацию
+                                </button>
+                                <a th:href="@{/page_two/redactor}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ========== ФОРМА ДЛЯ УСЛУГ ========== -->
+                <div th:if="${type == 'service'}">
+                    <div th:each="el : ${postwo}">
+                        <form method="post" th:action="'/page_two/redactor/job/' + ${el.hashId} + '/page_two/edit'" enctype="multipart/form-data" id="serviceForm">
+                            <div class="mb-4">
+                                <label for="service_title" class="form-label">
+                                    <i class="fas fa-heading me-1 text-muted"></i>Название услуги <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="service_title" th:value="${el.title}" name="title" placeholder="Введите название" class="form-control" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="service_anons" class="form-label">
+                                    <i class="fas fa-ruble-sign me-1 text-muted"></i>Цена <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₽</span>
+                                    <input type="number" id="service_anons" th:value="${el.price}" name="price" placeholder="Цена" class="form-control" required min="0" step="1">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="service_category" class="form-label">
+                                    <i class="fas fa-tag me-1 text-muted"></i>Категория <span class="text-danger">*</span>
+                                </label>
+                                <select id="service_category" name="category" class="form-select" required>
+                                    <option th:each="category : ${categories}"
+                                            th:if="${category.key != 'all'}"
+                                            th:value="${category.key}"
+                                            th:selected="${category.key == el.category}"
+                                            th:text="${category.value}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="service_full_text" class="form-label">
+                                    <i class="fas fa-align-left me-1 text-muted"></i>Описание <span class="text-danger">*</span>
+                                </label>
+                                <textarea id="service_full_text" name="full_text" placeholder="Полное описание" class="form-control" rows="5" required th:text="${el.full_text}"></textarea>
+                                <div class="form-text">Подробно опишите услугу, что входит в стоимость и условия.</div>
+                            </div>
+
+                            <!-- Местоположение (карта) -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i>Местоположение <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group mb-2">
+                                    <input type="text" id="service_locationInput" name="location"
+                                           class="form-control" placeholder="Введите адрес или выберите на карте"
+                                           th:value="${el?.location}" required>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearServiceLocation()">
+                                        <i class="fas fa-times me-1"></i>Очистить
+                                    </button>
+                                </div>
+                                <div class="form-text mb-2">
+                                    <i class="fas fa-info-circle me-1"></i>📍 Введите адрес вручную или кликните на карте для выбора
+                                </div>
+                                <div id="service_map" class="map-container"></div>
+                            </div>
+
+                            <!-- Блок текущих изображений -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-images me-1 text-muted"></i>Изображения
+                                </label>
+                                <div th:if="${not #lists.isEmpty(el.images)}" class="row g-3 mb-3">
+                                    <div th:each="image, stat : ${el.images}" class="col-6 col-md-4 col-lg-3">
+                                        <div class="image-card position-relative border rounded p-2"
+                                             th:classappend="${image.markedForDeletion} ? 'marked-for-deletion' : ''">
+                                            <img th:src="${image.imagePath}" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                            <div class="form-check mt-2">
+                                                <input type="checkbox" name="deleteImages" th:value="${image.id}"
+                                                       class="form-check-input" th:checked="${image.markedForDeletion}"
+                                                       th:id="'serviceDeleteImg_' + ${stat.index}">
+                                                <label class="form-check-label small" th:for="'serviceDeleteImg_' + ${stat.index}"
+                                                       th:classappend="${image.markedForDeletion} ? 'text-danger fw-bold' : 'text-muted'">
+                                                    <i class="fas fa-trash-alt me-1"></i>
+                                                    <span th:if="${image.markedForDeletion}">Будет удалено</span>
+                                                    <span th:unless="${image.markedForDeletion}">Удалить</span>
+                                                </label>
+                                            </div>
+                                            <div th:if="${image.markedForDeletion}" class="small text-warning mt-1">
+                                                <i class="fas fa-clock me-1"></i>После модерации
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${#lists.isEmpty(el.images)}" class="alert alert-light mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Нет загруженных изображений
+                                </div>
+
+                                <label for="service_files" class="form-label mt-2">
+                                    <i class="fas fa-plus-circle me-1 text-muted"></i>Добавить новые изображения
+                                </label>
+                                <input type="file" id="service_files" name="files" class="form-control" multiple accept="image/*">
+                                <div class="form-text">Можно выбрать несколько файлов. Максимум 5 изображений.</div>
+                                <div class="small text-muted mt-1">
+                                    <i class="fas fa-images me-1"></i>
+                                    Всего изображений: <span th:text="${el.images.size()}">0</span>
+                                </div>
+                            </div>
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                            <div class="d-flex gap-3 mt-4">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-2"></i>Обновить и отправить на модерацию
+                                </button>
+                                <a th:href="@{/page_two/redactor}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ========== ФОРМА ДЛЯ ВАКАНСИЙ ========== -->
+                <div th:if="${type == 'vacancy'}">
+                    <div th:each="el : ${vacvac}">
+                        <form method="post" th:action="'/page_two/redactor/vac/' + ${el.hashId} + '/page_two/edit'" enctype="multipart/form-data" id="vacancyForm">
+                            <div class="mb-4">
+                                <label for="vacancy_title" class="form-label">
+                                    <i class="fas fa-heading me-1 text-muted"></i>Название вакансии <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" id="vacancy_title" th:value="${el.title}" name="title" placeholder="Введите название" class="form-control" required>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="vacancy_cash" class="form-label">
+                                    <i class="fas fa-ruble-sign me-1 text-muted"></i>Зарплата <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₽</span>
+                                    <input type="number" id="vacancy_cash" th:value="${el.cash}" name="cash" placeholder="Укажите зарплату" class="form-control" required min="0" step="1">
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="vacancy_category" class="form-label">
+                                    <i class="fas fa-tag me-1 text-muted"></i>Категория вакансии <span class="text-danger">*</span>
+                                </label>
+                                <select id="vacancy_category" name="category" class="form-select" required>
+                                    <option th:each="category : ${categories}"
+                                            th:if="${category.key != 'all'}"
+                                            th:value="${category.key}"
+                                            th:selected="${category.key == el.category}"
+                                            th:text="${category.value}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Опыт работы -->
+                            <div class="mb-4">
+                                <label for="vacancy_experience" class="form-label">
+                                    <i class="fas fa-briefcase me-1 text-muted"></i>Опыт работы <span class="text-danger">*</span>
+                                </label>
+                                <select id="vacancy_experience" name="experience" class="form-select" required>
+                                    <option th:each="experience : ${experience}"
+                                            th:if="${experience.key != 'all'}"
+                                            th:value="${experience.key}"
+                                            th:selected="${experience.key == el.experience}"
+                                            th:text="${experience.value}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="vacancy_workformat" class="form-label">
+                                    <i class="fas fa-briefcase me-1 text-muted"></i>Формат работы <span class="text-danger">*</span>
+                                </label>
+                                <select id="vacancy_workformat" name="workformat" class="form-select" required>
+                                    <option th:each="workformat : ${workformat}"
+                                            th:if="${workformat.key != 'all'}"
+                                            th:value="${workformat.key}"
+                                            th:selected="${workformat.key == el.workformat}"
+                                            th:text="${workformat.value}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="vacancy_full_text" class="form-label">
+                                    <i class="fas fa-align-left me-1 text-muted"></i>Описание <span class="text-danger">*</span>
+                                </label>
+                                <textarea id="vacancy_full_text" name="full_text" placeholder="Полное описание" class="form-control" rows="5" required th:text="${el.full_text}"></textarea>
+                                <div class="form-text">Опишите обязанности, требования и условия работы.</div>
+                            </div>
+
+                            <!-- Местоположение (карта) -->
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1 text-muted"></i>Местоположение <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group mb-2">
+                                    <input type="text" id="vacancy_locationInput" name="location"
+                                           class="form-control" placeholder="Введите адрес или выберите на карте"
+                                           th:value="${el?.location}" required>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="clearVacancyLocation()">
+                                        <i class="fas fa-times me-1"></i>Очистить
+                                    </button>
+                                </div>
+                                <div class="form-text mb-2">
+                                    <i class="fas fa-info-circle me-1"></i>📍 Введите адрес вручную или кликните на карте для выбора
+                                </div>
+                                <div id="vacancy_map" class="map-container"></div>
+                            </div>
+
+                            <!-- Блок текущих изображений -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i class="fas fa-images me-1 text-muted"></i>Изображения
+                                </label>
+                                <div th:if="${not #lists.isEmpty(el.images)}" class="row g-3 mb-3">
+                                    <div th:each="image, stat : ${el.images}" class="col-6 col-md-4 col-lg-3">
+                                        <div class="image-card position-relative border rounded p-2"
+                                             th:classappend="${image.markedForDeletion} ? 'marked-for-deletion' : ''">
+                                            <img th:src="${image.imagePath}" class="img-fluid rounded" style="height: 120px; width: 100%; object-fit: cover;">
+                                            <div class="form-check mt-2">
+                                                <input type="checkbox" name="deleteImages" th:value="${image.id}"
+                                                       class="form-check-input" th:checked="${image.markedForDeletion}"
+                                                       th:id="'vacancyDeleteImg_' + ${stat.index}">
+                                                <label class="form-check-label small" th:for="'vacancyDeleteImg_' + ${stat.index}"
+                                                       th:classappend="${image.markedForDeletion} ? 'text-danger fw-bold' : 'text-muted'">
+                                                    <i class="fas fa-trash-alt me-1"></i>
+                                                    <span th:if="${image.markedForDeletion}">Будет удалено</span>
+                                                    <span th:unless="${image.markedForDeletion}">Удалить</span>
+                                                </label>
+                                            </div>
+                                            <div th:if="${image.markedForDeletion}" class="small text-warning mt-1">
+                                                <i class="fas fa-clock me-1"></i>После модерации
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${#lists.isEmpty(el.images)}" class="alert alert-light mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>Нет загруженных изображений
+                                </div>
+
+                                <label for="vacancy_files" class="form-label mt-2">
+                                    <i class="fas fa-plus-circle me-1 text-muted"></i>Добавить новые изображения
+                                </label>
+                                <input type="file" id="vacancy_files" name="files" class="form-control" multiple accept="image/*">
+                                <div class="form-text">Можно выбрать несколько файлов. Максимум 5 изображений.</div>
+                                <div class="small text-muted mt-1">
+                                    <i class="fas fa-images me-1"></i>
+                                    Всего изображений: <span th:text="${el.images.size()}">0</span>
+                                </div>
+                            </div>
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                            <div class="d-flex gap-3 mt-4">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-2"></i>Обновить и отправить на модерацию
+                                </button>
+                                <a th:href="@{/page_two/redactor}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/map_location_edit.js"></script>
+<script type="text/javascript" src="/js/functions/editlimagelimit.js"></script>
+<script type="text/javascript" src="/js/functions/custom-select-edit.js"></script>
+<script type="text/javascript" src="/js/functions/custom-select-experience-edit.js"></script>
+<script type="text/javascript" src="/js/functions/custom-select-workformat-edit.js"></script>
+
+<script>
+    // Валидация количества файлов
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInputs = ['product_files', 'service_files', 'vacancy_files'];
+        const maxSizeMB = 20;
+        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+        fileInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('change', function(e) {
+                    const files = e.target.files;
+
+                    if (files.length > 5) {
+                        alert('Можно загрузить не более 5 изображений');
+                        e.target.value = '';
+                        return;
+                    }
+
+                    for (let i = 0; i < files.length; i++) {
+                        if (files[i].size > maxSizeBytes) {
+                            alert(`Файл "${files[i].name}" слишком большой! Максимум ${maxSizeMB} MB`);
+                            e.target.value = '';
+                            return;
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    // Очистка местоположения
+    function clearProductLocation() {
+        const input = document.getElementById('product_locationInput');
+        if (input) input.value = '';
+    }
+    function clearServiceLocation() {
+        const input = document.getElementById('service_locationInput');
+        if (input) input.value = '';
+    }
+    function clearVacancyLocation() {
+        const input = document.getElementById('vacancy_locationInput');
+        if (input) input.value = '';
+    }
+
+    // Адаптация для sticky-шапки
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.querySelector('header');
+        if (header && window.getComputedStyle(header).position === 'sticky') {
+            document.body.classList.add('has-sticky-header');
+        }
+    });
+</script>
+</body>
+</html>

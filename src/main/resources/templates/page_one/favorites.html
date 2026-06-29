@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
+    <link rel="stylesheet" th:href="@{/css/stylefavorites.css}">
+</head>
+
+<body>
+<div class="container-wrapper">
+    <header th:insert="~{block/header :: headerhtml}"></header>
+
+    <div class="container mt-4">
+        <h2 class="text-center mb-3" style="font-size: 1.4rem;">Мои избранные</h2>
+
+        <!-- Вкладки -->
+        <div class="category-tabs mb-4">
+            <ul class="nav nav-tabs" id="favoritesTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="products-tab" data-bs-toggle="tab"
+                            data-bs-target="#products-content" type="button" role="tab" data-type="products">
+                        Товары
+                        <span class="badge-counter ms-1" id="productsBadge" th:text="${initialProductsBadge}"></span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="services-tab" data-bs-toggle="tab"
+                            data-bs-target="#services-content" type="button" role="tab" data-type="services">
+                        Услуги
+                        <span class="badge-counter ms-1" id="servicesBadge" th:text="${initialServicesBadge}"></span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="vacancies-tab" data-bs-toggle="tab"
+                            data-bs-target="#vacancies-content" type="button" role="tab" data-type="vacancies">
+                        Вакансии
+                        <span class="badge-counter ms-1" id="vacanciesBadge" th:text="${initialVacanciesBadge}"></span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="resume-tab" data-bs-toggle="tab"
+                            data-bs-target="#resume-content" type="button" role="tab" data-type="resume">
+                        Резюме
+                        <span class="badge-counter ms-1" id="resumeBadge" th:text="${initialResumeBadge}"></span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="tab-content" id="favoritesTabContent">
+
+            <!-- Товары -->
+            <div class="tab-pane fade show active" id="products-content" role="tabpanel">
+                <h2 class="mb-3" style="color: #007bff;">
+                    Товары
+                </h2>
+
+                <div class="row" id="productsContainerStatic">
+                    <div th:each="favorite : ${productFavorites}"
+                         class="col-md-6 col-lg-4 col-xl-3 mb-4"
+                         th:data-id="${favorite.id}">
+                        <!-- Определяем класс карточки в зависимости от premium/donate -->
+                        <div th:class="${favorite.post.premium} ? 'favorite-card-premium' : (${favorite.post.donate} ? 'favorite-card-donate' : 'favorite-card')">
+                            <div class="favorite-image-wrapper">
+                                <img th:if="${favorite.post.firstImagePath}"
+                                     th:src="${favorite.post.firstImagePath}"
+                                     class="favorite-image"
+                                     th:alt="${favorite.post.title}"
+                                     loading="lazy">
+                                <div th:unless="${favorite.post.firstImagePath}" class="favorite-image-placeholder">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            </div>
+
+                            <h5 class="favorite-title" th:text="${favorite.post.title}"></h5>
+
+                            <div class="favorite-content">
+                                <div class="favorite-info mb-2">
+                                    <small class="text-muted d-block">
+                                        <strong>Цена:</strong>
+                                        <span th:text="${favorite.post.price}"></span> ₽
+                                    </small>
+                                    <small class="text-muted d-block">
+                                        <strong>Город:</strong>
+                                        <span th:if="${favorite.post.user != null and favorite.post.user.city != null}">
+                                            <span th:if="${favorite.post.user.city == 'other' or favorite.post.user.city == '' or favorite.post.user.city == 'other_none'}">Не указан</span>
+                                            <span th:if="${favorite.post.user.city != 'other' and favorite.post.user.city != '' and favorite.post.user.city != 'other_none'}">
+                                                <span th:text="${regionsConfig.getCityDisplayName(favorite.post.user.region, favorite.post.user.city)}"></span>
+                                            </span>
+                                        </span>
+                                        <span th:unless="${favorite.post.user != null and favorite.post.user.city != null}">Не указан</span>
+                                    </small>
+                                </div>
+
+                                <div class="favorite-actions">
+                                    <a th:href="@{/postidviews/{hashId}(hashId=${favorite.post.hashId})}"
+                                       class="btn btn-primary btn-mod">
+                                        <i class="fas fa-eye"></i> Просмотр
+                                    </a>
+                                    <form th:action="@{/page_one/favorites/remove/{favoriteId}(favoriteId=${favorite.id})}"
+                                          method="post" class="d-inline">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="productsContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreProductsContainer">
+                    <button id="loadMoreProductsBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>Показать еще товары
+                    </button>
+                </div>
+
+                <div id="allLoadedProductsMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все товары загружены
+                    </p>
+                </div>
+            </div>
+
+            <!-- Услуги -->
+            <div class="tab-pane fade" id="services-content" role="tabpanel">
+                <h2 class="mb-3" style="color: #28a745;">
+                    Услуги
+                </h2>
+
+                <div class="row" id="servicesContainerStatic">
+                    <div th:each="favorite : ${serviceFavorites}"
+                         class="col-md-6 col-lg-4 col-xl-3 mb-4"
+                         th:data-id="${favorite.id}">
+                        <div th:class="${favorite.postJob.premium} ? 'favorite-card-premium' : (${favorite.postJob.donate} ? 'favorite-card-donate' : 'favorite-card')">
+                            <div class="favorite-image-wrapper">
+                                <img th:if="${favorite.postJob.firstImagePath}"
+                                     th:src="${favorite.postJob.firstImagePath}"
+                                     class="favorite-image"
+                                     th:alt="${favorite.postJob.title}"
+                                     loading="lazy">
+                                <div th:unless="${favorite.postJob.firstImagePath}" class="favorite-image-placeholder">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            </div>
+
+                            <h5 class="favorite-title" th:text="${favorite.postJob.title}"></h5>
+
+                            <div class="favorite-content">
+                                <div class="favorite-info mb-2">
+                                    <small class="text-muted d-block">
+                                        <strong>Цена:</strong>
+                                        <span th:text="${favorite.postJob.price}"></span> ₽
+                                    </small>
+                                    <small class="text-muted d-block">
+                                        <strong>Город:</strong>
+                                        <span th:if="${favorite.postJob.user != null and favorite.postJob.user.city != null}">
+                                            <span th:if="${favorite.postJob.user.city == 'other' or favorite.postJob.user.city == '' or favorite.postJob.user.city == 'other_none'}">Не указан</span>
+                                            <span th:if="${favorite.postJob.user.city != 'other' and favorite.postJob.user.city != '' and favorite.postJob.user.city != 'other_none'}">
+                                                <span th:text="${regionsConfig.getCityDisplayName(favorite.postJob.user.region, favorite.postJob.user.city)}"></span>
+                                            </span>
+                                        </span>
+                                        <span th:unless="${favorite.postJob.user != null and favorite.postJob.user.city != null}">Не указан</span>
+                                    </small>
+                                </div>
+
+                                <div class="favorite-actions">
+                                    <a th:href="@{/postidviewsjob/{hashId}(hashId=${favorite.postJob.hashId})}"
+                                       class="btn btn-primary btn-mod">
+                                        <i class="fas fa-eye"></i> Просмотр
+                                    </a>
+                                    <form th:action="@{/page_one/favorites/remove/{favoriteId}(favoriteId=${favorite.id})}"
+                                          method="post" class="d-inline">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="servicesContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreServicesContainer">
+                    <button id="loadMoreServicesBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>Показать еще услуги
+                    </button>
+                </div>
+
+                <div id="allLoadedServicesMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все услуги загружены
+                    </p>
+                </div>
+            </div>
+
+            <!-- Вакансии -->
+            <div class="tab-pane fade" id="vacancies-content" role="tabpanel">
+                <h2 class="mb-3" style="color: #dc3545;">
+                    Вакансии
+                </h2>
+
+                <div class="row" id="vacanciesContainerStatic">
+                    <div th:each="favorite : ${vacancyFavorites}"
+                         class="col-md-6 col-lg-4 col-xl-3 mb-4"
+                         th:data-id="${favorite.id}">
+                        <div th:class="${favorite.vacancy.premium} ? 'favorite-card-premium' : (${favorite.vacancy.donate} ? 'favorite-card-donate' : 'favorite-card')">
+                            <div class="favorite-image-wrapper">
+                                <img th:if="${favorite.vacancy.firstImagePath}"
+                                     th:src="${favorite.vacancy.firstImagePath}"
+                                     class="favorite-image"
+                                     th:alt="${favorite.vacancy.title}"
+                                     loading="lazy">
+                                <div th:unless="${favorite.vacancy.firstImagePath}" class="favorite-image-placeholder">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            </div>
+
+                            <h5 class="favorite-title" th:text="${favorite.vacancy.title}"></h5>
+
+                            <div class="favorite-content">
+                                <div class="favorite-info mb-2">
+                                    <small class="text-muted d-block">
+                                        <strong>Зарплата:</strong>
+                                        <span th:text="${favorite.vacancy.cash}"></span>
+                                    </small>
+                                    <small class="text-muted d-block">
+                                        <strong>Город:</strong>
+                                        <span th:if="${favorite.vacancy.user != null and favorite.vacancy.user.city != null}">
+                                            <span th:if="${favorite.vacancy.user.city == 'other' or favorite.vacancy.user.city == '' or favorite.vacancy.user.city == 'other_none'}">Не указан</span>
+                                            <span th:if="${favorite.vacancy.user.city != 'other' and favorite.vacancy.user.city != '' and favorite.vacancy.user.city != 'other_none'}">
+                                                <span th:text="${regionsConfig.getCityDisplayName(favorite.vacancy.user.region, favorite.vacancy.user.city)}"></span>
+                                            </span>
+                                        </span>
+                                        <span th:unless="${favorite.vacancy.user != null and favorite.vacancy.user.city != null}">Не указан</span>
+                                    </small>
+                                </div>
+
+                                <div class="favorite-actions">
+                                    <a th:href="@{/postidviewsvac/{hashId}(hashId=${favorite.vacancy.hashId})}"
+                                       class="btn btn-primary btn-mod">
+                                        <i class="fas fa-eye"></i> Просмотр
+                                    </a>
+                                    <form th:action="@{/page_one/favorites/remove/{favoriteId}(favoriteId=${favorite.id})}"
+                                          method="post" class="d-inline">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="vacanciesContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreVacanciesContainer">
+                    <button id="loadMoreVacanciesBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>Показать еще вакансии
+                    </button>
+                </div>
+
+                <div id="allLoadedVacanciesMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все вакансии загружены
+                    </p>
+                </div>
+            </div>
+
+            <!-- Резюме -->
+            <div class="tab-pane fade" id="resume-content" role="tabpanel">
+                <h2 class="mb-3" style="color: #17a2b8;">
+                    Резюме
+                </h2>
+
+                <div class="row" id="resumeContainerStatic">
+                    <div th:each="favorite : ${resumeFavorites}"
+                         class="col-md-6 col-lg-4 col-xl-3 mb-4"
+                         th:data-id="${favorite.id}">
+                        <!-- У резюме могут не быть полей premium/donate, оставляем обычный класс -->
+                        <div class="favorite-card">
+                            <div class="favorite-image-wrapper">
+                                <img th:if="${favorite.resume.firstImagePath}"
+                                     th:src="${favorite.resume.firstImagePath}"
+                                     class="favorite-image"
+                                     th:alt="${favorite.resume.title}"
+                                     loading="lazy">
+                                <div th:unless="${favorite.resume.firstImagePath}" class="favorite-image-placeholder">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            </div>
+
+                            <h5 class="favorite-title" th:text="${favorite.resume.title}"></h5>
+
+                            <div class="favorite-content">
+                                <div class="favorite-info mb-2">
+                                    <small class="text-muted d-block">
+                                        <strong>Зарплата:</strong>
+                                        <span th:text="${favorite.resume.cash}"></span>
+                                    </small>
+                                    <small class="text-muted d-block">
+                                        <strong>Город:</strong>
+                                        <span th:if="${favorite.resume.user != null and favorite.resume.user.city != null}">
+                                            <span th:if="${favorite.resume.user.city == 'other' or favorite.resume.user.city == '' or favorite.resume.user.city == 'other_none'}">Не указан</span>
+                                            <span th:if="${favorite.resume.user.city != 'other' and favorite.resume.user.city != '' and favorite.resume.user.city != 'other_none'}">
+                                                <span th:text="${regionsConfig.getCityDisplayName(favorite.resume.user.region, favorite.resume.user.city)}"></span>
+                                            </span>
+                                        </span>
+                                        <span th:unless="${favorite.resume.user != null and favorite.resume.user.city != null}">Не указан</span>
+                                    </small>
+                                </div>
+
+                                <div class="favorite-actions">
+                                    <a th:href="@{/postidviewsres/{hashId}(hashId=${favorite.resume.hashId})}"
+                                       class="btn btn-primary btn-mod">
+                                        <i class="fas fa-eye"></i> Просмотр
+                                    </a>
+                                    <form th:action="@{/page_one/favorites/remove/{favoriteId}(favoriteId=${favorite.id})}"
+                                          method="post" class="d-inline">
+                                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" id="resumeContainer"></div>
+
+                <div class="text-center mt-4" id="loadMoreResumeContainer">
+                    <button id="loadMoreResumeBtn" class="btn btn-primary" data-current-page="0">
+                        <i class="fas fa-plus-circle me-2"></i>Показать еще резюме
+                    </button>
+                </div>
+
+                <div id="allLoadedResumeMessage" class="text-center mt-4 mb-5" style="display: none;">
+                    <p class="text-muted">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Все резюме загружены
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingSpinner" class="text-center mt-2" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+            <p class="text-muted mt-2">Загружаем...</p>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{block/footer :: footerhtml}"></footer>
+
+<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="/js/supportAndfavor/favorites-pagination.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof loadAllSellerRatings === 'function') {
+            loadAllSellerRatings();
+        }
+    });
+</script>
+</body>
+</html>
