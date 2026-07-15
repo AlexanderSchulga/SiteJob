@@ -64,7 +64,6 @@ public class EmailController {
     @PostMapping("/forgot-password")
     public String sendPasswordResetCode(
             @RequestParam String email,
-            @RequestParam(name = "captcha", required = false) Boolean captcha,
             HttpServletRequest request,
             Model model
     ) {
@@ -74,13 +73,6 @@ public class EmailController {
         if (!rateLimitService.tryConsumeForgotPasswordPost(clientIp)) {
             log.warn("Слишком много POST запросов от IP: {}", clientIp);
             model.addAttribute("error", "Слишком много запросов. Попробуйте через час.");
-            return "forgot-password";
-        }
-
-        // Капча
-        if (captcha == null || !captcha) {
-            log.warn("Неудачная попытка восстановления пароля с IP: {} - не пройдена капча", clientIp);
-            model.addAttribute("error", "Подтвердите, что вы не робот");
             return "forgot-password";
         }
 
