@@ -63,7 +63,7 @@ public class PostCleanupService {
     public void cleanupBlockedPosts() {
         logger.info("Запуск очистки заблокированных постов...");
 
-        LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
+        LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(15);
         int deletedCount = 0;
 
         // Удаляем заблокированные товары

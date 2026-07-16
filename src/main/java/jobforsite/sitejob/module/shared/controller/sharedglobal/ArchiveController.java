@@ -302,6 +302,7 @@ public class ArchiveController {
             post.setArchivedAt(LocalDateTime.now());
             post.setPremium(false);
             post.setPremiumPriority(0);
+            post.setDonate(false);
             postRepo.save(post);
             log.debug("Товар с hashId {} успешно отправлен в архив", hashId);
 
@@ -355,6 +356,7 @@ public class ArchiveController {
             post.setArchivedAt(LocalDateTime.now());
             post.setPremium(false);
             post.setPremiumPriority(0);
+            post.setDonate(false);
             postRepoJob.save(post);
             log.debug("Услуга с hashId {} успешно отправлена в архив", hashId);
 
@@ -408,6 +410,7 @@ public class ArchiveController {
             vacancy.setArchivedAt(LocalDateTime.now());
             vacancy.setPremium(false);
             vacancy.setPremiumPriority(0);
+            vacancy.setDonate(false);
             postVacancyRepository.save(vacancy);
             log.debug("Вакансия с hashId {} успешно отправлена в архив", hashId);
 

@@ -69,7 +69,7 @@ public class PostArchiveService {
         log.info("Запуск архивации старых постов...");
 
         //LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusMinutes(5);
-        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(60);
         LocalDateTime now = LocalDateTime.now();
         int archivedCount = 0;
 
@@ -90,6 +90,7 @@ public class PostArchiveService {
             favorRepo.deleteByPostId(post.getId());
             post.setPremium(false);
             post.setPremiumPriority(0);
+            post.setDonate(false);
             log.info("Товар ID: {} отправлен в архив и удален из избранного. Дата модерации: {}",
                     post.getId(), post.getModeratedAt());
         }
@@ -112,6 +113,7 @@ public class PostArchiveService {
             favorRepo.deleteByPostJobId(service.getId());
             service.setPremium(false);
             service.setPremiumPriority(0);
+            service.setDonate(false);
             log.info("Услуга ID: {} отправлена в архив. Дата модерации: {}",
                     service.getId(), service.getModeratedAt());
         }
@@ -134,6 +136,7 @@ public class PostArchiveService {
             favorRepo.deleteByVacancyId(vacancy.getId());
             vacancy.setPremium(false);
             vacancy.setPremiumPriority(0);
+            vacancy.setDonate(false);
             log.info("Вакансия ID: {} отправлена в архив. Дата модерации: {}",
                     vacancy.getId(), vacancy.getModeratedAt());
         }
