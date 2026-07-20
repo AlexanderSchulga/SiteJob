@@ -173,17 +173,19 @@ public class SecurityConfig {
                                 "/resend-flashcall")
                 )
 
-                // ==================== ЗАГОЛОВКИ БЕЗОПАСНОСТИ ====================
-                // Защита от кликджекинга и CSP с разрешением для Яндекс.Карт и OpenStreetMap
+// ==================== ЗАГОЛОВКИ БЕЗОПАСНОСТИ ====================
+// Защита от кликджекинга и CSP с разрешением для Яндекс.Метрики, Карт и OpenStreetMap
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
                         .contentSecurityPolicy(csp -> csp
-                                .policyDirectives("default-src 'self'; " +
-                                        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://api-maps.yandex.ru https://yastatic.net https://core-renderer-tiles.maps.yandex.net; " +
-                                        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
-                                        "font-src 'self' https://cdnjs.cloudflare.com data:; " +
-                                        "img-src 'self' data: https:; " +
-                                        "connect-src 'self' https://api-maps.yandex.ru https://nominatim.openstreetmap.org;")
+                                .policyDirectives(
+                                        "default-src 'self'; " +
+                                                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://api-maps.yandex.ru https://yastatic.net https://core-renderer-tiles.maps.yandex.net https://mc.yandex.ru; " +
+                                                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                                "font-src 'self' https://cdnjs.cloudflare.com data:; " +
+                                                "img-src 'self' data: https: https://mc.yandex.ru; " +
+                                                "connect-src 'self' https://api-maps.yandex.ru https://nominatim.openstreetmap.org https://mc.yandex.ru wss://mc.yandex.ru mc.yandex.ru;"
+                                )
                         )
                 )
 
