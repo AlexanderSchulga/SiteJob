@@ -69,9 +69,11 @@ public class PostTextCategoryConfig extends BaseCategoryConfig {
         log.debug("Инициализация конфигурации категорий для товаров");
 
         categories.put("all", "Все товары");
-        categories.put("electronics", "Электроника и гаджеты");
+        categories.put("realty", "Недвижимость");
         categories.put("home", "Дом и интерьер");
+        categories.put("electronics", "Электроника и гаджеты");
         categories.put("construction", "Строительные материалы");
+        categories.put("motor", "Автотранспорт");
         categories.put("auto", "Автозапчасти и автотовары");
         categories.put("clothing", "Одежда и обувь");
         categories.put("children", "Детские товары");
