@@ -59,6 +59,50 @@
                 <div class="footer-date-updated" th:text="${#dates.format(#dates.createNow(), 'dd MMMM yyyy')}"></div>
             </div>
         </div>
+
+        <!-- БАННЕР СОГЛАСИЯ НА КУКИ -->
+        <div id="cookie-consent" style="position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; padding: 15px 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); z-index: 9999; display: none; border-top: 3px solid #e94560;">
+            <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <span style="color: #eee; font-size: 14px; flex: 1; min-width: 200px;">
+            🍪 Мы используем файлы cookie для улучшения работы сайта и сбора статистики.
+            Продолжая использовать сайт, вы соглашаетесь с
+            <a href="/confiden_agr/confidential" style="color: #e94560; text-decoration: underline;">Политикой конфиденциальности</a>.
+        </span>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="acceptCookies()" style="background: #e94560; color: #fff; border: none; padding: 8px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s;">
+                        Согласен
+                    </button>
+                    <button onclick="declineCookies()" style="background: transparent; color: #aaa; border: 1px solid #555; padding: 8px 25px; border-radius: 5px; cursor: pointer; transition: 0.3s;">
+                        Отказаться
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Показываем баннер, если ещё не дали согласие
+            if (localStorage.getItem('cookiesAccepted') === null) {
+                document.getElementById('cookie-consent').style.display = 'block';
+            }
+
+            function acceptCookies() {
+                localStorage.setItem('cookiesAccepted', 'true');
+                document.getElementById('cookie-consent').style.display = 'none';
+                // Загружаем Метрику
+                if (typeof loadMetrika === 'function') {
+                    loadMetrika();
+                }
+            }
+
+            function declineCookies() {
+                localStorage.setItem('cookiesAccepted', 'false');
+                document.getElementById('cookie-consent').style.display = 'none';
+                // Метрика НЕ загружается
+            }
+        </script>
+        <!-- /БАННЕР СОГЛАСИЯ -->
+
+
     </footer>
 
     <button onclick="topFunction()" id="myBtn" title="Вернуться наверх">↑ Наверх</button>
