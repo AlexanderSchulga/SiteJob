@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="vehicleDetails(post)">
+    <div class="row">
+      <div class="col-md-6">
+        <div th:if="${post.vehicleTypeDisplayName != null}">
+          <small class="text-muted d-block">
+            <strong>Тип:</strong>
+            <span th:text="${post.vehicleTypeDisplayName}"></span>
+          </small>
+        </div>
+        <div th:if="${post.vehicleOriginDisplayName != null}">
+          <small class="text-muted d-block">
+            <strong>Происхождение:</strong>
+            <span th:text="${post.vehicleOriginDisplayName}"></span>
+          </small>
+        </div>
+      </div>
+      <div class="col-md-6">
+
+        <div th:if="${post.mileage != null}">
+          <small class="text-muted d-block">
+            <strong>Пробег (тыс.км):</strong>
+            <span th:text="${post.mileage}"></span>
+          </small>
+        </div>
+
+        <div th:if="${post.numberOfOwners != null}">
+          <small class="text-muted d-block">
+            <strong>Количество владельцев:</strong>
+            <span th:text="${post.numberOfOwners}"></span>
+          </small>
+        </div>
+
+        <div th:if="${post.vehicleYear != null}">
+          <small class="text-muted d-block">
+            <strong>Год выпуска:</strong>
+            <span th:text="${post.vehicleYear}"></span>
+          </small>
+        </div>
+
+      </div>
+    </div>
+</div>
+</body>
+</html>

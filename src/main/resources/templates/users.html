@@ -10,7 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap-icons.css}">
 </head>
 <body>
-<script type="text/javascript" src="/js/functions/blacklist.js"></script>
+<script type="text/javascript" th:src="@{/js/functions/blacklist.js}"></script>
 <div class="container-wrapper">
     <header th:insert="~{block/header :: headerhtml}"></header>
 
@@ -358,9 +358,9 @@
 </div>
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/users/delete_user_service.js"></script>
-<script type="text/javascript" src="/js/users/load-more-users.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/users/delete_user_service.js}"></script>
+<script type="text/javascript" th:src="@{/js/users/load-more-users.js}"></script>
 
 
 <script>

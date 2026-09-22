@@ -1,7 +1,6 @@
 package jobforsite.sitejob.module.shared.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,10 +25,9 @@ import java.util.List;
  * @author Team
  * @version 1.0
  */
+@Slf4j
 @Service
 public class FileStorageService {
-
-    private static final Logger log = LoggerFactory.getLogger(FileStorageService.class);
 
     @Value("${upload.path}")
     private String uploadPath; // Базовая директория для хранения загруженных файлов

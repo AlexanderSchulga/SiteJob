@@ -1,20 +1,27 @@
 package jobforsite.sitejob.module.product.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jobforsite.sitejob.module.auth.service.EmailService;
+import jobforsite.sitejob.module.product.dto.PostCreateRequestDTO;
+import jobforsite.sitejob.module.product.dto.PostTextDetailDTO;
+import jobforsite.sitejob.module.product.dto.PostTextListDTO;
+import jobforsite.sitejob.module.product.dto.ProductFilterDTO;
+import jobforsite.sitejob.module.product.mapper.PostDetailMapper;
 import jobforsite.sitejob.module.product.model.CommentPersonal;
 import jobforsite.sitejob.module.product.model.PostText;
 import jobforsite.sitejob.module.product.repository.CommentRepoPersonal;
-import jobforsite.sitejob.module.product.repository.PostRepo;
+import jobforsite.sitejob.module.product.service.FilterRangeService;
+import jobforsite.sitejob.module.product.service.PostTextListService;
+import jobforsite.sitejob.module.product.service.PostTypeResolver;
+import jobforsite.sitejob.module.product.service.ProductService;
+import jobforsite.sitejob.module.product.service.filter.FilterFactory;
+import jobforsite.sitejob.module.product.service.filter.ProductFilter;
+import jobforsite.sitejob.module.shared.config.categoryconfig.FilterConfigService;
 import jobforsite.sitejob.module.shared.config.categoryconfig.PostTextCategoryConfig;
 import jobforsite.sitejob.module.shared.config.globalconfig.RegionsConfig;
 import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostController;
-import jobforsite.sitejob.module.shared.services.ImageService;
 import jobforsite.sitejob.module.shared.services.PostViewService;
-import jobforsite.sitejob.module.shared.services.cachrateservice.PostCacheService;
 import jobforsite.sitejob.module.shared.services.cachrateservice.RateLimitService;
 import jobforsite.sitejob.module.users.model.User;
-import jobforsite.sitejob.module.users.repository.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,7 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -47,20 +53,29 @@ import java.util.Map;
 @Controller
 public class RefController extends BasePostController {
 
-    private final PostRepo postRepo;
     private final CommentRepoPersonal commentRepoPersonal;
     private final PostTextCategoryConfig postTextCategoryConfig;
-    private final ImageService imageService;
-    private final RatingRepository ratingRepository;
     private final RegionsConfig regionsConfig;
     private final RateLimitService rateLimitService;
-    private final PostCacheService postCacheService;
     private final PostViewService postViewService;
+    private final FilterConfigService filterConfigService;
 
-    private final EmailService emailService;
+    private final ProductService productService;
+
+    private final FilterRangeService filterRangeService;
+
+    private final PostTextListService postTextListService;
+
+    private final PostDetailMapper postDetailMapper;
+
+    private final FilterFactory filterFactory;
+
+    private final PostTypeResolver postTypeResolver;
+
+
 
     /**
-     * Отображает страницу со списком товаров с поддержкой:
+     * Отображает страницу со списком товаров:
      * <ul>
      *   <li>Фильтрации по категории, региону, городу</li>
      *   <li>Поиска по названию</li>
@@ -69,12 +84,9 @@ public class RefController extends BasePostController {
      *   <li>Rate limiting для защиты от частых запросов</li>
      * </ul>
      *
-     * @param category       фильтр по категории
-     * @param search         поисковый запрос
-     * @param sort           тип сортировки (newest, oldest и т.д.)
-     * @param priceSort      сортировка по цене (asc, desc, none)
-     * @param region         фильтр по региону
-     * @param city           фильтр по городу
+     *
+     * ModelAttribute ProductFilterDTO +
+
      * @param page           номер страницы (начиная с 0)
      * @param size           количество элементов на странице
      * @param authentication данные аутентификации
@@ -83,12 +95,7 @@ public class RefController extends BasePostController {
      * @return имя шаблона страницы
      */
     @GetMapping("/page_one/viewsone")
-    public String viewsOnePage(@RequestParam(value = "category", required = false) String category,
-                               @RequestParam(value = "search", required = false) String search,
-                               @RequestParam(value = "sort", defaultValue = "newest") String sort,
-                               @RequestParam(value = "priceSort", defaultValue = "none") String priceSort,
-                               @RequestParam(value = "region", required = false) String region,
-                               @RequestParam(value = "city", required = false) String city,
+    public String viewsOnePage(@ModelAttribute ProductFilterDTO filter,
                                @RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "8") int size,
                                Authentication authentication,
@@ -96,38 +103,67 @@ public class RefController extends BasePostController {
                                Model model) {
 
         String clientIp = getClientIp(request);
-        log.debug("Запрос списка товаров: IP={}, category={}, search={}, region={}, city={}, page={}, size={}",
-                clientIp, category, search, region, city, page, size);
 
-        // Rate limiting для просмотра страницы товаров
+        // Нормализация параметров
+        String normalizedCategory = filterRangeService.normalizeParam(filter.getCategory());
+        String normalizedSearch = filterRangeService.normalizeParam(filter.getSearch());
+        String normalizedRegion = filterRangeService.normalizeParam(filter.getRegion());
+        String normalizedCity = filterRangeService.normalizeParam(filter.getCity());
+        String sort = filter.getSort() != null ? filter.getSort() : "newest";
+        String priceSort = filter.getPriceSort() != null ? filter.getPriceSort() : "none";
+
+        // Обновляем DTO
+        filter.setCategory(normalizedCategory);
+        filter.setSearch(normalizedSearch);
+        filter.setRegion(normalizedRegion);
+        filter.setCity(normalizedCity);
+        filter.setSort(sort);
+        filter.setPriceSort(priceSort);
+
+        // Rate limiting
         if (!checkRateLimitForView(clientIp, rateLimitService, "product", model, "Товары",
                 postTextCategoryConfig.getCategories(), regionsConfig)) {
-            log.warn("Превышен лимит запросов для просмотра товаров, IP: {}", clientIp);
             return "page_one/viewsone";
         }
 
-        // Получение списка городов для меню
-        Map<String, List<String>> citiesByGroup = getCitiesForMenu(region, regionsConfig);
+        // ===== ВЫБОР ФИЛЬТРА ЧЕРЕЗ ФАБРИКУ =====
+        ProductFilter productFilter = filterFactory.getFilter(normalizedCategory);
 
-        // Получение кэшированного списка постов
-        List<PostText> posts = postCacheService.getProductsList(
-                category, search, region, city, sort, priceSort, page, size
-        );
+        // ===== ПОЛУЧЕНИЕ ДАННЫХ =====
+        List<? extends PostText> posts = productFilter.getPosts(filter, page, size);
+        long totalItems = productFilter.getTotalCount(filter);
+        boolean hasMore = posts.size() == size;
 
-        // Получение кэшированного общего количества
-        long totalItems = postCacheService.getProductsCount(category, search, region, city);
+        // ===== ДОБАВЛЕНИЕ СПЕЦИФИЧНЫХ АТРИБУТОВ =====
+        productFilter.addModelAttributes(filter, model);
 
-        log.info("Загружен список товаров: найдено {} из {}, страница {}/{}",
-                posts.size(), totalItems, page + 1, (int) Math.ceil((double) totalItems / size));
+        // ===== ПРЕОБРАЗОВАНИЕ В DTO =====
+        List<PostTextListDTO> postListDTOs = postTextListService.toListDTO(posts);
 
-        // Настройка модели для отображения списка
-        setupListModel(model, posts, totalItems, page, size, "Товары",
-                postTextCategoryConfig.getCategories(), regionsConfig,
-                category, region, city, sort, priceSort, authentication);
+        // ===== ОБЩИЕ АТРИБУТЫ =====
+        Map<String, List<String>> citiesByGroup = getCitiesForMenu(normalizedRegion, regionsConfig);
 
-        // Дополнительные атрибуты
+        model.addAttribute("posts", postListDTOs);
+        model.addAttribute("categories", postTextCategoryConfig.getCategories());
+        model.addAttribute("totalItems", totalItems);
+        model.addAttribute("hasMore", hasMore);
+        model.addAttribute("currentPage", page);
         model.addAttribute("citiesByGroup", citiesByGroup);
-        model.addAttribute("posts", posts);
+        model.addAttribute("regions", regionsConfig.getRegions());
+        model.addAttribute("filterService", filterConfigService);
+        model.addAttribute("selectedCategory", normalizedCategory != null ? normalizedCategory : "all");
+        model.addAttribute("selectedRegion", normalizedRegion != null ? normalizedRegion : "all");
+        model.addAttribute("selectedCity", normalizedCity != null ? normalizedCity : "all");
+        model.addAttribute("currentSort", sort);
+        model.addAttribute("currentPriceSort", priceSort);
+        model.addAttribute("searchQuery", normalizedSearch);
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            model.addAttribute("currentUser", authentication.getPrincipal());
+        }
+
+        log.info("Загружено {} товаров, всего: {}, страница: {}, категория: {}, фильтр: {}",
+                posts.size(), totalItems, page, normalizedCategory, productFilter.getCategoryName());
 
         return "page_one/viewsone";
     }
@@ -140,11 +176,8 @@ public class RefController extends BasePostController {
      */
     @GetMapping("/page_two/viewstwo")
     public String viewsTwoPage(Model model) {
-        Iterable<PostText> posts = postRepo.findAll();
         model.addAttribute("title", "Создание товара");
-        model.addAttribute("posts", posts);
         model.addAttribute("categories", postTextCategoryConfig.getCategories());
-        log.debug("Отображена страница создания товара");
         return "page_two/viewstwo";
     }
 
@@ -157,103 +190,53 @@ public class RefController extends BasePostController {
      *   <li>Rate limit для предотвращения спама</li>
      * </ul>
      *
-     * @param title          название товара
-     * @param price          цена
-     * @param full_text      полное описание
-     * @param category       категория товара
-     * @param location       местоположение
-     * @param moderation     флаг модерации
-     * @param files          массив изображений
      * @param authentication данные аутентификации
      * @param request        HTTP-запрос (для получения IP)
      * @param model          модель для передачи данных в представление
      * @return редирект на главную или возврат к форме с ошибкой
      * @throws IOException при ошибках загрузки файлов
      */
+
     @PostMapping("/page_two/viewstwo")
-    public String viewsTwoPost(
-            @RequestParam String title,
-            @RequestParam Integer price,
-            @RequestParam String full_text,
-            @RequestParam String category,
-            @RequestParam String location,
-            @RequestParam Boolean moderation,
-            @RequestParam("files") MultipartFile[] files,
-            Authentication authentication,
-            HttpServletRequest request,
-            Model model) throws IOException {
+    public String viewsTwoPost(@ModelAttribute PostCreateRequestDTO request,
+                               Authentication authentication,
+                               HttpServletRequest httpRequest,
+                               Model model) {
 
-        String clientIp = getClientIp(request);
-        log.debug("Запрос на создание товара: IP={}, title={}, category={}", clientIp, title, category);
+        String clientIp = getClientIp(httpRequest);
 
-        // Проверка rate limit для создания товара
+        // Rate limiting
         if (!checkRateLimitForCreate(clientIp, rateLimitService, "product", model,
                 postTextCategoryConfig.getCategories(), "page_two/viewstwo")) {
-            log.warn("Превышен лимит запросов на создание товара, IP: {}", clientIp);
-            return "page_two/viewstwo";
-        }
-
-        // Валидация наличия изображений
-        if (files == null || files.length == 0 || files[0].isEmpty()) {
-            log.warn("Попытка создания товара без изображений, IP: {}", clientIp);
-            model.addAttribute("error", "Пожалуйста, выберите хотя бы один файл для загрузки");
-            model.addAttribute("categories", postTextCategoryConfig.getCategories());
-            return "page_two/viewstwo";
-        }
-
-        // Валидация количества изображений
-        if (files.length > 5) {
-            log.warn("Попытка загрузки более 5 изображений: count={}, IP: {}", files.length, clientIp);
-            model.addAttribute("error", "Можно загрузить не более 10 изображений");
-            model.addAttribute("categories", postTextCategoryConfig.getCategories());
             return "page_two/viewstwo";
         }
 
         try {
-
-            // ========== СЕРВЕРНАЯ ПРОВЕРКА РАЗМЕРА ==========
-            imageService.validateFilesSize(files, 20, 20);
-            // ================================================
-
-            // Создание товара
-            PostText post = new PostText(title, price, full_text, category, location, moderation);
             User user = (User) authentication.getPrincipal();
-            post.setUser(user);
 
-            PostText savedPost = postRepo.save(post);
+            // Создаём пост через сервис с DTO
+            MultipartFile[] files = request.getFiles();
+            PostText post = productService.createPostFromDTO(user, request, files);
 
-// ========== АВТОМАТИЧЕСКАЯ ОТПРАВКА УВЕДОМЛЕНИЯ ==========
-            if (savedPost.isModeration()) {
-                emailService.sendModerationNotification(
-                        "product",
-                        savedPost.getTitle(),
-                        savedPost.getUser().getNameuse(),
-                        savedPost.getUser().getRegion(),
-                        savedPost.getCreatedAt()
-                );
-            }
-
-            log.info("Создан новый товар, hashId: {}, category: {}", savedPost.getHashId(), category);
-
-            // Сохранение изображений
-            imageService.saveImages(files, savedPost, null, null, null);
-            log.debug("Сохранены изображения для товара, hashId: {}, количество файлов: {}", savedPost.getHashId(), files.length);
-
-            // Очистка кэша
-            postCacheService.clearProductsCache();
+            log.info("Товар успешно создан: id={}, hashId={}, user={}",
+                    post.getId(), post.getHashId(), user.getNameuse());
 
             return "redirect:/index";
 
         } catch (IllegalArgumentException e) {
-            log.warn("Ошибка валидации размера файлов: {}", e.getMessage());
+            log.warn("Ошибка валидации при создании товара: {}", e.getMessage());
             model.addAttribute("error", e.getMessage());
             model.addAttribute("categories", postTextCategoryConfig.getCategories());
             return "page_two/viewstwo";
+
         } catch (Exception e) {
-            log.error("Ошибка при создании товара, IP: {}, errorType: {}", clientIp, e.getClass().getSimpleName(), e);
-            return handleCreationError(e, model, postTextCategoryConfig.getCategories(), "page_two/viewstwo");
+            log.info("Ошибка при создании товара");
+            model.addAttribute("error", "Произошла ошибка при создании товара. Попробуйте позже.");
+            model.addAttribute("categories", postTextCategoryConfig.getCategories());
+            return "page_two/viewstwo";
         }
     }
+
 
     /**
      * Отображает детальную страницу товара.
@@ -272,54 +255,51 @@ public class RefController extends BasePostController {
      * @return имя шаблона детальной страницы
      * @throws ResponseStatusException если пост не найден или недоступен
      */
+
     @GetMapping("/postidviews/{hashId}")
-    public String viewsTwoDetails(@PathVariable String hashId, Model model, Authentication authentication, HttpServletRequest request) {
+    public String viewsTwoDetails(@PathVariable String hashId,
+                                  Model model,
+                                  Authentication authentication,
+                                  HttpServletRequest request) {
         log.debug("Запрос детальной страницы товара, hashId: {}", hashId);
 
-        // Поиск поста
-        PostText post = postRepo.findByHashId(hashId)
-                .orElseThrow(() -> {
-                    log.warn("Пост не найден, hashId: {}", hashId);
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Пост не найден");
-                });
+        PostText post = postTypeResolver.loadPostByHashId(hashId);
+        if (post == null) {
+            log.warn("Пост не найден, hashId: {}", hashId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пост не найден");
+        }
 
         // Регистрация просмотра
         User currentUser = authentication != null && authentication.isAuthenticated()
                 ? (User) authentication.getPrincipal()
                 : null;
         postViewService.registerProductView(post, request, currentUser);
-        log.debug("Зарегистрирован просмотр товара, hashId: {}, аутентифицирован: {}", hashId, currentUser != null);
 
-        // Проверка доступа к посту
+        // Проверка доступа
         if (!checkPostAccessAndWarnings(post, authentication, model)) {
             log.warn("Доступ к посту запрещён, hashId: {}", hashId);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пост не найден или недоступен");
         }
 
+        // ===== КОНВЕРТАЦИЯ В DTO =====
+        PostTextDetailDTO postDetail = postDetailMapper.toDetailDTO(post);
+        model.addAttribute("post", postDetail);
+
+        // Приватные комментарии
         Long postId = post.getId();
-        boolean isPrivateTabActive = false;
         boolean hasAdminAccess = hasSuperAccess(authentication);
 
-        // Загрузка приватных комментариев
         List<CommentPersonal> commentsPersonal = setupPrivateComments(
                 post, postId, authentication, hasAdminAccess,
                 id -> commentRepoPersonal.findByPostIdOrderByCreatedAtDesc(id),
                 (id, userId) -> commentRepoPersonal.findByPostIdAndUserOrRecipient(id, userId),
                 (id, userId) -> commentRepoPersonal.markMessagesAsRead(id, userId)
         );
-        log.debug("Загружены приватные комментарии для поста, hashId: {}, количество: {}", hashId, commentsPersonal.size());
 
-        // Добавление рейтинга продавца
-        addSellerRatingToModel(post, model, ratingRepository);
-
-        // Настройка модели
-        model.addAttribute("postwo", Collections.singletonList(post));
         model.addAttribute("commentsPersonal", commentsPersonal);
-        model.addAttribute("isPrivateTabActive", isPrivateTabActive);
         model.addAttribute("currentUser", authentication != null ? authentication.getPrincipal() : null);
         model.addAttribute("commentRepoPersonal", commentRepoPersonal);
 
-        log.info("Отображена детальная страница товара, hashId: {}", hashId);
         return "postidviews";
     }
 

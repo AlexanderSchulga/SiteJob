@@ -647,4 +647,5 @@ public class MessageTicketController extends BaseController {
             this.windowStart = windowStart;
         }
     }
+
 }

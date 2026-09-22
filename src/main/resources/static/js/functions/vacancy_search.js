@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // ===== ВОССТАНАВЛИВАЕМ ЗНАЧЕНИЕ ПОИСКА ИЗ URL =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('search');
+    if (searchQuery) {
+        searchInput.value = searchQuery;
+    }
+
     // Поиск при нажатии кнопки лупы
     searchButton.addEventListener('click', function() {
         performSearch();
@@ -25,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (query.length >= 2) {
             // Перенаправляем на ту же страницу с параметром поиска
             const currentUrl = new URL(window.location.href);
+            const urlParams = new URLSearchParams(window.location.search);
             const currentExperience = urlParams.get('experience');
             const currentWorkformat = urlParams.get('workformat');
 
@@ -36,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (currentWorkformat && currentWorkformat !== 'all') {
-                currentUrl.searchParams.set('workformat', currentWorkformat );
+                currentUrl.searchParams.set('workformat', currentWorkformat);
             }
 
             // НЕ удаляем другие параметры фильтрации
@@ -57,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
 // Кнопка очистки поиска
 const clearSearchButton = document.getElementById('clearSearchButton');
 if (clearSearchButton) {

@@ -58,7 +58,7 @@ function replyToComment(commentId, nameuse, commentText) {
     const commentTextarea = document.getElementById('commentText');
     if (commentTextarea) {
         commentTextarea.focus();
-        commentTextarea.placeholder = 'Ваш ответ...';
+        commentTextarea.placeholder = 'Ваш ответ...(не менее 3-х символов)';
     }
 
     // Прокрутка к форме

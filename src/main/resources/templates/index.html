@@ -256,13 +256,13 @@
     }
 </style>
 
-<script type="text/javascript" src="/js/supports/support_notifications.js"></script>
-<script type="text/javascript" src="/js/functions/blocked_posts_notifications.js"></script>
+<script type="text/javascript" th:src="@{/js/supports/support_notifications.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/blocked_posts_notifications.js}"></script>
 
 <!-- Загружаем скрипт уведомлений о блокировках ТОЛЬКО для авторизованных пользователей -->
-<script sec:authorize="isAuthenticated()" type="text/javascript" src="/js/functions/blocked_posts_notifications.js"></script>
+<script sec:authorize="isAuthenticated()" type="text/javascript" th:src="@{/js/functions/blocked_posts_notifications.js}"></script>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
 <script sec:authorize="isAuthenticated()">
     window.currentUserHashId = '[[${#authentication.principal.hashId}]]';
@@ -344,9 +344,9 @@ createMenu.classList.remove('show');
 });
 </script>
 
-<script type="text/javascript" src="/js/functions/carousel_sine.js"></script>
-<script type="text/javascript" src="/js/functions/carousel_paid.js"></script>
-<script type="text/javascript" src="/js/functions/moderation_notifications.js"></script>
+<script type="text/javascript" th:src="@{/js/functions/carousel_sine.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/carousel_paid.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/moderation_notifications.js}"></script>
 
 </body>
 </html>

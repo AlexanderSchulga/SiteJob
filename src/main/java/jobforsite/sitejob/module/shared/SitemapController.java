@@ -4,6 +4,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+ * Контроллер для генерации карты сайта (sitemap).
+ * <p>
+ * Предоставляет эндпоинт {@code /sitemap.xml}, возвращающий XML-документ
+ * в формате Sitemap Protocol, содержащий перечень основных URL сайта
+ * с указанием частоты обновления и приоритета.
+ */
 @Controller
 public class SitemapController {
 

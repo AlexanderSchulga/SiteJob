@@ -2,18 +2,23 @@ package jobforsite.sitejob.module.users.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jobforsite.sitejob.module.product.model.PostText;
+import jobforsite.sitejob.module.product.model.extendsPost.modelExtends.MotorVehiclesPostText;
+import jobforsite.sitejob.module.product.model.extendsPost.modelExtends.RealEstatePostText;
 import jobforsite.sitejob.module.product.repository.PostRepo;
+import jobforsite.sitejob.module.product.service.PostTypeResolver;
+import jobforsite.sitejob.module.product.service.ProductService;
+import jobforsite.sitejob.module.product.service.filter.ExtendsUpdateProductService;
 import jobforsite.sitejob.module.resume.model.Resume;
 import jobforsite.sitejob.module.resume.repository.PostResumeRepository;
 import jobforsite.sitejob.module.service.model.PostTextJob;
 import jobforsite.sitejob.module.service.repository.PostRepoJob;
 import jobforsite.sitejob.module.shared.config.categoryconfig.*;
+import jobforsite.sitejob.module.shared.dto.product.PostUpdateRequestDTO;
 import jobforsite.sitejob.module.shared.repository.FavorRepo;
 import jobforsite.sitejob.module.shared.services.ImageService;
 import jobforsite.sitejob.module.shared.services.cachrateservice.BlockedPostsCacheService;
 import jobforsite.sitejob.module.shared.services.cachrateservice.PostCacheService;
 import jobforsite.sitejob.module.users.model.User;
-import jobforsite.sitejob.module.users.repository.UserRepository;
 import jobforsite.sitejob.module.vacancy.model.Vacancy;
 import jobforsite.sitejob.module.vacancy.repository.PostVacancyRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,41 +31,35 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
 /**
- * MVC-контроллер для управления контентом пользователей администраторами.
+ * Контроллер административного управления контентом пользователя.
  * <p>
- * Обеспечивает функциональность для администраторов и суперадминистраторов:
- * <ul>
- *     <li>Блокировка/разблокировка постов (товары, услуги, вакансии, резюме)</li>
- *     <li>Удаление контента пользователей</li>
- *     <li>Редактирование контента пользователей</li>
- * </ul>
+ * Обрабатывает редактирование, блокировку и удаление объявлений всех типов
+ * (товары, услуги, вакансии, резюме) со стороны администратора или суперпользователя.
  * </p>
+ *
+ * <p><b>Основные сценарии:</b></p>
+ * <ul>
+ *   <li>Загрузка контента пользователя для панели администратора</li>
+ *   <li>Блокировка/разблокировка объявлений (с каскадным удалением из избранного)</li>
+ *   <li>Удаление объявлений вместе с изображениями и связями</li>
+ *   <li>Редактирование объявлений через отдельные формы для каждого типа</li>
+ * </ul>
  *
  * <p><b>Права доступа:</b></p>
  * <ul>
- *     <li>ROLE_SUPER — полный доступ ко всем операциям</li>
- *     <li>ROLE_ADMIN — доступ к блокировке/удалению/редактированию</li>
- *     <li>Обычный пользователь — только к своему контенту</li>
- * </ul>
- *
- * <p><b>Типы контента:</b></p>
- * <ul>
- *     <li>Товары (PostText)</li>
- *     <li>Услуги (PostTextJob)</li>
- *     <li>Вакансии (Vacancy)</li>
- *     <li>Резюме (Resume)</li>
+ *   <li>Блокировка и удаление — только {@code ROLE_SUPER} или {@code ROLE_ADMIN}</li>
+ *   <li>Редактирование — владелец объявления, {@code ROLE_ADMIN} или {@code ROLE_SUPER}</li>
  * </ul>
  *
  * @see PostText
@@ -68,34 +67,38 @@ import java.util.Optional;
  * @see Vacancy
  * @see Resume
  */
+
 @RequiredArgsConstructor
 @Controller
 public class UpdateUserPost {
 
     private static final Logger logger = LoggerFactory.getLogger(UpdateUserPost.class);
 
-    private final UserRepository userRepository;
     private final PostRepo postRepo;
     private final PostRepoJob postRepoJob;
     private final PostVacancyRepository postVacancyRepository;
     private final PostResumeRepository postResumeRepository;
+
     private final PostTextCategoryConfig postTextCategoryConfig;
     private final PostTextJobCategoryConfig postTextJobCategoryConfig;
     private final PostVacancyCategoryConfig postVacancyCategoryConfig;
     private final PostResumeCategoryConfig postResumeCategoryConfig;
     private final ExperienceResumCategoryConfig experienceResumCategoryConfig;
-
     private final ExperienceVacancyCategoryConfig experienceVacancyCategoryConfig;
-
     private final WorkFormatVacancyConfig workFormatVacancyConfig;
-
     private final WorkFormatResumeConfig workFormatResumeConfig;
 
     private final ImageService imageService;
     private final FavorRepo favorRepo;
     private final BlockedPostsCacheService blockedPostsCacheService;
-
     private final PostCacheService postCacheService;
+    private final FilterConfigService filterConfigService;
+
+    private final ProductService productService;
+
+    private final ExtendsUpdateProductService extendsUpdateProductService;
+
+    private final PostTypeResolver postTypeResolver;
 
     // ======================================================================
     // ЗАГРУЗКА КОНТЕНТА ПОЛЬЗОВАТЕЛЯ
@@ -121,25 +124,18 @@ public class UpdateUserPost {
      * @param model модель для добавления атрибутов
      */
     public void loadUserContent(User user, Model model) {
-        // Создаем pageable с лимитом 8 записей, сортировка по дате создания (новые сверху)
         Pageable pageable = PageRequest.of(0, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        // Загружаем страницы контента каждого типа
         Page<PostText> userPostsPage = postRepo.findByUser(user, pageable);
         Page<PostTextJob> userPostsJobPage = postRepoJob.findByUser(user, pageable);
         Page<Vacancy> userVacanciesPage = postVacancyRepository.findByUser(user, pageable);
         Page<Resume> userResumePage = postResumeRepository.findByUser(user, pageable);
 
-        // Подсчитываем общее количество записей каждого типа
         long totalProducts = postRepo.countByUser(user);
         long totalServices = postRepoJob.countByUser(user);
         long totalVacancies = postVacancyRepository.countByUser(user);
         long totalResume = postResumeRepository.countByUser(user);
 
-        logger.debug("User content loaded - products: {}, services: {}, vacancies: {}, resumes: {}",
-                totalProducts, totalServices, totalVacancies, totalResume);
-
-        // Добавляем данные в модель
         model.addAttribute("userPosts", userPostsPage.getContent());
         model.addAttribute("userPostsJob", userPostsJobPage.getContent());
         model.addAttribute("userVacancies", userVacanciesPage.getContent());
@@ -151,7 +147,7 @@ public class UpdateUserPost {
     }
 
     // ======================================================================
-    // УПРАВЛЕНИЕ ТОВАРАМИ (PostText)
+    // УПРАВЛЕНИЕ ТОВАРАМИ
     // ======================================================================
 
     /**
@@ -256,7 +252,7 @@ public class UpdateUserPost {
     }
 
     // ======================================================================
-    // УПРАВЛЕНИЕ УСЛУГАМИ (PostTextJob)
+    // УПРАВЛЕНИЕ УСЛУГАМИ (без изменений)
     // ======================================================================
 
     /**
@@ -314,6 +310,7 @@ public class UpdateUserPost {
         }
     }
 
+
     /**
      * Удаляет услугу пользователя.
      *
@@ -352,7 +349,7 @@ public class UpdateUserPost {
     }
 
     // ======================================================================
-    // УПРАВЛЕНИЕ ВАКАНСИЯМИ (Vacancy)
+    // УПРАВЛЕНИЕ ВАКАНСИЯМИ
     // ======================================================================
 
     /**
@@ -448,7 +445,7 @@ public class UpdateUserPost {
     }
 
     // ======================================================================
-    // УПРАВЛЕНИЕ РЕЗЮМЕ (Resume)
+    // УПРАВЛЕНИЕ РЕЗЮМЕ
     // ======================================================================
 
     /**
@@ -541,18 +538,15 @@ public class UpdateUserPost {
     }
 
     // ======================================================================
-    // РЕДАКТИРОВАНИЕ КОНТЕНТА (GET-редиректы)
+    // СТРАНИЦЫ РЕДАКТИРОВАНИЯ КОНТЕНТА (GET)
     // ======================================================================
-
-    // Эти методы перенаправляют на соответствующие формы редактирования
-    // Администраторы и суперадминистраторы перенаправляются на admin-версию формы
 
     @GetMapping("/users/{hashId}/page_two/admin_edit_user/post/{postId}/edit")
     public String editPost(@PathVariable String hashId,
                            @PathVariable Long postId,
                            Model model,
                            Authentication authentication) {
-        return "redirect:/page_two/admin_edit_user/" + postId + "/page_two/edit_admin?hashId=" + hashId;
+        return "redirect:/page_two/admin_edit_user/" + postId + "/page_two/edit_admin?userHashId=" + hashId;
     }
 
     @GetMapping("/users/{hashId}/page_two/admin_edit_user/job/{jobId}/edit")
@@ -560,7 +554,7 @@ public class UpdateUserPost {
                           @PathVariable Long jobId,
                           Model model,
                           Authentication authentication) {
-        return "redirect:/page_two/admin_edit_user/job/" + jobId + "/page_two/edit_admin?hashId=" + hashId;
+        return "redirect:/page_two/admin_edit_user/job/" + jobId + "/page_two/edit_admin?userHashId=" + hashId;
     }
 
     @GetMapping("/users/{hashId}/page_two/admin_edit_user/vacancy/{vacancyId}/edit")
@@ -568,7 +562,7 @@ public class UpdateUserPost {
                               @PathVariable Long vacancyId,
                               Model model,
                               Authentication authentication) {
-        return "redirect:/page_two/admin_edit_user/vac/" + vacancyId + "/page_two/edit_admin?hashId=" + hashId;
+        return "redirect:/page_two/admin_edit_user/vac/" + vacancyId + "/page_two/edit_admin?userHashId=" + hashId;
     }
 
     @GetMapping("/users/{hashId}/page_two/admin_edit_user/resume/{resumeId}/edit")
@@ -576,631 +570,89 @@ public class UpdateUserPost {
                              @PathVariable Long resumeId,
                              Model model,
                              Authentication authentication) {
-        return "redirect:/page_two/admin_edit_user/res/" + resumeId + "/page_two/edit_admin?hashId=" + hashId;
+        return "redirect:/page_two/admin_edit_user/res/" + resumeId + "/page_two/edit_admin?userHashId=" + hashId;
     }
 
     // ======================================================================
-    // СТРАНИЦЫ РЕДАКТИРОВАНИЯ КОНТЕНТА (GET для отображения формы)
+    // ОБНОВЛЕНИЕ КОНТЕНТА (POST)
     // ======================================================================
 
     /**
-     * Отображает форму редактирования товара.
-     * <p>
-     * Доступна администраторам и владельцу контента.
-     * </p>
-     *
-     * @param hashId        хэш-идентификатор товара
-     * @param userHashId    хэш-идентификатор пользователя (для редиректа)
-     * @param model         модель для данных формы
-     * @param authentication аутентификация для проверки прав
-     * @return страница редактирования или ошибка
+     * Обновление товара через DTO.
      */
-    @GetMapping("/page_two/admin_edit_user/{hashId}/page_two/edit_admin")
-    public String redactorDetailsEdit(@PathVariable(value = "hashId") String hashId,
-                                      @RequestParam(value = "userHashId", required = false) String userHashId,
-                                      Model model,
-                                      Authentication authentication,
-                                      HttpSession session) {
-
-        if (session.getAttribute("uploadError") != null) {
-            model.addAttribute("error", session.getAttribute("uploadError"));
-            session.removeAttribute("uploadError");
-        }
-
-        Optional<PostText> postwo = postRepo.findByHashId(hashId);
-        if (postwo.isEmpty()) {
-            return "redirect:/admin_edit_user";
-        }
-
-        User currentUser = (User) authentication.getPrincipal();
-        PostText post = postwo.get();
-
-        if (!hasEditAccess(currentUser, post.getUser().getId())) {
-            model.addAttribute("error", "Доступ запрещен");
-            return "error";
-        }
-
-        model.addAttribute("postwo", List.of(post));
-        model.addAttribute("title", "redactor_admin");
-        model.addAttribute("type", "product");
-        model.addAttribute("categories", postTextCategoryConfig.getCategories());
-        model.addAttribute("isSuper", currentUser.getRole().equals("ROLE_SUPER"));
-        model.addAttribute("isAdmin", isAdmin(currentUser));
-        model.addAttribute("hashId", userHashId);
-        model.addAttribute("isPremium", post.isPremium());
-        model.addAttribute("premiumPriority", post.getPremiumPriority());
-        model.addAttribute("isDonate", post.isDonate());
-        return "page_two/edit_admin";
-    }
-
-    /**
-     * Отображает форму редактирования услуги.
-     *
-     * @param hashId        хэш-идентификатор услуги
-     * @param userHashId    хэш-идентификатор пользователя
-     * @param model         модель для данных формы
-     * @param authentication аутентификация для проверки прав
-     * @return страница редактирования или ошибка
-     */
-    @GetMapping("/page_two/admin_edit_user/job/{hashId}/page_two/edit_admin")
-    public String redactorJobDetailsEdit(@PathVariable(value = "hashId") String hashId,
-                                         @RequestParam(value = "userHashId", required = false) String userHashId,
-                                         Model model,
-                                         Authentication authentication,
-                                         HttpSession session) {
-
-        if (session.getAttribute("uploadError") != null) {
-            model.addAttribute("error", session.getAttribute("uploadError"));
-            session.removeAttribute("uploadError");
-        }
-
-        Optional<PostTextJob> postwo = postRepoJob.findByHashId(hashId);
-        if (postwo.isEmpty()) {
-            return "redirect:/admin_edit_user";
-        }
-
-        User currentUser = (User) authentication.getPrincipal();
-        PostTextJob post = postwo.get();
-
-        if (!hasEditAccess(currentUser, post.getUser().getId())) {
-            model.addAttribute("error", "Доступ запрещен");
-            return "error";
-        }
-
-        model.addAttribute("postwo", List.of(post));
-        model.addAttribute("title", "redactor_admin");
-        model.addAttribute("type", "service");
-        model.addAttribute("categories", postTextJobCategoryConfig.getCategories());
-        model.addAttribute("isSuper", currentUser.getRole().equals("ROLE_SUPER"));
-        model.addAttribute("isAdmin", isAdmin(currentUser));
-        model.addAttribute("hashId", userHashId);
-        model.addAttribute("isPremium", post.isPremium());
-        model.addAttribute("premiumPriority", post.getPremiumPriority());
-        model.addAttribute("isDonate", post.isDonate());
-        return "page_two/edit_admin";
-    }
-
-    /**
-     * Отображает форму редактирования вакансии.
-     *
-     * @param hashId        хэш-идентификатор вакансии
-     * @param userHashId    хэш-идентификатор пользователя
-     * @param model         модель для данных формы
-     * @param authentication аутентификация для проверки прав
-     * @return страница редактирования или ошибка
-     */
-    @GetMapping("/page_two/admin_edit_user/vac/{hashId}/page_two/edit_admin")
-    public String redactorVacancyDetailsEdit(@PathVariable(value = "hashId") String hashId,
-                                             @RequestParam(value = "userHashId", required = false) String userHashId,
-                                             Model model,
-                                             Authentication authentication,
-                                             HttpSession session) {
-
-        if (session.getAttribute("uploadError") != null) {
-            model.addAttribute("error", session.getAttribute("uploadError"));
-            session.removeAttribute("uploadError");
-        }
-
-        Optional<Vacancy> vacvac = postVacancyRepository.findByHashId(hashId);
-        if (vacvac.isEmpty()) {
-            return "redirect:/admin_edit_user";
-        }
-
-        User currentUser = (User) authentication.getPrincipal();
-        Vacancy vacancy = vacvac.get();
-
-        if (!hasEditAccess(currentUser, vacancy.getUser().getId())) {
-            model.addAttribute("error", "Доступ запрещен");
-            return "error";
-        }
-
-        model.addAttribute("vacvac", List.of(vacancy));
-        model.addAttribute("title", "redactor_admin");
-        model.addAttribute("type", "vacancy");
-        model.addAttribute("categories", postVacancyCategoryConfig.getCategories());
-        model.addAttribute("experience", experienceVacancyCategoryConfig.getExperience());
-        model.addAttribute("workformat", workFormatVacancyConfig.getWorkformat());
-        model.addAttribute("isSuper", currentUser.getRole().equals("ROLE_SUPER"));
-        model.addAttribute("isAdmin", isAdmin(currentUser));
-        model.addAttribute("hashId", userHashId);
-        model.addAttribute("isPremium", vacancy.isPremium());
-        model.addAttribute("premiumPriority", vacancy.getPremiumPriority());
-        model.addAttribute("isDonate", vacancy.isDonate());
-        return "page_two/edit_admin";
-    }
-
-    /**
-     * Отображает форму редактирования резюме.
-     *
-     * @param hashId        хэш-идентификатор резюме
-     * @param userHashId    хэш-идентификатор пользователя
-     * @param model         модель для данных формы
-     * @param authentication аутентификация для проверки прав
-     * @return страница редактирования или ошибка
-     */
-    @GetMapping("/page_two/admin_edit_user/res/{hashId}/page_two/edit_admin")
-    public String redactorResumeDetailsEdit(@PathVariable(value = "hashId") String hashId,
-                                            @RequestParam(value = "userHashId", required = false) String userHashId,
-                                            Model model,
-                                            Authentication authentication,
-                                            HttpSession session) {
-
-        if (session.getAttribute("uploadError") != null) {
-            model.addAttribute("error", session.getAttribute("uploadError"));
-            session.removeAttribute("uploadError");
-        }
-
-        Optional<Resume> resum = postResumeRepository.findByHashId(hashId);
-        if (resum.isEmpty()) {
-            return "redirect:/admin_edit_user";
-        }
-
-        User currentUser = (User) authentication.getPrincipal();
-        Resume resume = resum.get();
-
-        if (!hasEditAccess(currentUser, resume.getUser().getId())) {
-            model.addAttribute("error", "Доступ запрещен");
-            return "error";
-        }
-
-        model.addAttribute("resume", List.of(resume));
-        model.addAttribute("title", "redactor_admin");
-        model.addAttribute("type", "resume");
-        model.addAttribute("categories", postResumeCategoryConfig.getCategories());
-        model.addAttribute("experience", experienceResumCategoryConfig.getExperience());
-        model.addAttribute("workformat", workFormatResumeConfig.getWorkformat());
-        model.addAttribute("isSuper", currentUser.getRole().equals("ROLE_SUPER"));
-        model.addAttribute("isAdmin", isAdmin(currentUser));
-        model.addAttribute("hashId", userHashId);
-        return "page_two/edit_admin";
-    }
-
-    // ======================================================================
-    // ОБНОВЛЕНИЕ КОНТЕНТА (POST-обработчики)
-    // ======================================================================
-
-    // Эти методы принимают данные из форм редактирования и вызывают соответствующие приватные методы
-
     @PostMapping("/page_two/admin_edit_user/{hashId}/page_two/edit_admin")
-    public String redactorDetailsPostUpdate(@PathVariable(value = "hashId") String hashId,
-                                            @RequestParam String title,
-                                            @RequestParam Integer price,
-                                            @RequestParam String full_text,
-                                            @RequestParam String category,
-                                            @RequestParam String location,
-                                            @RequestParam(value = "deleteImages", required = false) List<Long> deleteImageIds,
-                                            @RequestParam(value = "files", required = false) MultipartFile[] files,
-                                            @RequestParam(value = "userHashId", required = false) String userHashId,
-                                            @RequestParam(value = "premium", required = false, defaultValue = "false") Boolean premium,
-                                            @RequestParam(value = "premiumPriority", required = false, defaultValue = "0") Integer premiumPriority,
-                                            @RequestParam(value = "donate", required = false, defaultValue = "false") Boolean donate,
-                                            Model model,
-                                            Authentication authentication) {
-        Optional<PostText> postOptional = postRepo.findByHashId(hashId);
-        if (postOptional.isEmpty()) {
-            model.addAttribute("error", "Запись не найдена");
-            return "error";
-        }
-        return updateProductPost(postOptional.get().getId(), title, price, full_text, category, location,
-                deleteImageIds, files, userHashId, premium, premiumPriority, donate, model, authentication);
-    }
+    public String updateProductPost(
+            @PathVariable("hashId") String postHashId,
+            @ModelAttribute PostUpdateRequestDTO request,
+            Authentication authentication,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
-    @PostMapping("/page_two/admin_edit_user/job/{hashId}/page_two/edit_admin")
-    public String redactorJobDetailsPostUpdate(@PathVariable(value = "hashId") String hashId,
-                                               @RequestParam String title,
-                                               @RequestParam Integer price,
-                                               @RequestParam String full_text,
-                                               @RequestParam String category,
-                                               @RequestParam String location,
-                                               @RequestParam(value = "deleteImages", required = false) List<Long> deleteImageIds,
-                                               @RequestParam(value = "files", required = false) MultipartFile[] files,
-                                               @RequestParam(value = "userHashId", required = false) String userHashId,
-                                               @RequestParam(value = "premium", required = false, defaultValue = "false") Boolean premium,
-                                               @RequestParam(value = "premiumPriority", required = false, defaultValue = "0") Integer premiumPriority,
-                                               @RequestParam(value = "donate", required = false, defaultValue = "false") Boolean donate,
-                                               Model model,
-                                               Authentication authentication) {
-        Optional<PostTextJob> postOptional = postRepoJob.findByHashId(hashId);
-        if (postOptional.isEmpty()) {
-            model.addAttribute("error", "Запись не найдена");
-            return "error";
-        }
-        return updateServicePost(postOptional.get().getId(), title, price, full_text, category, location,
-                deleteImageIds, files, userHashId, premium, premiumPriority, donate, model, authentication);
-    }
-
-    @PostMapping("/page_two/admin_edit_user/vac/{hashId}/page_two/edit_admin")
-    public String redactorVacancyDetailsPostUpdate(@PathVariable(value = "hashId") String hashId,
-                                                   @RequestParam String title,
-                                                   @RequestParam Integer cash,
-                                                   @RequestParam String full_text,
-                                                   @RequestParam String category,
-                                                   @RequestParam String experience,
-                                                   @RequestParam String workformat,
-                                                   @RequestParam String location,
-                                                   @RequestParam(value = "deleteImages", required = false) List<Long> deleteImageIds,
-                                                   @RequestParam(value = "files", required = false) MultipartFile[] files,
-                                                   @RequestParam(value = "userHashId", required = false) String userHashId,
-                                                   @RequestParam(value = "premium", required = false, defaultValue = "false") Boolean premium,
-                                                   @RequestParam(value = "premiumPriority", required = false, defaultValue = "0") Integer premiumPriority,
-                                                   @RequestParam(value = "donate", required = false, defaultValue = "false") Boolean donate,
-                                                   Model model,
-                                                   Authentication authentication) {
-        Optional<Vacancy> vacancyOptional = postVacancyRepository.findByHashId(hashId);
-        if (vacancyOptional.isEmpty()) {
-            model.addAttribute("error", "Запись не найдена");
-            return "error";
-        }
-        return updatePostVacancy(vacancyOptional.get().getId(), title, cash, full_text, category, experience, workformat, location,
-                deleteImageIds, files, userHashId, premium, premiumPriority, donate, model, authentication);
-    }
-
-    @PostMapping("/page_two/admin_edit_user/res/{hashId}/page_two/edit_admin")
-    public String redactorResumeDetailsPostUpdate(@PathVariable(value = "hashId") String hashId,
-                                                  @RequestParam String title,
-                                                  @RequestParam Integer cash,
-                                                  @RequestParam String full_text,
-                                                  @RequestParam String category,
-                                                  @RequestParam String experience,
-                                                  @RequestParam String workformat,
-                                                  @RequestParam(value = "deleteImages", required = false) List<Long> deleteImageIds,
-                                                  @RequestParam(value = "files", required = false) MultipartFile[] files,
-                                                  @RequestParam(value = "userHashId", required = false) String userHashId,
-                                                  Model model,
-                                                  Authentication authentication) {
-        Optional<Resume> resumeOptional = postResumeRepository.findByHashId(hashId);
-        if (resumeOptional.isEmpty()) {
-            model.addAttribute("error", "Запись не найдена");
-            return "error";
-        }
-        return updatePostResume(resumeOptional.get().getId(), title, cash, full_text, category, experience, workformat,
-                deleteImageIds, files, userHashId, model, authentication);
-    }
-
-    // ======================================================================
-    // ПРИВАТНЫЕ МЕТОДЫ ОБНОВЛЕНИЯ
-    // ======================================================================
-
-    /**
-     * Обновляет товар.
-     */
-    private String updateProductPost(Long id, String title, Integer price, String full_text,
-                                     String category, String location, List<Long> deleteImageIds,
-                                     MultipartFile[] files, String userHashId,
-                                     Boolean premium, Integer premiumPriority,
-                                     Boolean donate, Model model,
-                                     Authentication authentication) {
         try {
             User currentUser = (User) authentication.getPrincipal();
-            Optional<PostText> optionalPost = postRepo.findById(id);
-            if (optionalPost.isEmpty()) {
-                model.addAttribute("error", "Запись не найдена");
-                return "error";
+
+            // Находим пост по hashId
+            PostText post = postTypeResolver.loadPostByHashId(postHashId);
+
+            if (post == null) {
+                throw new IllegalArgumentException("Пост не найден");
             }
 
-            PostText post = optionalPost.get();
-            if (!hasEditAccess(currentUser, post.getUser().getId())) {
-                model.addAttribute("error", "Доступ запрещен");
-                return "error";
+            // Обновляем через сервис
+
+            PostText updatedPost;
+
+            MultipartFile[] files = request.getFiles();
+            if (files != null) {
+                files = java.util.Arrays.stream(files)
+                        .filter(f -> f != null && !f.isEmpty())
+                        .toArray(MultipartFile[]::new);
+                request.setFiles(files.length > 0 ? files : null);
             }
 
-            // ========== СЕРВЕРНАЯ ПРОВЕРКА РАЗМЕРА ==========
-            imageService.validateFilesSize(files, 20, 20);
-            // ================================================
-
-            // Обработка изображений
-            processImages(post.getImages().size(), deleteImageIds, files, post, null, null, null, model);
-
-            // Обновление полей
-            post.setTitle(title);
-            post.setPrice(price);
-            post.setFull_text(full_text);
-            post.setCategory(category);
-            post.setLocation(location);
-
-            if (premium != null) {
-                post.setPremium(premium);
-            }
-            if (premiumPriority != null) {
-                post.setPremiumPriority(premiumPriority);
+            if (post instanceof RealEstatePostText || post instanceof MotorVehiclesPostText) {
+                updatedPost = productService.updatePostFromDTO(
+                        post.getId(), currentUser, request, request.getFiles(), true
+                );
+            } else {
+                updatedPost = extendsUpdateProductService.updateExtendsPostFromDTO(
+                        post.getId(), currentUser, request, request.getFiles(), true
+                );
             }
 
-            if (donate != null) {
-                post.setDonate(donate);
-            }
+            //updatedPost.setModeration(false);
+            //updatedPost.resetForModeration();
+             //updatedPost.setArchived(false);
 
-            // Обновляем дату публикации, чтобы объявление попало в карусель
-            if (premium != null && premium) {
-                post.setModeratedAt(LocalDateTime.now());
-                logger.info("Updated moderatedAt for premium product id: {}", post.getId());
-            }
-            // ==================================
+            updatedPost.publishAfterAdminEdit();
+            postRepo.save(updatedPost);
 
-            postRepo.save(post);
-
-
+            // Очищаем кэш
             postCacheService.clearIndexCache();
 
-            // Удаление помеченных изображений
-            deleteMarkedImagesAfterUpdate(post, null, null, null);
+            // Редирект с userHashId
+            String returnHash = request.getUserHashId() != null && !request.getUserHashId().isEmpty()
+                    ? request.getUserHashId()
+                    : updatedPost.getUser().getHashId();
 
-            String returnHash = (userHashId != null && !userHashId.isEmpty()) ? userHashId : post.getUser().getHashId();
-            return "redirect:/page_two/admin_edit_user/" + post.getHashId() + "/page_two/edit_admin?userHashId=" + returnHash;
+            redirectAttributes.addFlashAttribute("success", "Объявление успешно обновлено");
+            return "redirect:/page_two/admin_edit_user/" + updatedPost.getHashId() + "/page_two/edit_admin?userHashId=" + returnHash;
+
         } catch (IllegalArgumentException e) {
-            logger.warn("Ошибка валидации размера файлов: {}", e.getMessage());
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("categories", postTextCategoryConfig.getCategories());
+            logger.warn("Ошибка валидации при обновлении товара: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/page_two/admin_edit_user/" + postHashId + "/page_two/edit_admin?userHashId=" + request.getUserHashId();
 
-            return "redirect:/page_two/admin_edit_user?error=size_limit";
+        } catch (SecurityException e) {
+            logger.warn("Ошибка доступа: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Доступ запрещен");
+            return "redirect:/page_two/admin_edit_user/" + postHashId + "/page_two/edit_admin?userHashId=" + request.getUserHashId();
 
         } catch (Exception e) {
-            logger.error("Error updating product: ", e);
-            model.addAttribute("error", "Ошибка при обновлении: " + e.getMessage());
-            return "error";
+            logger.warn("Ошибка при обновлении товара: ", e);
+            redirectAttributes.addFlashAttribute("error", "Произошла ошибка при обновлении. Попробуйте позже.");
+            return "redirect:/page_two/admin_edit_user/" + postHashId + "/page_two/edit_admin?userHashId=" + request.getUserHashId();
         }
-    }
-
-    /**
-     * Обновляет услугу.
-     */
-    private String updateServicePost(Long id, String title, Integer price, String full_text,
-                                     String category, String location, List<Long> deleteImageIds,
-                                     MultipartFile[] files, String userHashId,
-                                     Boolean premium, Integer premiumPriority,
-                                     Boolean donate, Model model,
-                                     Authentication authentication) {
-        try {
-            User currentUser = (User) authentication.getPrincipal();
-            Optional<PostTextJob> optionalPost = postRepoJob.findById(id);
-            if (optionalPost.isEmpty()) {
-                model.addAttribute("error", "Запись не найдена");
-                return "error";
-            }
-
-            PostTextJob post = optionalPost.get();
-            if (!hasEditAccess(currentUser, post.getUser().getId())) {
-                model.addAttribute("error", "Доступ запрещен");
-                return "error";
-            }
-
-            // ========== СЕРВЕРНАЯ ПРОВЕРКА РАЗМЕРА ==========
-            imageService.validateFilesSize(files, 20, 20);
-            // ================================================
-
-            processImages(post.getImages().size(), deleteImageIds, files, null, post, null, null, model);
-            post.setTitle(title);
-            post.setPrice(price);
-            post.setFull_text(full_text);
-            post.setCategory(category);
-            post.setLocation(location);
-
-            if (premium != null) {
-                post.setPremium(premium);
-            }
-            if (premiumPriority != null) {
-                post.setPremiumPriority(premiumPriority);
-            }
-
-            if (donate != null) {
-                post.setDonate(donate);
-            }
-
-            // Обновляем дату публикации, чтобы объявление попало в карусель
-            if (premium != null && premium) {
-                post.setModeratedAt(LocalDateTime.now());
-                logger.info("Updated moderatedAt for premium service id: {}", post.getId());
-            }
-            // ==================================
-
-            postRepoJob.save(post);
-
-            postCacheService.clearIndexCache();
-
-            deleteMarkedImagesAfterUpdate(null, post, null, null);
-
-            String returnHash = (userHashId != null && !userHashId.isEmpty()) ? userHashId : post.getUser().getHashId();
-            return "redirect:/page_two/admin_edit_user/job/" + post.getHashId() + "/page_two/edit_admin?userHashId=" + returnHash;
-        } catch (IllegalArgumentException e) {
-            logger.warn("Ошибка валидации размера файлов: {}", e.getMessage());
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("categories", postTextJobCategoryConfig.getCategories());
-
-            return "redirect:/page_two/admin_edit_user?error=size_limit";
-
-        } catch (Exception e) {
-            logger.error("Error updating service: ", e);
-            model.addAttribute("error", "Ошибка при обновлении: " + e.getMessage());
-            return "error";
-        }
-    }
-
-    /**
-     * Обновляет вакансию.
-     */
-    private String updatePostVacancy(Long id, String title, Integer cash, String full_text,
-                                     String category, String experience, String workformat, String location, List<Long> deleteImageIds,
-                                     MultipartFile[] files, String userHashId,
-                                     Boolean premium, Integer premiumPriority,
-                                     Boolean donate, Model model,
-                                     Authentication authentication) {
-        try {
-            User currentUser = (User) authentication.getPrincipal();
-            Optional<Vacancy> optionalVac = postVacancyRepository.findById(id);
-            if (optionalVac.isEmpty()) {
-                model.addAttribute("error", "Запись не найдена");
-                return "error";
-            }
-
-            Vacancy vaca = optionalVac.get();
-            if (!hasEditAccess(currentUser, vaca.getUser().getId())) {
-                model.addAttribute("error", "Доступ запрещен");
-                return "error";
-            }
-
-            // ========== СЕРВЕРНАЯ ПРОВЕРКА РАЗМЕРА ==========
-            imageService.validateFilesSize(files, 20, 20);
-            // ================================================
-
-            processImages(vaca.getImages().size(), deleteImageIds, files, null, null, vaca, null, model);
-            vaca.setTitle(title);
-            vaca.setCash(cash);
-            vaca.setFull_text(full_text);
-            vaca.setCategory(category);
-            vaca.setExperience(experience);
-            vaca.setWorkformat(workformat);
-            vaca.setLocation(location);
-
-            if (premium != null) {
-                vaca.setPremium(premium);
-            }
-            if (premiumPriority != null) {
-                vaca.setPremiumPriority(premiumPriority);
-            }
-
-            if (donate != null) {
-                vaca.setDonate(donate);
-            }
-
-            // Обновляем дату публикации, чтобы объявление попало в карусель
-            if (premium != null && premium) {
-                vaca.setModeratedAt(LocalDateTime.now());
-                logger.info("Updated moderatedAt for premium vacancy id: {}", vaca.getId());
-            }
-            // ==================================
-
-            postVacancyRepository.save(vaca);
-
-            postCacheService.clearIndexCache();
-
-            deleteMarkedImagesAfterUpdate(null, null, vaca, null);
-
-            String returnHash = (userHashId != null && !userHashId.isEmpty()) ? userHashId : vaca.getUser().getHashId();
-            return "redirect:/page_two/admin_edit_user/vac/" + vaca.getHashId() + "/page_two/edit_admin?userHashId=" + returnHash;
-        } catch (IllegalArgumentException e) {
-            logger.warn("Ошибка валидации размера файлов: {}", e.getMessage());
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("categories", postVacancyCategoryConfig.getCategories());
-
-            return "redirect:/page_two/admin_edit_user?error=size_limit";
-
-        } catch (Exception e) {
-            logger.error("Error updating vacancy: ", e);
-            model.addAttribute("error", "Ошибка при обновлении: " + e.getMessage());
-            return "error";
-        }
-    }
-
-    /**
-     * Обновляет резюме.
-     */
-    private String updatePostResume(Long id, String title, Integer cash, String full_text,
-                                    String category, String experience, String workformat, List<Long> deleteImageIds,
-                                    MultipartFile[] files, String userHashId, Model model,
-                                    Authentication authentication) {
-        try {
-            User currentUser = (User) authentication.getPrincipal();
-            Optional<Resume> optionalRes = postResumeRepository.findById(id);
-            if (optionalRes.isEmpty()) {
-                model.addAttribute("error", "Запись не найдена");
-                return "error";
-            }
-
-            Resume res = optionalRes.get();
-            if (!hasEditAccess(currentUser, res.getUser().getId())) {
-                model.addAttribute("error", "Доступ запрещен");
-                return "error";
-            }
-
-            // ========== СЕРВЕРНАЯ ПРОВЕРКА РАЗМЕРА ==========
-            imageService.validateFilesSize(files, 20, 20);
-            // ================================================
-
-            processImages(res.getImages().size(), deleteImageIds, files, null, null, null, res, model);
-            res.setTitle(title);
-            res.setCash(cash);
-            res.setFull_text(full_text);
-            res.setCategory(category);
-            res.setExperience(experience);
-            res.setWorkformat(workformat);
-            postResumeRepository.save(res);
-            deleteMarkedImagesAfterUpdate(null, null, null, res);
-
-            String returnHash = (userHashId != null && !userHashId.isEmpty()) ? userHashId : res.getUser().getHashId();
-            return "redirect:/page_two/admin_edit_user/res/" + res.getHashId() + "/page_two/edit_admin?userHashId=" + returnHash;
-        } catch (IllegalArgumentException e) {
-            logger.warn("Ошибка валидации размера файлов: {}", e.getMessage());
-            model.addAttribute("error", e.getMessage());
-            model.addAttribute("categories", postResumeCategoryConfig.getCategories());
-
-            return "redirect:/page_two/admin_edit_user?error=size_limit";
-
-        } catch (Exception e) {
-            logger.error("Error updating resume: ", e);
-            model.addAttribute("error", "Ошибка при обновлении: " + e.getMessage());
-            return "error";
-        }
-    }
-
-    // ======================================================================
-    // ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
-    // ======================================================================
-
-    /**
-     * Проверяет, имеет ли пользователь права суперадминистратора.
-     *
-     * @param authentication аутентификация пользователя
-     * @return true если роль ROLE_SUPER или ROLE_ADMIN
-     */
-    private boolean hasSuperAccess(Authentication authentication) {
-        if (authentication == null) return false;
-        return authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_SUPER") || a.getAuthority().equals("ROLE_ADMIN"));
-    }
-
-    /**
-     * Проверяет, имеет ли пользователь право редактировать контент.
-     * <p>
-     * Право есть у ROLE_SUPER, ROLE_ADMIN или владельца контента.
-     * </p>
-     *
-     * @param currentUser текущий пользователь
-     * @param postOwnerId ID владельца контента
-     * @return true если доступ разрешен
-     */
-    private boolean hasEditAccess(User currentUser, Long postOwnerId) {
-        return currentUser.getRole().equals("ROLE_SUPER") ||
-                currentUser.getRole().equals("ROLE_ADMIN") ||
-                currentUser.getId().equals(postOwnerId);
-    }
-
-    /**
-     * Проверяет, является ли пользователь администратором.
-     *
-     * @param user пользователь
-     * @return true если роль ROLE_ADMIN или ROLE_SUPER
-     */
-    private boolean isAdmin(User user) {
-        return user.getRole().equals("ROLE_ADMIN") || user.getRole().equals("ROLE_SUPER");
     }
 
     /**
@@ -1254,5 +706,546 @@ public class UpdateUserPost {
         } catch (Exception e) {
             logger.error("Error deleting marked images: ", e);
         }
+    }
+
+    /**
+     * Обновляет услугу.
+     */
+    private String updateServicePost(String hashId,
+                                     Long id, String title, Integer price, String full_text,
+                                     String category, String location, List<Long> deleteImageIds,
+                                     MultipartFile[] files, String userHashId,
+                                     Boolean premium, Integer premiumPriority,
+                                     Boolean donate, Model model,
+                                     Authentication authentication,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            Optional<PostTextJob> optionalPost = postRepoJob.findById(id);
+            if (optionalPost.isEmpty()) {
+                model.addAttribute("error", "Запись не найдена");
+                return "error";
+            }
+
+            PostTextJob post = optionalPost.get();
+            if (!hasEditAccess(currentUser, post.getUser().getId())) {
+                model.addAttribute("error", "Доступ запрещен");
+                return "error";
+            }
+
+            // ===== АДМИН: ФОТО УДАЛЯЮТСЯ СРАЗУ! =====
+            // 1. Удаляем выбранные фото (физически)
+            if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+                imageService.markImagesForDeletion(deleteImageIds);
+                // Сразу физически удаляем
+                imageService.deleteMarkedImagesForPostJob(post);
+            }
+
+            // 2. Добавляем новые фото
+            MultipartFile[] nonEmptyFiles = files == null ? null :
+                    java.util.Arrays.stream(files)
+                            .filter(f -> f != null && !f.isEmpty())
+                            .toArray(MultipartFile[]::new);
+
+            if (nonEmptyFiles != null && nonEmptyFiles.length > 0) {
+                imageService.validateFilesSize(nonEmptyFiles, 20, 20);
+
+                int currentCount = post.getImages().size();
+                if (deleteImageIds != null) {
+                    currentCount -= deleteImageIds.size();
+                }
+                if (currentCount + nonEmptyFiles.length > 5) {
+                    throw new IllegalArgumentException("Нельзя загрузить более 5 изображений");
+                }
+                imageService.saveImages(nonEmptyFiles, null, post, null, null);
+            }
+
+            // 3. Обновляем поля (full_text может быть null)
+            post.setTitle(title);
+            post.setPrice(price);
+            post.setFull_text(full_text);  // может быть null
+            post.setCategory(category);
+            post.setLocation(location);
+
+            if (premium != null) {
+                post.setPremium(premium);
+            }
+            if (premiumPriority != null) {
+                post.setPremiumPriority(premiumPriority);
+            }
+            if (donate != null) {
+                post.setDonate(donate);
+            }
+
+            if (premium != null && premium) {
+                post.setModeratedAt(LocalDateTime.now());
+            }
+
+            //post.setModeration(false);
+            // Сброс на модерацию
+            //post.resetForModeration();
+            //post.setArchived(false);
+
+            post.publishAfterAdminEdit();
+
+            postRepoJob.save(post);
+            postCacheService.clearIndexCache();
+
+            String returnHash = (userHashId != null && !userHashId.isEmpty()) ? userHashId : post.getUser().getHashId();
+            return "redirect:/page_two/admin_edit_user/job/" + post.getHashId() + "/page_two/edit_admin?userHashId=" + returnHash;
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Ошибка валидации: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/page_two/admin_edit_user/job/" + hashId + "/page_two/edit_admin?userHashId=" + userHashId;
+        } catch (Exception e) {
+            logger.error("Error updating service: ", e);
+            redirectAttributes.addFlashAttribute("error", "Ошибка при обновлении. Попробуйте позже.");
+            return "redirect:/page_two/admin_edit_user/job/" + hashId + "/page_two/edit_admin?userHashId=" + userHashId;
+        }
+    }
+
+    /**
+     * Обновляет вакансию.
+     */
+    private String updatePostVacancy(String hashId,
+                                     Long id, String title, Integer cash, String full_text,
+                                     String category, String experience, String workformat, String location,
+                                     List<Long> deleteImageIds, MultipartFile[] files, String userHashId,
+                                     Boolean premium, Integer premiumPriority, Boolean donate,
+                                     Model model, Authentication authentication,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            Optional<Vacancy> optionalVac = postVacancyRepository.findById(id);
+            if (optionalVac.isEmpty()) {
+                model.addAttribute("error", "Запись не найдена");
+                return "error";
+            }
+
+            Vacancy vaca = optionalVac.get();
+            if (!hasEditAccess(currentUser, vaca.getUser().getId())) {
+                model.addAttribute("error", "Доступ запрещен");
+                return "error";
+            }
+
+            // ===== АДМИН: ФОТО УДАЛЯЮТСЯ СРАЗУ! =====
+            if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+                imageService.markImagesForDeletion(deleteImageIds);
+                imageService.deleteMarkedImagesForVacancy(vaca);
+            }
+
+            MultipartFile[] nonEmptyFiles = files == null ? null :
+                    java.util.Arrays.stream(files)
+                            .filter(f -> f != null && !f.isEmpty())
+                            .toArray(MultipartFile[]::new);
+
+            if (nonEmptyFiles != null && nonEmptyFiles.length > 0) {
+                imageService.validateFilesSize(nonEmptyFiles, 20, 20);
+
+                int currentCount = vaca.getImages().size();
+                if (deleteImageIds != null) {
+                    currentCount -= deleteImageIds.size();
+                }
+                if (currentCount + nonEmptyFiles.length > 5) {
+                    throw new IllegalArgumentException("Нельзя загрузить более 5 изображений");
+                }
+                imageService.saveImages(nonEmptyFiles, null, null, vaca, null);
+            }
+
+            vaca.setTitle(title);
+            vaca.setCash(cash);
+            vaca.setFull_text(full_text);  // может быть null
+            vaca.setCategory(category);
+            vaca.setExperience(experience);
+            vaca.setWorkformat(workformat);
+            vaca.setLocation(location);
+
+            if (premium != null) {
+                vaca.setPremium(premium);
+            }
+            if (premiumPriority != null) {
+                vaca.setPremiumPriority(premiumPriority);
+            }
+            if (donate != null) {
+                vaca.setDonate(donate);
+            }
+
+            if (premium != null && premium) {
+                vaca.setModeratedAt(LocalDateTime.now());
+            }
+
+            //vaca.setModeration(false);
+            // Сброс на модерацию
+            //vaca.resetForModeration();
+            //vaca.setArchived(false);
+
+            vaca.publishAfterAdminEdit();
+
+            postVacancyRepository.save(vaca);
+            postCacheService.clearIndexCache();
+
+            String returnHash = (userHashId != null && !userHashId.isEmpty()) ? userHashId : vaca.getUser().getHashId();
+            return "redirect:/page_two/admin_edit_user/vac/" + vaca.getHashId() + "/page_two/edit_admin?userHashId=" + returnHash;
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Ошибка валидации: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/page_two/admin_edit_user/vac/" + hashId + "/page_two/edit_admin?userHashId=" + userHashId;
+        } catch (Exception e) {
+            logger.error("Error updating vacancy: ", e);
+            redirectAttributes.addFlashAttribute("error", "Ошибка при обновлении. Попробуйте позже.");
+            return "redirect:/page_two/admin_edit_user/vac/" + hashId + "/page_two/edit_admin?userHashId=" + userHashId;
+        }
+    }
+
+    /**
+     * Обновляет резюме.
+     */
+    private String updatePostResume(String hashId,
+                                    Long id, String title, Integer cash, String full_text,
+                                    String category, String experience, String workformat,
+                                    List<Long> deleteImageIds, MultipartFile[] files, String userHashId,
+                                    Model model, Authentication authentication,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            User currentUser = (User) authentication.getPrincipal();
+            Optional<Resume> optionalRes = postResumeRepository.findById(id);
+            if (optionalRes.isEmpty()) {
+                model.addAttribute("error", "Запись не найдена");
+                return "error";
+            }
+
+            Resume res = optionalRes.get();
+            if (!hasEditAccess(currentUser, res.getUser().getId())) {
+                model.addAttribute("error", "Доступ запрещен");
+                return "error";
+            }
+
+            // ===== АДМИН: ФОТО УДАЛЯЮТСЯ СРАЗУ! =====
+            if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+                imageService.markImagesForDeletion(deleteImageIds);
+                imageService.deleteMarkedImagesForResume(res);
+            }
+
+            MultipartFile[] nonEmptyFiles = files == null ? null :
+                    java.util.Arrays.stream(files)
+                            .filter(f -> f != null && !f.isEmpty())
+                            .toArray(MultipartFile[]::new);
+
+            if (nonEmptyFiles != null && nonEmptyFiles.length > 0) {
+                imageService.validateFilesSize(nonEmptyFiles, 20, 20);
+
+                int currentCount = res.getImages().size();
+                if (deleteImageIds != null) {
+                    currentCount -= deleteImageIds.size();
+                }
+                if (currentCount + nonEmptyFiles.length > 5) {
+                    throw new IllegalArgumentException("Нельзя загрузить более 5 изображений");
+                }
+                imageService.saveImages(nonEmptyFiles, null, null, null, res);
+            }
+
+            res.setTitle(title);
+            res.setCash(cash);
+            res.setFull_text(full_text);  // может быть null
+            res.setCategory(category);
+            res.setExperience(experience);
+            res.setWorkformat(workformat);
+            postResumeRepository.save(res);
+
+            //res.setModeration(false);
+            //res.resetForModeration();
+            //res.setArchived(false);
+
+            res.publishAfterAdminEdit();
+
+            String returnHash = (userHashId != null && !userHashId.isEmpty()) ? userHashId : res.getUser().getHashId();
+            return "redirect:/page_two/admin_edit_user/res/" + res.getHashId() + "/page_two/edit_admin?userHashId=" + returnHash;
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Ошибка валидации: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/page_two/admin_edit_user/res/" + hashId + "/page_two/edit_admin?userHashId=" + userHashId;
+        } catch (Exception e) {
+            logger.error("Error updating resume: ", e);
+            redirectAttributes.addFlashAttribute("error", "Ошибка при обновлении. Попробуйте позже.");
+            return "redirect:/page_two/admin_edit_user/res/" + hashId + "/page_two/edit_admin?userHashId=" + userHashId;
+        }
+    }
+
+    // ======================================================================
+    // СТРАНИЦЫ ОТОБРАЖЕНИЯ ФОРМ (GET)
+    // ======================================================================
+
+    @GetMapping("/page_two/admin_edit_user/{hashId}/page_two/edit_admin")
+    public String redactorDetailsEdit(@PathVariable(value = "hashId") String hashId,
+                                      @RequestParam(value = "userHashId", required = false) String userHashId,
+                                      Model model,
+                                      Authentication authentication,
+                                      HttpSession session,
+                                      RedirectAttributes redirectAttributes) {
+
+        // Проверяем наличие ошибок из RedirectAttributes
+        if (redirectAttributes.getFlashAttributes().containsKey("error")) {
+            model.addAttribute("error", redirectAttributes.getFlashAttributes().get("error"));
+        }
+        if (redirectAttributes.getFlashAttributes().containsKey("success")) {
+            model.addAttribute("success", redirectAttributes.getFlashAttributes().get("success"));
+        }
+
+        // Старая обработка ошибок из сессии (для обратной совместимости)
+        if (session.getAttribute("uploadError") != null) {
+            model.addAttribute("error", session.getAttribute("uploadError"));
+            session.removeAttribute("uploadError");
+        }
+
+        // загружаем пост с правильным типом
+        PostText post = postTypeResolver.loadPostByHashId(hashId);
+
+        if (post == null) {
+            return "redirect:/admin_edit_user";
+        }
+
+        User currentUser = (User) authentication.getPrincipal();
+
+
+        if (!hasEditAccess(currentUser, post.getUser().getId())) {
+            model.addAttribute("error", "Доступ запрещен");
+            return "error";
+        }
+
+        model.addAttribute("postwo", List.of(post));
+        model.addAttribute("title", "redactor_admin");
+        model.addAttribute("type", "product");
+        model.addAttribute("categories", postTextCategoryConfig.getCategories());
+        model.addAttribute("isSuper", currentUser.getRole().equals("ROLE_SUPER"));
+        model.addAttribute("isAdmin", isAdmin(currentUser));
+        model.addAttribute("hashId", userHashId);
+        model.addAttribute("isPremium", post.isPremium());
+        model.addAttribute("premiumPriority", post.getPremiumPriority());
+        model.addAttribute("isDonate", post.isDonate());
+        model.addAttribute("filterService", filterConfigService);
+
+        return "page_two/edit_admin";
+    }
+
+    @GetMapping("/page_two/admin_edit_user/job/{hashId}/page_two/edit_admin")
+    public String redactorJobDetailsEdit(@PathVariable(value = "hashId") String hashId,
+                                         @RequestParam(value = "userHashId", required = false) String userHashId,
+                                         Model model,
+                                         Authentication authentication,
+                                         HttpSession session,
+                                         RedirectAttributes redirectAttributes) {
+
+        if (redirectAttributes.getFlashAttributes().containsKey("error")) {
+            model.addAttribute("error", redirectAttributes.getFlashAttributes().get("error"));
+        }
+        if (redirectAttributes.getFlashAttributes().containsKey("success")) {
+            model.addAttribute("success", redirectAttributes.getFlashAttributes().get("success"));
+        }
+
+        if (session.getAttribute("uploadError") != null) {
+            model.addAttribute("error", session.getAttribute("uploadError"));
+            session.removeAttribute("uploadError");
+        }
+
+        Optional<PostTextJob> postOptional = postRepoJob.findByHashId(hashId);
+        if (postOptional.isEmpty()) {
+            return "redirect:/admin_edit_user";
+        }
+
+        User currentUser = (User) authentication.getPrincipal();
+        PostTextJob post = postOptional.get();
+
+        if (!hasEditAccess(currentUser, post.getUser().getId())) {
+            model.addAttribute("error", "Доступ запрещен");
+            return "error";
+        }
+
+        model.addAttribute("postwo", List.of(post));
+        model.addAttribute("title", "redactor_admin");
+        model.addAttribute("type", "service");
+        model.addAttribute("categories", postTextJobCategoryConfig.getCategories());
+        model.addAttribute("isSuper", currentUser.getRole().equals("ROLE_SUPER"));
+        model.addAttribute("isAdmin", isAdmin(currentUser));
+        model.addAttribute("hashId", userHashId);
+        model.addAttribute("isPremium", post.isPremium());
+        model.addAttribute("premiumPriority", post.getPremiumPriority());
+        model.addAttribute("isDonate", post.isDonate());
+        return "page_two/edit_admin";
+    }
+
+    @GetMapping("/page_two/admin_edit_user/vac/{hashId}/page_two/edit_admin")
+    public String redactorVacancyDetailsEdit(@PathVariable(value = "hashId") String hashId,
+                                             @RequestParam(value = "userHashId", required = false) String userHashId,
+                                             Model model,
+                                             Authentication authentication,
+                                             HttpSession session) {
+
+
+        if (session.getAttribute("uploadError") != null) {
+            model.addAttribute("error", session.getAttribute("uploadError"));
+            session.removeAttribute("uploadError");
+        }
+
+        Optional<Vacancy> vacancyOptional = postVacancyRepository.findByHashId(hashId);
+        if (vacancyOptional.isEmpty()) {
+            return "redirect:/admin_edit_user";
+        }
+
+        User currentUser = (User) authentication.getPrincipal();
+        Vacancy vacancy = vacancyOptional.get();
+
+        if (!hasEditAccess(currentUser, vacancy.getUser().getId())) {
+            model.addAttribute("error", "Доступ запрещен");
+            return "error";
+        }
+
+        model.addAttribute("vacvac", List.of(vacancy));
+        model.addAttribute("title", "redactor_admin");
+        model.addAttribute("type", "vacancy");
+        model.addAttribute("categories", postVacancyCategoryConfig.getCategories());
+        model.addAttribute("experience", experienceVacancyCategoryConfig.getExperience());
+        model.addAttribute("workformat", workFormatVacancyConfig.getWorkformat());
+        model.addAttribute("isSuper", currentUser.getRole().equals("ROLE_SUPER"));
+        model.addAttribute("isAdmin", isAdmin(currentUser));
+        model.addAttribute("hashId", userHashId);
+        model.addAttribute("isPremium", vacancy.isPremium());
+        model.addAttribute("premiumPriority", vacancy.getPremiumPriority());
+        model.addAttribute("isDonate", vacancy.isDonate());
+        return "page_two/edit_admin";
+    }
+
+    @GetMapping("/page_two/admin_edit_user/res/{hashId}/page_two/edit_admin")
+    public String redactorResumeDetailsEdit(@PathVariable(value = "hashId") String hashId,
+                                            @RequestParam(value = "userHashId", required = false) String userHashId,
+                                            Model model,
+                                            Authentication authentication,
+                                            HttpSession session) {
+
+        if (session.getAttribute("uploadError") != null) {
+            model.addAttribute("error", session.getAttribute("uploadError"));
+            session.removeAttribute("uploadError");
+        }
+
+        Optional<Resume> resumeOptional = postResumeRepository.findByHashId(hashId);
+        if (resumeOptional.isEmpty()) {
+            return "redirect:/admin_edit_user";
+        }
+
+        User currentUser = (User) authentication.getPrincipal();
+        Resume resume = resumeOptional.get();
+
+        if (!hasEditAccess(currentUser, resume.getUser().getId())) {
+            model.addAttribute("error", "Доступ запрещен");
+            return "error";
+        }
+
+        model.addAttribute("resume", List.of(resume));
+        model.addAttribute("title", "redactor_admin");
+        model.addAttribute("type", "resume");
+        model.addAttribute("categories", postResumeCategoryConfig.getCategories());
+        model.addAttribute("experience", experienceResumCategoryConfig.getExperience());
+        model.addAttribute("workformat", workFormatResumeConfig.getWorkformat());
+        model.addAttribute("isSuper", currentUser.getRole().equals("ROLE_SUPER"));
+        model.addAttribute("isAdmin", isAdmin(currentUser));
+        model.addAttribute("hashId", userHashId);
+        return "page_two/edit_admin";
+    }
+
+
+    // Эти методы принимают данные из форм редактирования и вызывают соответствующие приватные методы
+
+    @PostMapping("/page_two/admin_edit_user/job/{hashId}/page_two/edit_admin")
+    public String redactorJobDetailsPostUpdate(@PathVariable(value = "hashId") String hashId,
+                                               @RequestParam String title,
+                                               @RequestParam Integer price,
+                                               @RequestParam String full_text,
+                                               @RequestParam String category,
+                                               @RequestParam String location,
+                                               @RequestParam(value = "deleteImageIds", required = false) List<Long> deleteImageIds,
+                                               @RequestParam(value = "files", required = false) MultipartFile[] files,
+                                               @RequestParam(value = "userHashId", required = false) String userHashId,
+                                               @RequestParam(value = "premium", required = false, defaultValue = "false") Boolean premium,
+                                               @RequestParam(value = "premiumPriority", required = false, defaultValue = "0") Integer premiumPriority,
+                                               @RequestParam(value = "donate", required = false, defaultValue = "false") Boolean donate,
+                                               Model model,
+                                               Authentication authentication, RedirectAttributes redirectAttributes) {
+        Optional<PostTextJob> postOptional = postRepoJob.findByHashId(hashId);
+        if (postOptional.isEmpty()) {
+            model.addAttribute("error", "Запись не найдена");
+            return "error";
+        }
+        return updateServicePost(hashId, postOptional.get().getId(), title, price, full_text, category, location,
+                deleteImageIds, files, userHashId, premium, premiumPriority, donate, model, authentication, redirectAttributes);
+    }
+
+    @PostMapping("/page_two/admin_edit_user/vac/{hashId}/page_two/edit_admin")
+    public String redactorVacancyDetailsPostUpdate(@PathVariable(value = "hashId") String hashId,
+                                                   @RequestParam String title,
+                                                   @RequestParam Integer cash,
+                                                   @RequestParam String full_text,
+                                                   @RequestParam String category,
+                                                   @RequestParam String experience,
+                                                   @RequestParam String workformat,
+                                                   @RequestParam String location,
+                                                   @RequestParam(value = "deleteImageIds", required = false) List<Long> deleteImageIds,
+                                                   @RequestParam(value = "files", required = false) MultipartFile[] files,
+                                                   @RequestParam(value = "userHashId", required = false) String userHashId,
+                                                   @RequestParam(value = "premium", required = false, defaultValue = "false") Boolean premium,
+                                                   @RequestParam(value = "premiumPriority", required = false, defaultValue = "0") Integer premiumPriority,
+                                                   @RequestParam(value = "donate", required = false, defaultValue = "false") Boolean donate,
+                                                   Model model,
+                                                   Authentication authentication, RedirectAttributes redirectAttributes) {
+        Optional<Vacancy> vacancyOptional = postVacancyRepository.findByHashId(hashId);
+        if (vacancyOptional.isEmpty()) {
+            model.addAttribute("error", "Запись не найдена");
+            return "error";
+        }
+        return updatePostVacancy(hashId, vacancyOptional.get().getId(), title, cash, full_text, category, experience, workformat, location,
+                deleteImageIds, files, userHashId, premium, premiumPriority, donate, model, authentication, redirectAttributes);
+    }
+
+    @PostMapping("/page_two/admin_edit_user/res/{hashId}/page_two/edit_admin")
+    public String redactorResumeDetailsPostUpdate(@PathVariable(value = "hashId") String hashId,
+                                                  @RequestParam String title,
+                                                  @RequestParam Integer cash,
+                                                  @RequestParam String full_text,
+                                                  @RequestParam String category,
+                                                  @RequestParam String experience,
+                                                  @RequestParam String workformat,
+                                                  @RequestParam(value = "deleteImageIds", required = false) List<Long> deleteImageIds,
+                                                  @RequestParam(value = "files", required = false) MultipartFile[] files,
+                                                  @RequestParam(value = "userHashId", required = false) String userHashId,
+                                                  Model model,
+                                                  Authentication authentication, RedirectAttributes redirectAttributes) {
+        Optional<Resume> resumeOptional = postResumeRepository.findByHashId(hashId);
+        if (resumeOptional.isEmpty()) {
+            model.addAttribute("error", "Запись не найдена");
+            return "error";
+        }
+        return updatePostResume(hashId, resumeOptional.get().getId(), title, cash, full_text, category, experience, workformat,
+                deleteImageIds, files, userHashId, model, authentication, redirectAttributes);
+    }
+
+    // ======================================================================
+    // ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ
+    // ======================================================================
+
+    private boolean hasSuperAccess(Authentication authentication) {
+        if (authentication == null) return false;
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_SUPER") || a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    private boolean hasEditAccess(User currentUser, Long postOwnerId) {
+        return currentUser.getRole().equals("ROLE_SUPER") ||
+                currentUser.getRole().equals("ROLE_ADMIN") ||
+                currentUser.getId().equals(postOwnerId);
+    }
+
+    private boolean isAdmin(User user) {
+        return user.getRole().equals("ROLE_ADMIN") || user.getRole().equals("ROLE_SUPER");
     }
 }

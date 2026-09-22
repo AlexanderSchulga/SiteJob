@@ -70,22 +70,22 @@ public class PostResumeCategoryConfig extends BaseCategoryConfig {
         log.debug("Инициализация конфигурации категорий для резюме");
 
         categories.put("all", "Все резюме");
-        categories.put("it", "IT и программирование");
-        categories.put("prom", "Промышленность");
-        categories.put("build", "Строительство");
+        categories.put("auto", "Автобизнес и транспорт");
         categories.put("street", "Дороги и инфраструктура");
+        categories.put("cleaning", "Клининг и уборка");
         categories.put("salle", "Коммерция и продажи");
-        categories.put("manager", "Управление");
-        categories.put("remote", "Удалённая работа");
+        categories.put("beauty", "Красота и здоровье");
         categories.put("logistic", "Логистика и склад");
         categories.put("medicine", "Медицина и фармацевтика");
         categories.put("edu", "Образование и наука");
         categories.put("service", "Обслуживание и сервис");
-        categories.put("cleaning", "Клининг и уборка");
         categories.put("security", "Охрана и безопасность");
-        categories.put("beauty", "Красота и здоровье");
-        categories.put("auto", "Автобизнес и транспорт");
+        categories.put("prom", "Промышленность");
         categories.put("agriculture", "Сельское хозяйство");
+        categories.put("build", "Строительство");
+        categories.put("remote", "Удалённая работа");
+        categories.put("manager", "Управление");
+        categories.put("it", "IT и программирование");
 
         log.debug("Загружено {} категорий для резюме", categories.size());
     }

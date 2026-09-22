@@ -74,6 +74,30 @@ public class CacheConfig extends BaseCacheConfig {
         registerCustomCacheSeconds(cacheManager, "vacanciesList", 30, 1000);
         registerCustomCacheSeconds(cacheManager, "resumeList", 30, 1000);
 
+        // ========== КЭШИ ДЛЯ подкатегорий ==========
+        registerCustomCacheSeconds(cacheManager, "realtyList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "vehicleList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "apartmentsList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "houseList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "landList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "garageList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "commercialList", 30, 1000);
+
+        registerCustomCacheSeconds(cacheManager, "autoList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "constructionsList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "interiorList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "toolsList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "appliancesList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "electronicsList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "clothingList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "childrenPrList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "sportsList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "foodList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "healthList", 30, 1000);
+        registerCustomCacheSeconds(cacheManager, "animalsList", 30, 1000);
+
+
+
         // ========== Кэши страниц с фильтрами (30 сек) ==========
         // Для пагинированных страниц с учетом фильтрации и сортировки
         registerCustomCacheSeconds(cacheManager, "productsPage", 30, 2000);
@@ -88,6 +112,23 @@ public class CacheConfig extends BaseCacheConfig {
         registerShortLivedCache(cacheManager, "vacanciesCount", 120, 500);
         registerShortLivedCache(cacheManager, "resumeCount", 120, 500);
 
+        // ========== КЭШИ ДЛЯ СЧЕТЧИКОВ НЕДВИЖИМОСТИ И АВТО ==========
+        registerShortLivedCache(cacheManager, "realtyCount", 120, 500);
+        registerShortLivedCache(cacheManager, "vehicleCount", 120, 500);
+
+        registerShortLivedCache(cacheManager, "autoCount", 120, 500);
+        registerShortLivedCache(cacheManager, "constructionsCount", 120, 500);
+        registerShortLivedCache(cacheManager, "interiorCount", 120, 500);
+        registerShortLivedCache(cacheManager, "toolsCount", 120, 500);
+        registerShortLivedCache(cacheManager, "appliancesCount", 120, 500);
+        registerShortLivedCache(cacheManager, "electronicsCount", 120, 500);
+        registerShortLivedCache(cacheManager, "clothingCount", 120, 500);
+        registerShortLivedCache(cacheManager, "childrenPrCount", 120, 500);
+        registerShortLivedCache(cacheManager, "sportsCount", 120, 500);
+        registerShortLivedCache(cacheManager, "foodCount", 120, 500);
+        registerShortLivedCache(cacheManager, "healthCount", 120, 500);
+        registerShortLivedCache(cacheManager, "animalsCount", 120, 500);
+
         // ========== Кэши пользовательских данных (30-60 минут) ==========
         // Персональные данные пользователей: объявления, резюме и т.д.
         registerCustomCache(cacheManager, "userByHash", 60, 5000);
@@ -101,6 +142,7 @@ public class CacheConfig extends BaseCacheConfig {
         // Кэшируются редко меняющиеся информационные страницы
         registerLongLivedCache(cacheManager, "index", 24, 100);
         registerLongLivedCache(cacheManager, "about", 24, 100);
+        registerLongLivedCache(cacheManager, "promotion", 24, 100);
 
         // ========== Кэши рейтингов продавцов (5-10 минут) ==========
         // Рейтинги и отзывы продавцов

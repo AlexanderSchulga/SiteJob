@@ -5,6 +5,7 @@ import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostControll
 import jobforsite.sitejob.module.shared.model.Favorites;
 import jobforsite.sitejob.module.shared.model.ImagesFoto;
 import jobforsite.sitejob.module.users.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.slf4j.Logger;
@@ -22,10 +23,9 @@ import java.util.stream.Collectors;
  * текст объявления, статусы модерации, блокировки, архивности.
  * Поддерживает связи с изображениями, комментариями, избранным и пользователем.
  */
+@Slf4j
 @Entity
 public class PostTextJob implements BasePostController.PostAccessInfo {
-
-    private static final Logger log = LoggerFactory.getLogger(PostTextJob.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -127,6 +127,16 @@ public class PostTextJob implements BasePostController.PostAccessInfo {
         this.archived = false;
         this.archivedAt = null;
         log.debug("Сброшены статусы модерации для объявления с hashId: {}", hashId);
+    }
+
+    public void publishAfterAdminEdit() {
+        this.blocked = false;
+        this.blockedAt = null;
+        this.moderation = false;
+        this.archived = false;
+        this.archivedAt = null;
+        this.moderatedAt = LocalDateTime.now();
+        log.debug("Объявление опубликовано после админского редактирования, hashId: {}", hashId);
     }
 
     /**

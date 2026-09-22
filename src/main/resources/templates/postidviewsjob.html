@@ -241,7 +241,7 @@
     <div class="tab-content" id="commentsTabContent">
         <div class="tab-pane fade show active" id="public-comments" role="tabpanel">
             <div class="comments-section">
-                <h3>Общие комментарии</h3>
+                <h4>Общие комментарии</h4>
                 <div th:if="${#authentication.isAuthenticated()}" class="comment-form mb-4">
                     <form th:action="@{/postidviewsjob/{hashId}/comment(hashId=${postwo[0].hashId})}"
                           method="post" id="public-comment-form" data-ajax="true">
@@ -250,7 +250,7 @@
                         <div id="publicReplyTo" class="alert alert-info mb-2" style="display: none;"></div>
                         <div class="form-group">
                             <textarea name="text" class="form-control mb-3" rows="3" required
-                                      placeholder="Ваш комментарий..." id="publicCommentText"></textarea>
+                                      placeholder="Ваш комментарий...(не менее 3-х символов)" id="publicCommentText"></textarea>
                         </div>
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary" id="submitPublicComment">
@@ -284,7 +284,7 @@
 
         <div class="tab-pane fade" id="private-comments" role="tabpanel">
             <div class="comments-section">
-                <h3>Личные комментарии</h3>
+                <h4>Личные комментарии</h4>
                 <div th:if="${#authentication.isAuthenticated()}" class="comment-form">
                     <form th:action="@{/postidviewsjob/{hashId}/commentPersonalJob(hashId=${postwo[0].hashId})}"
                           method="post" id="private-comment-form" data-ajax="true">
@@ -298,7 +298,7 @@
                         </div>
                         <div class="form-group">
                             <textarea name="text" class="form-control mb-3" rows="3" required
-                                      placeholder="Ваш личный комментарий..." id="commentText"></textarea>
+                                      placeholder="Ваш личный комментарий...(не менее 3-х символов)" id="commentText"></textarea>
                         </div>
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary" id="submitPrivateComment">
@@ -483,11 +483,11 @@
 </script>
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/comment-post/respons_comment_job.js"></script>
-<script type="text/javascript" src="/js/functions/rating.js"></script>
-<script type="text/javascript" src="/js/supportAndfavor/favorites.js"></script>
-<script type="text/javascript" src="/js/comment-post/LoadMoreCommentsPagination.js"></script>
-<script type="text/javascript" src="/js/comment-post/LoadMorePublicCommentsJob.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/comment-post/respons_comment_job.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/rating.js}"></script>
+<script type="text/javascript" th:src="@{/js/supportAndfavor/favorites.js}"></script>
+<script type="text/javascript" th:src="@{/js/comment-post/LoadMoreCommentsPagination.js}"></script>
+<script type="text/javascript" th:src="@{/js/comment-post/LoadMorePublicCommentsJob.js}"></script>
 </body>
 </html>

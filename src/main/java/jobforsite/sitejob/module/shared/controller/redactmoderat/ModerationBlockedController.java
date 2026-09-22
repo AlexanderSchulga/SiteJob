@@ -238,8 +238,8 @@ public class ModerationBlockedController {
             return "redirect:/page_two/moderat";
 
         } catch (Exception e) {
-            log.error("Ошибка при переключении статуса блокировки для типа {} с id={}: {}", type, id, e.getMessage(), e);
-            model.addAttribute("error", "Ошибка при блокировке: " + e.getMessage());
+            log.warn("Ошибка при переключении статуса блокировки для типа {}, id={}", type, id);
+            model.addAttribute("error", "Ошибка при блокировке");
             return "error";
         }
     }

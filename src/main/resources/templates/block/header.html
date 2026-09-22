@@ -7,10 +7,9 @@
     <link rel="shortcut icon" type="image/png" th:href="@{/favicon.png}">
     <meta name="user-hash-id" th:content="${#authentication.principal.hashId}" sec:authorize="isAuthenticated()">
 
-
   </head>
 
-  <script type="text/javascript" src="/js/metrika.js"></script>
+  <script type="text/javascript" th:src="@{/js/metrika.js}"></script>
 
   <script>
     // Проверяем согласие
@@ -148,13 +147,13 @@
     </div>
   </header>
 
-  <script type="text/javascript" src="/js/header_back.js"></script>
-  <script type="text/javascript" src="/js/header_stop.js"></script>
-  <script type="text/javascript" src="/js/functions/main_sidebar.js"></script>
-  <script type="text/javascript" src="/js/supportAndfavor/global_support_notifications.js"></script>
-  <script type="text/javascript" src="/js/supports/sse_support_notifications.js"></script>
-  <script type="text/javascript" src="/js/message_notifications.js"></script>
-  <script type="text/javascript" src="/js/users/delete_user_service_me.js"></script>
+  <script type="text/javascript" th:src="@{/js/header_back.js}"></script>
+  <script type="text/javascript" th:src="@{/js/header_stop.js}"></script>
+  <script type="text/javascript" th:src="@{/js/functions/main_sidebar.js}"></script>
+  <script type="text/javascript" th:src="@{/js/supportAndfavor/global_support_notifications.js}"></script>
+  <script type="text/javascript" th:src="@{/js/supports/sse_support_notifications.js}"></script>
+  <script type="text/javascript" th:src="@{/js/message_notifications.js}"></script>
+  <script type="text/javascript" th:src="@{/js/users/delete_user_service_me.js}"></script>
 
 
   <script>

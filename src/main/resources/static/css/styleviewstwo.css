@@ -229,149 +229,6 @@ textarea:focus {
     margin-top: 10px;
 }
 
-/* Планшеты */
-@media (max-width: 768px) {
-    .container-wrapper {
-        max-width: 100%;
-        padding: 0 15px;
-    }
-
-    .card-body {
-        padding: 20px;
-    }
-
-    .card-header {
-        padding: 10px 16px;
-    }
-
-    .card-header h5 {
-        font-size: 1rem;
-    }
-
-    .form-label {
-        font-size: 0.85rem;
-        margin-bottom: 5px !important;
-    }
-
-    .form-control,
-    .form-select,
-    textarea {
-        padding: 8px 12px !important;
-        font-size: 0.85rem;
-    }
-
-    .btn {
-        padding: 6px 16px;
-        font-size: 0.85rem;
-    }
-
-    .map-container {
-        height: 300px;
-    }
-}
-
-/* Мобильные телефоны */
-@media (max-width: 576px) {
-    .container-wrapper {
-        padding: 0 10px;
-    }
-
-    .card-body {
-        padding: 16px;
-    }
-
-    .form-label {
-        font-size: 0.8rem;
-    }
-
-    .form-control,
-    .form-select,
-    textarea {
-        padding: 8px 10px !important;
-        font-size: 0.85rem;
-    }
-
-    /* Исправление выпадающего списка */
-    select.form-select,
-    select.form-select option,
-    #category,
-    #category option {
-        max-width: calc(100vw - 40px) !important;
-        width: auto !important;
-        min-width: 0 !important;
-        overflow-wrap: break-word !important;
-        word-wrap: break-word !important;
-        word-break: break-all !important;
-        white-space: normal !important;
-    }
-
-    .btn {
-        padding: 6px 14px;
-        font-size: 0.85rem;
-    }
-
-    /* Кнопки - не растянуты */
-    .d-flex.gap-3 {
-        flex-direction: column;
-        gap: 10px !important;
-        align-items: center;
-    }
-
-    .d-flex.gap-3 .btn {
-        width: 70%;
-        min-width: 180px;
-        max-width: 250px;
-    }
-
-    .breadcrumb {
-        font-size: 0.8rem;
-    }
-
-    .input-group-text {
-        padding: 6px 10px;
-    }
-
-    .map-container {
-        height: 250px;
-    }
-}
-
-@media (max-width: 480px) {
-    .container-wrapper {
-        padding: 0 8px;
-    }
-
-    .card-body {
-        padding: 12px;
-    }
-
-    .form-label {
-        font-size: 0.75rem;
-    }
-
-    .form-control,
-    .form-select,
-    textarea {
-        padding: 6px 8px !important;
-        font-size: 0.8rem;
-    }
-
-    .btn {
-        padding: 5px 12px;
-        font-size: 0.8rem;
-    }
-
-    .d-flex.gap-3 .btn {
-        width: 75%;
-        min-width: 150px;
-        max-width: 220px;
-    }
-
-    .breadcrumb {
-        font-size: 0.75rem;
-    }
-}
-
 @media (max-width: 360px) {
     .card-header h5 {
         font-size: 0.85rem;
@@ -485,7 +342,6 @@ input[type="file"].form-control::file-selector-button {
     transform: rotate(180deg);
 }
 
-/* Важно: dropdown позиционируется абсолютно, НЕ сдвигает контент */
 .custom-dropdown {
     position: absolute;
     top: 100%;
@@ -566,7 +422,7 @@ input[type="file"].form-control::file-selector-button {
     textarea.form-control,
     #full_text,
     textarea#full_text {
-        font-size: 16px !important;  /* 16px предотвращает автоматический зум на iOS */
+        font-size: 16px !important;
         line-height: 1.5 !important;
     }
 }
@@ -586,4 +442,879 @@ input[type="file"].form-control::file-selector-button {
     textarea#full_text {
         font-size: 15px !important;
     }
+}
+
+
+/* ===== УБИРАЕМ СТРЕЛКИ У ВСЕХ ЧИСЛОВЫХ ПОЛЕЙ ===== */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+input[type="number"] {
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
+
+
+/* ===== ПОДКАТЕГОРИИ - */
+
+/* Блоки подкатегорий */
+#realtyFields .card,
+#motorFields .card {
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+#realtyFields .card-header,
+#motorFields .card-header {
+    background: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+#realtyFields .card-body,
+#motorFields .card-body {
+    padding: 12px 14px;
+}
+
+#realtyFields select,
+#realtyFields input,
+#motorFields select,
+#motorFields input {
+    width: 100%;
+    padding: 8px 30px 8px 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 2px solid #6c757d;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    min-height: 38px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+#realtyFields select,
+#motorFields select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px 14px;
+}
+
+#realtyFields select:hover,
+#realtyFields input:hover,
+#motorFields select:hover,
+#motorFields input:hover {
+    border-color: #0d6efd;
+}
+
+#realtyFields select:focus,
+#realtyFields input:focus,
+#motorFields select:focus,
+#motorFields input:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+#realtyFields label,
+#motorFields label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 4px;
+    display: block;
+}
+
+#realtyFields .row,
+#motorFields .row {
+    margin-left: -6px;
+    margin-right: -6px;
+}
+
+#realtyFields .row > [class*="col-"],
+#motorFields .row > [class*="col-"] {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ (КАК В ЛЕНТЕ) ===== */
+@media (max-width: 767px) {
+    #realtyFields .card-body,
+    #motorFields .card-body {
+        padding: 8px 10px;
+    }
+
+    #realtyFields .card-header,
+    #motorFields .card-header {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    #realtyFields select,
+    #realtyFields input,
+    #motorFields select,
+    #motorFields input {
+        padding: 6px 26px 6px 10px;
+        font-size: 0.8rem;
+        min-height: 34px;
+    }
+
+    #realtyFields label,
+    #motorFields label {
+        font-size: 0.75rem;
+        margin-bottom: 2px;
+    }
+
+    #realtyFields .row > [class*="col-"],
+    #motorFields .row > [class*="col-"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-bottom: 6px;
+    }
+
+    @media (min-width: 480px) and (max-width: 767px) {
+        #realtyFields .row > [class*="col-"],
+        #motorFields .row > [class*="col-"] {
+            flex: 0 0 33.333%;
+            max-width: 33.333%;
+        }
+    }
+
+    @media (max-width: 360px) {
+        #realtyFields .row > [class*="col-"],
+        #motorFields .row > [class*="col-"] {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+}
+
+/* Планшеты (как в ленте) */
+@media (min-width: 768px) and (max-width: 991px) {
+    #realtyFields .row > [class*="col-"],
+    #motorFields .row > [class*="col-"] {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+
+    #realtyFields select,
+    #realtyFields input,
+    #motorFields select,
+    #motorFields input {
+        font-size: 0.8rem;
+        padding: 6px 28px 6px 10px;
+        min-height: 34px;
+    }
+}
+
+/* Десктоп (как в ленте) */
+@media (min-width: 992px) {
+    #realtyFields .row > [class*="col-"],
+    #motorFields .row > [class*="col-"] {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+/* Специальный стиль для основного выбора типа — как в ленте */
+#propertyType,
+#vehicleType {
+    font-weight: 500;
+    border-color: #0d6efd !important;
+    background-color: #f8f9fa;
+}
+
+#propertyType:focus,
+#vehicleType:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2) !important;
+}
+
+
+/* ===== СТИЛИ ДЛЯ КАСТОМНЫХ FILTER SELECT ===== */
+.custom-filter-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-filter-select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 30px 8px 12px;
+    background: #fff;
+    border: 2px solid #6c757d;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    min-height: 38px;
+    user-select: none;
+    transition: border-color 0.2s;
+}
+
+.custom-filter-select-trigger:hover {
+    border-color: #0d6efd;
+}
+
+.custom-filter-select-trigger.active {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.custom-filter-select-trigger .filter-selected-value {
+    color: #212529;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.custom-filter-select-trigger .filter-dropdown-arrow {
+    font-size: 10px;
+    color: #6c757d;
+    transition: transform 0.2s;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.custom-filter-select-trigger.active .filter-dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-filter-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 2px solid #0d6efd;
+    border-radius: 8px;
+    margin-top: 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 99999 !important;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+}
+
+.custom-filter-dropdown.show {
+    display: block;
+}
+
+.custom-filter-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #212529;
+    transition: background 0.2s;
+}
+
+.custom-filter-option:hover {
+    background: #e8f0fe;
+}
+
+.custom-filter-option.selected {
+    background: #e8f0fe;
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+.custom-filter-option:last-child {
+    border-bottom: none;
+}
+
+.custom-filter-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-filter-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.custom-filter-dropdown::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+.custom-filter-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.filter-group select[data-custom-filter] {
+    display: none !important;
+}
+
+/* Исправление для контейнеров фильтров */
+.filter-group .card {
+    position: relative;
+    overflow: visible !important;
+}
+
+.filter-group .card-body {
+    overflow: visible !important;
+}
+
+.filter-group .row {
+    overflow: visible !important;
+}
+
+.filter-group [class*="col-"] {
+    overflow: visible !important;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 767px) {
+    .custom-filter-select-trigger {
+        padding: 6px 26px 6px 10px;
+        font-size: 0.8rem;
+        min-height: 34px;
+    }
+    .custom-filter-option {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+    .custom-filter-dropdown {
+        max-height: 200px;
+        z-index: 99999 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-filter-select-trigger {
+        padding: 5px 24px 5px 8px;
+        font-size: 0.78rem;
+        min-height: 32px;
+    }
+    .custom-filter-option {
+        padding: 7px 10px;
+        font-size: 0.82rem;
+    }
+}
+
+/* ============================================================
+   ============================================================ */
+
+/* Контейнеры фильтров
+#realtyFields,
+#vehicleFields {
+    position: relative;
+    z-index: 10;
+  } */
+
+
+/* Обёртки кастомных селектов */
+.custom-filter-select-wrapper,
+.custom-select-wrapper {
+    position: relative;
+    z-index: 20;
+}
+
+/* Сами выпадающие списки — absolute, поверх */
+.custom-filter-dropdown,
+.custom-dropdown,
+.custom-select-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 99999 !important;
+    background: #fff !important;
+    border: 2px solid #0d6efd !important;
+    border-radius: 8px !important;
+    margin-top: 4px !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    display: none;
+    min-width: 180px;
+}
+
+.custom-filter-dropdown.show,
+.custom-dropdown.show,
+.custom-select-dropdown.show {
+    display: block !important;
+}
+
+/* Нативные select в фильтрах */
+#realtyFields select,
+#motorFields select,
+.filter-group select {
+    position: relative !important;
+    z-index: 250 !important;
+}
+
+/* Карточки фильтров — не обрезаем */
+.filter-group .card {
+    position: relative;
+    z-index: 5;
+    overflow: visible !important;
+}
+
+.filter-group .card-body,
+.filter-group .row,
+.filter-group [class*="col-"] {
+    overflow: visible !important;
+}
+
+/* header — ниже выпадающих списков */
+header,
+.sticky-header {
+    z-index: 9999 !important;
+}
+
+/* Мобильные — убираем радиокнопки */
+@media (max-width: 768px) {
+    .custom-filter-dropdown,
+    .custom-dropdown,
+    .custom-select-dropdown {
+        z-index: 99999 !important;
+        max-height: 200px !important;
+    }
+
+    .custom-filter-option input[type="radio"],
+    .custom-dropdown-option input[type="radio"] {
+        display: none !important;
+    }
+}
+
+/* ===== УБИРАЕМ СТРЕЛКИ У ЧИСЛОВЫХ ПОЛЕЙ ===== */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+input[type="number"] {
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
+
+/* ===== УБИРАЕМ РАДИОКНОПКИ В КАСТОМНЫХ СЕЛЕКТАХ ===== */
+.custom-filter-option,
+.custom-dropdown-option {
+    position: relative;
+}
+
+.custom-filter-option input[type="radio"],
+.custom-dropdown-option input[type="radio"] {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .custom-filter-option input[type="radio"],
+    .custom-dropdown-option input[type="radio"] {
+        display: none !important;
+    }
+
+    .custom-filter-dropdown,
+    .custom-dropdown {
+        list-style: none !important;
+        padding: 0 !important;
+    }
+}
+
+
+
+
+/* ===== ФИКС ДЛЯ БУТСТРАПА - СВЕРХУ ВНИЗ ===== */
+
+/* Все блоки - чтобы не обрезали */
+.card-body,
+.create-form-card .card-body,
+.mb-4,
+.mb-3 {
+    overflow: visible !important;
+}
+
+/* Категория - САМАЯ ВЕРХНЯЯ (100) */
+.mb-4:has(#category) {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+#category + .custom-select-wrapper {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+#category + .custom-select-wrapper .custom-dropdown {
+    z-index: 999999 !important;
+}
+
+/* Опыт работы - (90) */
+.mb-3:has(#experience),
+.mb-4:has(#experience) {
+    position: relative !important;
+    z-index: 90 !important;
+}
+
+#experience + .custom-select-wrapper {
+    position: relative !important;
+    z-index: 90 !important;
+}
+
+#experience + .custom-select-wrapper .custom-dropdown {
+    z-index: 999999 !important;
+}
+
+/* Формат работы - (80) */
+.mb-3:has(#workformat),
+.mb-4:has(#workformat) {
+    position: relative !important;
+    z-index: 80 !important;
+}
+
+#workformat + .custom-select-wrapper {
+    position: relative !important;
+    z-index: 80 !important;
+}
+
+#workformat + .custom-select-wrapper .custom-dropdown {
+    z-index: 999999 !important;
+}
+
+/* Название, зарплата и всё остальное - ниже (1) */
+.mb-4:not(:has(select)) {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Сам дропдаун - ПОВЕРХ ВСЕГО */
+.custom-dropdown {
+    position: absolute !important;
+    z-index: 999999 !important;
+    background: white !important;
+    border: 2px solid #0d6efd !important;
+    border-radius: 10px !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    display: none !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+}
+
+.custom-dropdown.show {
+    display: block !important;
+}
+
+
+
+/*Валидация полей фильтров*/
+
+.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.invalid-feedback {
+    display: none;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.invalid-feedback.show {
+    display: block;
+}
+
+/* Для кастомных селектов */
+.custom-select-wrapper.is-invalid .custom-select-trigger {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.custom-filter-select-wrapper.is-invalid .custom-filter-select-trigger {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}
+
+
+/* ============================================================
+   ===== ФИКС: КОЛОНКИ С СЕЛЕКТАМИ ВНУТРИ ОДНОГО ROW =====
+   ============================================================ */
+
+/* Все колонки внутри .row — position: relative, чтобы z-index работал */
+#realtyFields .row > [class*="col-"],
+#motorFields .row > [class*="col-"],
+#autoFields .row > [class*="col-"],
+#constructionsFields .row > [class*="col-"],
+#interiorFields .row > [class*="col-"],
+#toolsFields .row > [class*="col-"],
+#appliancesFields .row > [class*="col-"],
+#electronicsFields .row > [class*="col-"],
+#clothingFields .row > [class*="col-"],
+#childrenPrFields .row > [class*="col-"],
+#sportsFields .row > [class*="col-"],
+#foodFields .row > [class*="col-"],
+#healthFields .row > [class*="col-"],
+#animalsFields .row > [class*="col-"] {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+#realtyFields .row > [class*="col-"]:nth-child(1),
+#motorFields .row > [class*="col-"]:nth-child(1),
+#autoFields .row > [class*="col-"]:nth-child(1),
+#constructionsFields .row > [class*="col-"]:nth-child(1),
+#interiorFields .row > [class*="col-"]:nth-child(1),
+#toolsFields .row > [class*="col-"]:nth-child(1),
+#appliancesFields .row > [class*="col-"]:nth-child(1),
+#electronicsFields .row > [class*="col-"]:nth-child(1),
+#clothingFields .row > [class*="col-"]:nth-child(1),
+#childrenPrFields .row > [class*="col-"]:nth-child(1),
+#sportsFields .row > [class*="col-"]:nth-child(1),
+#foodFields .row > [class*="col-"]:nth-child(1),
+#healthFields .row > [class*="col-"]:nth-child(1),
+#animalsFields .row > [class*="col-"]:nth-child(1) { z-index: 100 !important; }
+
+#realtyFields .row > [class*="col-"]:nth-child(2),
+#motorFields .row > [class*="col-"]:nth-child(2),
+#autoFields .row > [class*="col-"]:nth-child(2),
+#constructionsFields .row > [class*="col-"]:nth-child(2),
+#interiorFields .row > [class*="col-"]:nth-child(2),
+#toolsFields .row > [class*="col-"]:nth-child(2),
+#appliancesFields .row > [class*="col-"]:nth-child(2),
+#electronicsFields .row > [class*="col-"]:nth-child(2),
+#clothingFields .row > [class*="col-"]:nth-child(2),
+#childrenPrFields .row > [class*="col-"]:nth-child(2),
+#sportsFields .row > [class*="col-"]:nth-child(2),
+#foodFields .row > [class*="col-"]:nth-child(2),
+#healthFields .row > [class*="col-"]:nth-child(2),
+#animalsFields .row > [class*="col-"]:nth-child(2) { z-index: 95 !important; }
+
+#realtyFields .row > [class*="col-"]:nth-child(3),
+#motorFields .row > [class*="col-"]:nth-child(3),
+#autoFields .row > [class*="col-"]:nth-child(3),
+#constructionsFields .row > [class*="col-"]:nth-child(3),
+#interiorFields .row > [class*="col-"]:nth-child(3),
+#toolsFields .row > [class*="col-"]:nth-child(3),
+#appliancesFields .row > [class*="col-"]:nth-child(3),
+#electronicsFields .row > [class*="col-"]:nth-child(3),
+#clothingFields .row > [class*="col-"]:nth-child(3),
+#childrenPrFields .row > [class*="col-"]:nth-child(3),
+#sportsFields .row > [class*="col-"]:nth-child(3),
+#foodFields .row > [class*="col-"]:nth-child(3),
+#healthFields .row > [class*="col-"]:nth-child(3),
+#animalsFields .row > [class*="col-"]:nth-child(3) { z-index: 90 !important; }
+
+#realtyFields .row > [class*="col-"]:nth-child(4),
+#motorFields .row > [class*="col-"]:nth-child(4),
+#autoFields .row > [class*="col-"]:nth-child(4),
+#constructionsFields .row > [class*="col-"]:nth-child(4),
+#interiorFields .row > [class*="col-"]:nth-child(4),
+#toolsFields .row > [class*="col-"]:nth-child(4),
+#appliancesFields .row > [class*="col-"]:nth-child(4),
+#electronicsFields .row > [class*="col-"]:nth-child(4),
+#clothingFields .row > [class*="col-"]:nth-child(4),
+#childrenPrFields .row > [class*="col-"]:nth-child(4),
+#sportsFields .row > [class*="col-"]:nth-child(4),
+#foodFields .row > [class*="col-"]:nth-child(4),
+#healthFields .row > [class*="col-"]:nth-child(4),
+#animalsFields .row > [class*="col-"]:nth-child(4) { z-index: 85 !important; }
+
+#realtyFields .row > [class*="col-"]:nth-child(5),
+#motorFields .row > [class*="col-"]:nth-child(5),
+#autoFields .row > [class*="col-"]:nth-child(5),
+#constructionsFields .row > [class*="col-"]:nth-child(5),
+#interiorFields .row > [class*="col-"]:nth-child(5),
+#toolsFields .row > [class*="col-"]:nth-child(5),
+#appliancesFields .row > [class*="col-"]:nth-child(5),
+#electronicsFields .row > [class*="col-"]:nth-child(5),
+#clothingFields .row > [class*="col-"]:nth-child(5),
+#childrenPrFields .row > [class*="col-"]:nth-child(5),
+#sportsFields .row > [class*="col-"]:nth-child(5),
+#foodFields .row > [class*="col-"]:nth-child(5),
+#healthFields .row > [class*="col-"]:nth-child(5),
+#animalsFields .row > [class*="col-"]:nth-child(5) { z-index: 80 !important; }
+
+#realtyFields .row > [class*="col-"]:nth-child(6),
+#motorFields .row > [class*="col-"]:nth-child(6),
+#autoFields .row > [class*="col-"]:nth-child(6),
+#constructionsFields .row > [class*="col-"]:nth-child(6),
+#interiorFields .row > [class*="col-"]:nth-child(6),
+#toolsFields .row > [class*="col-"]:nth-child(6),
+#appliancesFields .row > [class*="col-"]:nth-child(6),
+#electronicsFields .row > [class*="col-"]:nth-child(6),
+#clothingFields .row > [class*="col-"]:nth-child(6),
+#childrenPrFields .row > [class*="col-"]:nth-child(6),
+#sportsFields .row > [class*="col-"]:nth-child(6),
+#foodFields .row > [class*="col-"]:nth-child(6),
+#healthFields .row > [class*="col-"]:nth-child(6),
+#animalsFields .row > [class*="col-"]:nth-child(6) { z-index: 75 !important; }
+
+#realtyFields .row > [class*="col-"]:nth-child(7),
+#motorFields .row > [class*="col-"]:nth-child(7),
+#autoFields .row > [class*="col-"]:nth-child(7),
+#constructionsFields .row > [class*="col-"]:nth-child(7),
+#interiorFields .row > [class*="col-"]:nth-child(7),
+#toolsFields .row > [class*="col-"]:nth-child(7),
+#appliancesFields .row > [class*="col-"]:nth-child(7),
+#electronicsFields .row > [class*="col-"]:nth-child(7),
+#clothingFields .row > [class*="col-"]:nth-child(7),
+#childrenPrFields .row > [class*="col-"]:nth-child(7),
+#sportsFields .row > [class*="col-"]:nth-child(7),
+#foodFields .row > [class*="col-"]:nth-child(7),
+#healthFields .row > [class*="col-"]:nth-child(7),
+#animalsFields .row > [class*="col-"]:nth-child(7) { z-index: 70 !important; }
+
+#realtyFields .row > [class*="col-"]:nth-child(8),
+#motorFields .row > [class*="col-"]:nth-child(8),
+#autoFields .row > [class*="col-"]:nth-child(8),
+#constructionsFields .row > [class*="col-"]:nth-child(8),
+#interiorFields .row > [class*="col-"]:nth-child(8),
+#toolsFields .row > [class*="col-"]:nth-child(8),
+#appliancesFields .row > [class*="col-"]:nth-child(8),
+#electronicsFields .row > [class*="col-"]:nth-child(8),
+#clothingFields .row > [class*="col-"]:nth-child(8),
+#childrenPrFields .row > [class*="col-"]:nth-child(8),
+#sportsFields .row > [class*="col-"]:nth-child(8),
+#foodFields .row > [class*="col-"]:nth-child(8),
+#healthFields .row > [class*="col-"]:nth-child(8),
+#animalsFields .row > [class*="col-"]:nth-child(8) { z-index: 65 !important; }
+
+/* Внутри колонки dropdown — поверх всего */
+#realtyFields .custom-filter-select-wrapper,
+#motorFields .custom-filter-select-wrapper,
+#autoFields .custom-filter-select-wrapper,
+#constructionsFields .custom-filter-select-wrapper,
+#interiorFields .custom-filter-select-wrapper,
+#toolsFields .custom-filter-select-wrapper,
+#appliancesFields .custom-filter-select-wrapper,
+#electronicsFields .custom-filter-select-wrapper,
+#clothingFields .custom-filter-select-wrapper,
+#childrenPrFields .custom-filter-select-wrapper,
+#sportsFields .custom-filter-select-wrapper,
+#foodFields .custom-filter-select-wrapper,
+#healthFields .custom-filter-select-wrapper,
+#animalsFields .custom-filter-select-wrapper {
+    z-index: 999999 !important;
+    position: relative !important;
+}
+
+#realtyFields .custom-filter-dropdown,
+#motorFields .custom-filter-dropdown,
+#autoFields .custom-filter-dropdown,
+#constructionsFields .custom-filter-dropdown,
+#interiorFields .custom-filter-dropdown,
+#toolsFields .custom-filter-dropdown,
+#appliancesFields .custom-filter-dropdown,
+#electronicsFields .custom-filter-dropdown,
+#clothingFields .custom-filter-dropdown,
+#childrenPrFields .custom-filter-dropdown,
+#sportsFields .custom-filter-dropdown,
+#foodFields .custom-filter-dropdown,
+#healthFields .custom-filter-dropdown,
+#animalsFields .custom-filter-dropdown {
+    z-index: 2147483647 !important;
+}
+
+
+/* ============================================================
+   ===== ФИКС: ПЕРВЫЙ РЯД В КАЖДОМ FILTER-GROUP ПОВЕРХ НИЖНИХ =====
+   ============================================================ */
+
+/* Все .row внутри filter-group — stacking context */
+.filter-group .card-body > .row,
+.filter-group .card-body > .row > [class*="col-"] {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/* Первый .row внутри card-body — высокий z-index */
+.filter-group .card-body > .row:first-child {
+    z-index: 500 !important;
+}
+
+/* Все последующие .row — ниже */
+.filter-group .card-body > .row:not(:first-child) {
+    z-index: 100 !important;
+}
+
+/* Колонки первого ряда — поверх всего */
+.filter-group .card-body > .row:first-child > [class*="col-"] {
+    z-index: 1000 !important;
+}
+
+/* Колонки последующих рядов */
+.filter-group .card-body > .row:not(:first-child) > [class*="col-"] {
+    z-index: 10 !important;
+}
+
+/* Обёртка dropdown в первом ряду — максимальный z-index */
+.filter-group .card-body > .row:first-child .custom-filter-select-wrapper {
+    position: relative !important;
+    z-index: 999999 !important;
+    overflow: visible !important;
+}
+
+/* Сам dropdown в первом ряду */
+.filter-group .card-body > .row:first-child .custom-filter-dropdown,
+.filter-group .card-body > .row:first-child .custom-filter-dropdown.show {
+    z-index: 2147483647 !important;
+    position: absolute !important;
+}
+
+/* Обёртка и dropdown в остальных рядах — тоже поверх, но внутри своего ряда */
+.filter-group .card-body > .row:not(:first-child) .custom-filter-select-wrapper {
+    position: relative !important;
+    z-index: 9999 !important;
+    overflow: visible !important;
+}
+
+.filter-group .card-body > .row:not(:first-child) .custom-filter-dropdown,
+.filter-group .card-body > .row:not(:first-child) .custom-filter-dropdown.show {
+    z-index: 2147483646 !important;
+    position: absolute !important;
+}
+
+
+/* ============================================================
+   ===== ФИКС ДЛЯ MOTOR: КОЛОНКИ В ОДНОМ РЯДУ ПО УБЫВАНИЮ =====
+   ============================================================ */
+
+/* Ряд в motor — сбросить z-index ряда, чтобы колонки управляли */
+#motorFields .card-body > .row {
+    z-index: auto !important;
+}
+
+/* Все колонки — stacking context */
+#motorFields .card-body > .row > [class*="col-"] {
+    position: relative !important;
+    z-index: auto !important;
+    overflow: visible !important;
+}
+
+/* По убыванию: Тип транспорта → Регион бренда → Пробег → Владельцы → Год */
+#motorFields .card-body > .row > [class*="col-"]:nth-child(1) { z-index: 1000 !important; }
+#motorFields .card-body > .row > [class*="col-"]:nth-child(2) { z-index: 990 !important; }
+#motorFields .card-body > .row > [class*="col-"]:nth-child(3) { z-index: 980 !important; }
+#motorFields .card-body > .row > [class*="col-"]:nth-child(4) { z-index: 970 !important; }
+#motorFields .card-body > .row > [class*="col-"]:nth-child(5) { z-index: 960 !important; }
+
+/* Обёртка и dropdown внутри motor — максимальный */
+#motorFields .custom-filter-select-wrapper {
+    position: relative !important;
+    z-index: 999999 !important;
+    overflow: visible !important;
+}
+
+#motorFields .custom-filter-dropdown,
+#motorFields .custom-filter-dropdown.show {
+    z-index: 2147483647 !important;
+    position: absolute !important;
 }

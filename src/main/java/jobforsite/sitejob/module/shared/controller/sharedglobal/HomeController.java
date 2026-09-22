@@ -85,6 +85,14 @@ public class HomeController extends BaseController {
         return "about";
     }
 
+    @GetMapping("/promotion")
+    @Cacheable(value = "promotion", key = "#authentication?.principal?.id ?: 'anonymous'")
+    public String promotionPage(Model model) {
+        log.info("Promotion page requested");
+        model.addAttribute("title", "Продвижение, тарифы и оплата");
+        return "promotion";
+    }
+
     @GetMapping("/page_one/support_service")
     public String supportPage(Model model) {
         log.info("Support service page requested");
@@ -104,14 +112,10 @@ public class HomeController extends BaseController {
         log.info("Loading FRESH paid carousel items from database");
         List<PaidCarouselItem> paidItems = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime cutoffDate = now.minusDays(30);
 
-        // 1. Платные товары (premium = true И moderatedAt + 30 дней > now)
-        List<PostText> premiumProducts = postRepo.findAll().stream()
-                .filter(p -> p.isPremium()
-                        && p.getModeratedAt() != null
-                        && p.getModeratedAt().plusDays(30).isAfter(now)
-                        && !p.isBlocked())
-                .collect(Collectors.toList());
+        // 1. Платные товары - используем кастомный запрос
+        List<PostText> premiumProducts = postRepo.findPremiumActivePosts(cutoffDate);
 
         for (PostText product : premiumProducts) {
             PaidCarouselItem item = new PaidCarouselItem();

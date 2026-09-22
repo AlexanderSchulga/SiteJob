@@ -47,49 +47,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Получаем текущие параметры URL
             const urlParams = new URLSearchParams(window.location.search);
-            const currentCategory = urlParams.get('category');
-            const currentSearch = urlParams.get('search') || '';
-            const currentRegion = urlParams.get('region');
-            const currentCity = urlParams.get('city');
-            const currentExperience = urlParams.get('experience');
-            const currentWorkformat = urlParams.get('workformat');
 
             // Создаем новый объект URLSearchParams
             const newParams = new URLSearchParams();
 
-            // Сохраняем поисковый запрос если есть
-            if (currentSearch) {
-                newParams.append('search', currentSearch);
-            }
+            // Сохраняем ВСЕ существующие параметры из URL
+            urlParams.forEach((value, key) => {
+                // Пропускаем параметры сортировки, которые будем устанавливать заново
+                if (key === 'sort' || key === 'priceSort' || key === 'page') {
+                    return;
+                }
+                newParams.append(key, value);
+            });
 
-            // Сохраняем категорию если она указана И НЕ равна 'all'
-            if (currentCategory && currentCategory !== 'all') {
-                newParams.append('category', currentCategory);
-            }
+            // Если выбрана сортировка по дате, удаляем сортировку по цене
+            newParams.delete('priceSort');
 
-            // Сохраняем регион если он указан И НЕ равен 'all'
-            if (currentRegion && currentRegion !== 'all') {
-                newParams.append('region', currentRegion);
-            }
-
-            // Сохраняем город если он указан
-            if (currentCity && currentCity !== 'all') {
-                newParams.append('city', currentCity);
-            }
-
-            if (currentExperience && currentExperience !== 'all') {
-                newParams.searchParams.set('experience', currentExperience);
-            }
-
-            if (currentWorkformat && currentWorkformat !== 'all') {
-                newParams.searchParams.set('workformat', currentWorkformat );
-            }
-
-            // Сбрасываем сортировку по цене
-            urlParams.delete('priceSort');
-
-            // Всегда добавляем сортировку
+            // Всегда добавляем сортировку по дате
             newParams.append('sort', sortValue);
+
+            // Сбрасываем пагинацию
+            newParams.delete('page');
 
             // Создаем новый URL
             const newUrl = window.location.pathname +

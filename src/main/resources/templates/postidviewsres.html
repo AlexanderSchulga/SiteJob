@@ -149,9 +149,9 @@
         </div>
     </div>
 
-    <!-- Блок личных комментариев (без табов, только личные, как и было) -->
+    <!-- Блок личных комментариев (без табов, только личные) -->
     <div class="comments-section mt-4" id="private-comments">
-        <h3>Личные комментарии</h3>
+        <h4>Личные комментарии</h4>
 
         <div th:if="${#authentication.isAuthenticated()}" class="comment-form mb-4">
             <form th:action="@{/postidviewsres/{hashId}/commentPersonalRes(hashId=${postwores[0].hashId})}"
@@ -166,7 +166,7 @@
                 </div>
                 <div class="form-group">
                     <textarea name="text" class="form-control mb-3" rows="3" required
-                              placeholder="Ваш личный комментарий..." id="commentText"></textarea>
+                              placeholder="Ваш личный комментарий...(не менее 3-х символов)" id="commentText"></textarea>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary" id="submitPrivateComment">
@@ -355,10 +355,10 @@
 </script>
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/comment-post/respons_comment_res.js"></script>
-<script type="text/javascript" src="/js/functions/rating.js"></script>
-<script type="text/javascript" src="/js/supportAndfavor/favorites.js"></script>
-<script type="text/javascript" src="/js/comment-post/LoadMoreCommentsPagination.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/comment-post/respons_comment_res.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/rating.js}"></script>
+<script type="text/javascript" th:src="@{/js/supportAndfavor/favorites.js}"></script>
+<script type="text/javascript" th:src="@{/js/comment-post/LoadMoreCommentsPagination.js}"></script>
 </body>
 </html>

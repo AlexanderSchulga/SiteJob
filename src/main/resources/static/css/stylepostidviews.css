@@ -1,4 +1,4 @@
-/* ========== ОСНОВНЫЕ СТИЛИ - единые с styleedit.css ========== */
+/* ========== ОСНОВНЫЕ СТИЛИ ========== */
 
 body, .container-wrapper, .admin-panel, .content-block,
 .card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
@@ -988,7 +988,8 @@ body.has-sticky-header .container-wrapper {
     /* Адаптация групп на планшетах */
     .info-group-1,
     .info-group-2,
-    .info-group-3 {
+    .info-group-3,
+    .info-group-specific {
         padding: 12px 16px;
     }
 
@@ -1179,7 +1180,8 @@ body.has-sticky-header .container-wrapper {
     /* Адаптация групп на телефонах */
     .info-group-1,
     .info-group-2,
-    .info-group-3 {
+    .info-group-3,
+    .info-group-specific {
         padding: 10px 14px;
         border-radius: 14px;
     }
@@ -1267,7 +1269,8 @@ body.has-sticky-header .container-wrapper {
 
     .info-group-1,
     .info-group-2,
-    .info-group-3 {
+    .info-group-3,
+    .info-group-specific {
         padding: 8px 12px;
     }
 
@@ -1338,7 +1341,8 @@ body.has-sticky-header .container-wrapper {
 
     .info-group-1,
     .info-group-2,
-    .info-group-3 {
+    .info-group-3,
+    .info-group-specific {
         padding: 6px 10px;
     }
 
@@ -1416,4 +1420,20 @@ body.has-sticky-header .container-wrapper {
 .comment-card.private-comment.reply-comment {
     background: #f8f9fa;
     border-color: #e9ecef;
+}
+
+
+/* Группа специфичных полей (характеристики товара) */
+.info-group-specific {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+}
+
+.info-group-specific:hover {
+    border-color: #dee2e6;
+    background: #fefefe;
 }

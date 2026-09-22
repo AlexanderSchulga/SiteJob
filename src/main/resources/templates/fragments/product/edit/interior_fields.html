@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="interiorFields(el)">
+    <div id="interiorFieldsEdit" class="filter-group mb-4" th:attr="data-category=${el.category}">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-car me-2"></i>Дом и интерьер
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Тип <span class="text-danger">*</span></label>
+                        <select id="interiorType" name="interiorType" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('interior', 'interior', 'interiorType')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.interiorType != null and el.interiorType == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Состояние <span class="text-danger">*</span></label>
+                        <select id="conditionInterior" name="conditionInterior" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('interior', 'interior', 'conditionInterior')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.conditionInterior != null and el.conditionInterior == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

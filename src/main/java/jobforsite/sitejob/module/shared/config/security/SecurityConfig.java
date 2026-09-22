@@ -120,6 +120,7 @@ public class SecurityConfig {
                                 "/public/api/**",
                                 "/confiden_agr/**",
                                 "/error",
+                                "/promotion",
                                 "/api/rating/seller/**",
                                 "/error/**",
                                 "/maintenance",

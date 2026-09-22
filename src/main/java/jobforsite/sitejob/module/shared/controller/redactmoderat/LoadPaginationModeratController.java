@@ -122,8 +122,8 @@ public class LoadPaginationModeratController {
             return "page_two/moderat";
 
         } catch (Exception e) {
-            log.error("Ошибка загрузки главной страницы модерации: {}", e.getMessage(), e);
-            model.addAttribute("error", "Ошибка загрузки постов для модерации: " + e.getMessage());
+            log.warn("Ошибка загрузки главной страницы модерации: {}", e.getMessage());
+            model.addAttribute("error", "Ошибка загрузки постов для модерации");
             return "error";
         }
     }
@@ -209,8 +209,8 @@ public class LoadPaginationModeratController {
             return "redirect:/page_two/moderat";
 
         } catch (Exception e) {
-            log.error("Ошибка при одобрении типа: {}, hashId: {}: {}", hashId, e.getMessage(), e);
-            model.addAttribute("error", "Ошибка при модерации: " + e.getMessage());
+            log.warn("Ошибка при одобрении типа: hashId: {}", hashId);
+            model.addAttribute("error", "Ошибка при модерации");
             return "error";
         }
     }
@@ -246,8 +246,11 @@ public class LoadPaginationModeratController {
                     model.addAttribute("error", "Запись не найдена");
                     return "error";
                 }
+
                 PostText post = optionalPost.get();
+
                 imageService.deleteMarkedImagesForPost(post);
+
                 post.setModeration(false);
                 post.setArchived(false);
                 post.setModeratedAt(LocalDateTime.now());
@@ -265,8 +268,11 @@ public class LoadPaginationModeratController {
                     model.addAttribute("error", "Запись не найдена");
                     return "error";
                 }
+
                 PostTextJob post = optionalPost.get();
+
                 imageService.deleteMarkedImagesForPostJob(post);
+
                 post.setModeration(false);
                 post.setArchived(false);
                 post.setModeratedAt(LocalDateTime.now());
@@ -284,7 +290,9 @@ public class LoadPaginationModeratController {
                     return "error";
                 }
                 Vacancy vacancy = optionalVacancy.get();
+
                 imageService.deleteMarkedImagesForVacancy(vacancy);
+
                 vacancy.setModeration(false);
                 vacancy.setArchived(false);
                 vacancy.setModeratedAt(LocalDateTime.now());
@@ -306,8 +314,8 @@ public class LoadPaginationModeratController {
             return "redirect:/page_two/moderat";
 
         } catch (Exception e) {
-            log.error("Ошибка при одобрении типа: {}, hashId: {}: {}", type, hashId, e.getMessage(), e);
-            model.addAttribute("error", "Ошибка при модерации: " + e.getMessage());
+            log.warn("Ошибка при отклонении типа: {}, hashId: {}", type, hashId);
+            model.addAttribute("error", "Ошибка при модерации");
             return "error";
         }
     }
@@ -445,9 +453,9 @@ public class LoadPaginationModeratController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке объявлений на модерации: type={}, error={}", type, e.getClass().getSimpleName(), e);
+            log.warn("Ошибка при загрузке объявлений на модерации: type={}", type);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(createErrorResponse(e.getMessage()));
+                    .body(createErrorResponse("Ошибка при загрузке объявлений"));
         }
     }
 
@@ -469,7 +477,7 @@ public class LoadPaginationModeratController {
     }
 
     // ==================== МЕТОДЫ КОНВЕРТАЦИИ В DTO ====================
-    // Примечание: методы конвертации используются для тестирования или в других местах,
+    // методы конвертации используются для тестирования и в других местах,
     // но фактически данные берутся напрямую из кэша через ModerationSliceResponse.
 
     /**

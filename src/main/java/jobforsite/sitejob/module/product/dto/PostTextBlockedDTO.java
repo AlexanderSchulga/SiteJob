@@ -41,7 +41,7 @@ public class PostTextBlockedDTO {
 
     private boolean premium = false;
 
-    /** Приоритет показа в промо-карусели (чем выше, тем выше) */
+    /** Приоритет показа в промо-карусели (чем выше, тем выше, макс 15) */
 
     private int premiumPriority = 0;
 

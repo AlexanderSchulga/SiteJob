@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="childrenPrFields(el)">
+    <div id="childrenPrFieldsEdit" class="filter-group mb-4" th:attr="data-category=${el.category}">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-baby me-2"></i>Детские товары
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Пол <span class="text-danger">*</span></label>
+                        <select id="genderChildrenPr" name="genderChildrenPr" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('childrenPr','childrenPr','genderChildrenPr')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.genderChildrenPr != null and el.genderChildrenPr == option.key}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Состояние <span class="text-danger">*</span></label>
+                        <select id="conditionChildrenPr" name="conditionChildrenPr" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('childrenPr','childrenPr','conditionChildrenPr')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.conditionChildrenPr != null and el.conditionChildrenPr == option.key}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

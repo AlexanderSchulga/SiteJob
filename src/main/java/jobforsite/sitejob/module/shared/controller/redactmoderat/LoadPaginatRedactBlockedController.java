@@ -169,8 +169,8 @@ public class LoadPaginatRedactBlockedController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке заблокированных данных типа {}: {}", type, e.getClass().getSimpleName(), e);
-            PaginationSliceResponseDTO<?> errorResponse = createErrorResponse(e.getMessage());
+            log.warn("Ошибка при загрузке заблокированных данных типа: {}", type);
+            PaginationSliceResponseDTO<?> errorResponse = createErrorResponse("Ошибка при загрузке данных");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
@@ -320,13 +320,13 @@ public class LoadPaginatRedactBlockedController {
             return "redirect:/page_two/redactor";
 
         } catch (Exception e) {
-            log.error("Ошибка при блокировке/разблокировке записи hashId={}, type={}: {}", hashId, type, e.getMessage(), e);
-            model.addAttribute("error", "Ошибка при блокировке: " + e.getMessage());
+            log.warn("Ошибка при блокировке/разблокировке записи hashId={}, type={}", hashId, type);
+            model.addAttribute("error", "Ошибка при блокировке");
             return "error";
         }
     }
 
-    // ==================== MAIN PAGE ====================
+    // ==================== ====================
 
     /**
      * Главная страница управления заблокированными объявлениями.
@@ -372,8 +372,8 @@ public class LoadPaginatRedactBlockedController {
             return "page_two/redactorblocked";
 
         } catch (Exception e) {
-            log.error("Ошибка загрузки страницы заблокированных: {}", e.getMessage(), e);
-            model.addAttribute("error", "Ошибка загрузки заблокированных объявлений: " + e.getMessage());
+            log.warn("Ошибка загрузки страницы заблокированных");
+            model.addAttribute("error", "Ошибка загрузки заблокированных объявлений");
             return "error";
         }
     }
@@ -488,7 +488,7 @@ public class LoadPaginatRedactBlockedController {
 
             return ResponseEntity.ok(statistics);
         } catch (Exception e) {
-            log.error("Ошибка получения статистики: {}", e.getMessage(), e);
+            log.warn("Ошибка получения статистики");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

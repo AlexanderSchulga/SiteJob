@@ -68,22 +68,22 @@ public class PostTextJobCategoryConfig extends BaseCategoryConfig {
         log.debug("Инициализация конфигурации категорий для услуг");
 
         categories.put("all", "Все услуги");
-        categories.put("cleaning", "Уборка и клининг");
-        categories.put("repair", "Ремонт и отделка");
-        categories.put("construction", "Строительные работы");
-        categories.put("beauty", "Красота и здоровье");
-        categories.put("transport", "Транспортные услуги");
-        categories.put("moving", "Грузоперевозки и переезд");
         categories.put("rent", "Аренда");
+        categories.put("accounting", "Бухгалтерия и налоги");
+        categories.put("moving", "Грузоперевозки и переезд");
+        categories.put("elderly", "Уход за пожилыми и детьми");
+        categories.put("pets", "Услуги для животных");
+        categories.put("beauty", "Красота и здоровье");
         categories.put("education", "Обучение и курсы");
         categories.put("event", "Организация мероприятий");
-        categories.put("it", "IT и компьютерная помощь");
-        categories.put("legal", "Юридические услуги");
-        categories.put("accounting", "Бухгалтерия и налоги");
+        categories.put("repair", "Ремонт и отделка");
+        categories.put("construction", "Строительные работы");
+        categories.put("transport", "Транспортные услуги");
+        categories.put("cleaning", "Уборка и клининг");
         categories.put("photography", "Фото и видео");
         categories.put("travel", "Путешествия и отдых");
-        categories.put("pets", "Услуги для животных");
-        categories.put("elderly", "Уход за пожилыми и детьми");
+        categories.put("legal", "Юридические услуги");
+        categories.put("it", "IT и компьютерная помощь");
 
         log.debug("Загружено {} категорий для услуг", categories.size());
     }

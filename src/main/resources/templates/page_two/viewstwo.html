@@ -9,7 +9,6 @@
     <link rel="stylesheet" th:href="@{/css/stylebackground.css}">
     <link rel="stylesheet" th:href="@{/css/styleviewstwo.css}">
 
-    <!-- Асинхронная загрузка Яндекс.Карт -->
     <script>
         function loadYandexMaps() {
             return new Promise((resolve, reject) => {
@@ -17,7 +16,6 @@
                     resolve();
                     return;
                 }
-
                 const script = document.createElement('script');
                 script.src = 'https://api-maps.yandex.ru/2.1/?apikey=a29aa5a3-6b5d-4e6e-a513-27f390d21ae1&lang=ru_RU';
                 script.onload = () => ymaps.ready(resolve);
@@ -33,7 +31,6 @@
     <header th:insert="~{block/header :: headerhtml}"></header>
 
     <div class="container mt-4">
-        <!-- Хлебные крошки -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
@@ -46,6 +43,7 @@
                 </li>
             </ol>
         </nav>
+
 
         <div class="create-form-card card shadow-sm">
             <div class="card-header bg-primary">
@@ -61,7 +59,8 @@
                 </div>
 
                 <form th:action="@{/page_two/viewstwo}" method="post" enctype="multipart/form-data">
-                    <!-- Категория товара -->
+
+                    <!-- ===== КАТЕГОРИЯ ===== -->
                     <div class="mb-4">
                         <label for="category" class="form-label">
                             <i class="fas fa-tag me-1 text-muted"></i>Категория товара <span class="text-danger">*</span>
@@ -74,81 +73,32 @@
                                     th:text="${category.value}">
                             </option>
                         </select>
-                        <!-- Кастомный select будет создан здесь через JS -->
                     </div>
 
-                    <!-- Название товара -->
-                    <div class="mb-4">
-                        <label for="title" class="form-label">
-                            <i class="fas fa-heading me-1 text-muted"></i>Название товара <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" id="title" name="title"
-                               placeholder="Введите название товара"
-                               class="form-control" required>
-                    </div>
+                    <!-- ===== ДИНАМИЧЕСКИЕ ПОЛЯ ===== -->
+                    <div id="dynamicFields">
+                        <!-- Блоки для подкатегорий (характеристики) — сразу после категории -->
+                        <div th:replace="~{fragments/product/create/realty_fields :: realtyFields}"></div>
+                        <div th:replace="~{fragments/product/create/motor_fields :: motorFields}"></div>
+                        <div th:replace="~{fragments/product/create/auto_fields :: autoFields}"></div>
+                        <div th:replace="~{fragments/product/create/constructions_fields :: constructionsFields}"></div>
+                        <div th:replace="~{fragments/product/create/interior_fields :: interiorFields}"></div>
+                        <div th:replace="~{fragments/product/create/tools_fields :: toolsFields}"></div>
+                        <div th:replace="~{fragments/product/create/appliances_fields :: appliancesFields}"></div>
+                        <div th:replace="~{fragments/product/create/electronics_fields :: electronicsFields}"></div>
+                        <div th:replace="~{fragments/product/create/clothing_fields :: clothingFields}"></div>
+                        <div th:replace="~{fragments/product/create/children_fields :: childrenPrFields}"></div>
+                        <div th:replace="~{fragments/product/create/sports_fields :: sportsFields}"></div>
+                        <div th:replace="~{fragments/product/create/food_fields :: foodFields}"></div>
+                        <div th:replace="~{fragments/product/create/health_fields :: healthFields}"></div>
+                        <div th:replace="~{fragments/product/create/animals_fields :: animalsFields}"></div>
 
-                    <!-- Цена -->
-                    <div class="mb-4">
-                        <label for="price" class="form-label">
-                            <i class="fas fa-ruble-sign me-1 text-muted"></i>Укажите цену <span class="text-danger">*</span>
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">₽</span>
-                            <input type="number"
-                                   id="price"
-                                   name="price"
-                                   placeholder="Укажите цену (только цифры)"
-                                   class="form-control"
-                                   required
-                                   min="0"
-                                   step="1"
-                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        </div>
-                    </div>
-
-                    <!-- Описание товара -->
-                    <div class="mb-4">
-                        <label for="full_text" class="form-label">
-                            <i class="fas fa-align-left me-1 text-muted"></i>Описание товара <span class="text-danger">*</span>
-                        </label>
-                        <textarea id="full_text" name="full_text"
-                                  placeholder="Введите описание товара"
-                                  class="form-control" rows="5" required></textarea>
-                        <div class="form-text">Подробно опишите товар, его характеристики и состояние</div>
-                    </div>
-
-                    <!-- Блок местоположения -->
-                    <div class="mb-4">
-                        <label class="form-label">
-                            <i class="fas fa-map-marker-alt me-1 text-muted"></i>Местоположение <span class="text-danger">*</span>
-                        </label>
-
-                        <div class="input-group mb-2">
-                            <input type="text" id="locationInput" name="location"
-                                   class="form-control" placeholder="Введите адрес или выберите на карте"
-                                   th:value="${el?.location}" required>
-                            <button type="button" class="btn btn-outline-secondary" onclick="clearLocation()">
-                                <i class="fas fa-times me-1"></i>Очистить
-                            </button>
-                        </div>
-
-                        <div class="form-text mb-2">
-                            <i class="fas fa-info-circle me-1"></i>📍 Введите адрес вручную или кликните на карте для выбора
-                        </div>
-
-                        <!-- Контейнер для карты -->
-                        <div id="map" class="map-container"></div>
-                    </div>
-
-                    <!-- Изображения -->
-                    <div class="mb-4">
-                        <label for="files" class="form-label">
-                            <i class="fas fa-images me-1 text-muted"></i>Изображения товара <span class="text-danger">*</span>
-                        </label>
-                        <input type="file" name="files" id="files" class="form-control" multiple accept="image/*" required>
-                        <div class="form-text">
-                            <i class="fas fa-info-circle me-1"></i>Вы можете выбрать несколько изображений, удерживая Ctrl (или Cmd на Mac). Максимум 5 изображений
-                        </div>
+                        <!-- Общие поля -->
+                        <div th:replace="~{fragments/product/create/common_fields :: title}"></div>
+                        <div th:replace="~{fragments/product/create/common_fields :: price}"></div>
+                        <div th:replace="~{fragments/product/create/common_fields :: description}"></div>
+                        <div th:replace="~{fragments/product/create/common_fields :: location(mapId='create')}"></div>
+                        <div th:replace="~{fragments/product/create/common_fields :: images}"></div>
                     </div>
 
                     <input type="hidden" name="moderation" value="true">
@@ -167,12 +117,21 @@
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/map_location.js"></script>
-<script type="text/javascript" src="/js/functions/imagelimit.js"></script>
-<script type="text/javascript" src="/js/functions/custom-select-set.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/map_location.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/imagelimit.js}"></script>
+<script type="text/javascript" th:src="@{/js/subcategory_create.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select-set.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/filter/custom-filter-select.js}"></script>
+<script type="text/javascript" th:src="@{/js/validate/validate_create_post.js}"></script>
 
 <script>
+    function clearLocation() {
+        const input = document.getElementById('locationInput');
+        if (input) input.value = '';
+    }
+
+    // Валидация файлов
     document.getElementById('files').addEventListener('change', function(e) {
         const files = e.target.files;
         const maxSizeMB = 20;
@@ -192,15 +151,6 @@
             }
         }
     });
-
-    // Адаптация для sticky-шапки
-    document.addEventListener('DOMContentLoaded', function() {
-        const header = document.querySelector('header');
-        if (header && window.getComputedStyle(header).position === 'sticky') {
-            document.body.classList.add('has-sticky-header');
-        }
-    });
 </script>
-
 </body>
 </html>

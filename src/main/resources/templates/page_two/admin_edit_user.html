@@ -379,13 +379,13 @@
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/all.min.js"></script>
-<script type="text/javascript" src="/js/phone.js"></script>
-<script type="text/javascript" src="/js/functions/region_config.js"></script>
-<script type="text/javascript" src="/js/functions/city_config.js"></script>
-<script type="text/javascript" src="/js/users/admin_user_pagination.js"></script>
-<script type="text/javascript" src="/js/functions/custom-select.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/all.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/phone.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/region_config.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/city_config.js}"></script>
+<script type="text/javascript" th:src="@{/js/users/admin_user_pagination.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select.js}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const path = window.location.pathname;
         if (path.includes('viewsonevac')) return 'vacancy';
         if (path.includes('viewsonejob')) return 'service';
-        return 'product'; // viewsone
+        return 'product';
     }
 
     // Функция для получения правильного текста в зависимости от типа страницы
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 : 'По убыванию зарплаты';
         } else {
             return priceSortValue === 'price_asc'
-                ? 'От возрастанию цены'
+                ? 'По возрастанию цены'
                 : 'По убыванию цены';
         }
     }
@@ -62,14 +62,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-// Обработчик выбора опции сортировки по цене
-
+    // Обработчик выбора опции сортировки по цене
     priceSortOptionsList.forEach(option => {
         option.addEventListener('click', function() {
             const priceSortValue = this.getAttribute('data-price-sort');
             const priceSortText = this.textContent;
-
-            console.log('Price sort selected:');
 
             // Обновляем отображаемый текст
             selectedPriceSortText.textContent = priceSortText;
@@ -79,39 +76,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Создаем URLSearchParams из текущих параметров
             const urlParams = new URLSearchParams(window.location.search);
-            const currentExperience = urlParams.get('experience');
-            const currentWorkformat = urlParams.get('workformat');
 
+            // Создаем новый объект URLSearchParams
+            const newParams = new URLSearchParams();
+
+            // Сохраняем ВСЕ существующие параметры из URL
+            urlParams.forEach((value, key) => {
+                // Пропускаем параметры сортировки, которые будем устанавливать заново
+                if (key === 'sort' || key === 'priceSort' || key === 'page') {
+                    return;
+                }
+                newParams.append(key, value);
+            });
 
             // Если выбрана "По умолчанию", удаляем параметр priceSort
             if (priceSortValue === 'none') {
-                urlParams.delete('priceSort');
+                // Не добавляем priceSort
             } else {
-                // Иначе устанавливаем значение и сбрасываем сортировку по дате
-                urlParams.set('priceSort', priceSortValue);
-
-                // Сбрасываем сортировку по дате при выборе сортировки по цене
-                urlParams.delete('sort'); // Удаляем сортировку по дате
+                newParams.set('priceSort', priceSortValue);
+                // При сортировке по цене удаляем сортировку по дате
+                newParams.delete('sort');
             }
 
-            if (currentExperience && currentExperience !== 'all') {
-                urlParams.searchParams.set('experience', currentExperience);
-            }
-
-            if (currentWorkformat && currentWorkformat !== 'all') {
-                urlParams.searchParams.set('workformat', currentWorkformat );
-            }
-
-            // Если сортировка по дате не указана, устанавливаем по умолчанию 'newest'
-            // НЕ устанавливаем, чтобы была либо сортировка по дате, либо по цене
+            // Сбрасываем пагинацию
+            newParams.delete('page');
 
             // Создаем новый URL
             const newUrl = window.location.pathname +
-                (urlParams.toString() ? '?' + urlParams.toString() : '');
+                (newParams.toString() ? '?' + newParams.toString() : '');
 
-            console.log('Applying price sort');
-
-            // Переходим по новому URL
             window.location.href = newUrl;
         });
     });

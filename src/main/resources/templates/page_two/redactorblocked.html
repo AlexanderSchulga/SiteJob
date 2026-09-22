@@ -275,9 +275,9 @@
 </div>
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
 <script type="text/javascript" th:src="@{/js/paginationPost/load-more-blocked-redact.js}"></script>
-<script type="text/javascript" src="/js/functions/custom-select-redblock.js"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select-redblock.js}"></script>
 
 
 <!-- Модальное окно для подтверждения разблокировки -->

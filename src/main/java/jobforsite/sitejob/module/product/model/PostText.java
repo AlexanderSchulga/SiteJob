@@ -1,9 +1,11 @@
 package jobforsite.sitejob.module.product.model;
 
 import jakarta.persistence.*;
+import jobforsite.sitejob.module.product.model.interfaceFilter.PostDetailsVisitor;
 import jobforsite.sitejob.module.shared.model.Favorites;
 import jobforsite.sitejob.module.shared.model.ImagesFoto;
 import jobforsite.sitejob.module.users.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -20,7 +22,11 @@ import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostControll
  * а также служебные поля для модерации, блокировки и архивации.
  * Реализует интерфейс BasePostController.PostAccessInfo для контроля доступа.
  */
+@Slf4j
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "post_text")
+@DiscriminatorColumn(name = "post_type")
 public class PostText implements BasePostController.PostAccessInfo {
 
     @Id
@@ -98,7 +104,7 @@ public class PostText implements BasePostController.PostAccessInfo {
     private List<CommentPersonal> commentsPersonal = new ArrayList<>();
 
     /**********************************************
-    /** Флаг платного объявления (поднятие в промо-карусель) */
+     /** Флаг платного объявления (поднятие в промо-карусель) */
     @Column(name = "is_premium")
     private boolean premium = false;
 
@@ -108,6 +114,8 @@ public class PostText implements BasePostController.PostAccessInfo {
 
     @Column(name = "is_donate")
     private boolean donate = false;
+
+
 
     // ========== Конструкторы ==========
 
@@ -146,6 +154,29 @@ public class PostText implements BasePostController.PostAccessInfo {
         this.moderation = true;
         this.archived = false;
         this.archivedAt = null;
+    }
+
+    /**
+     * Публикует объявление после редактирования администратором.
+     * Снимает модерацию, убирает из архива, обновляет дату модерации.
+     */
+    public void publishAfterAdminEdit() {
+        this.blocked = false;
+        this.blockedAt = null;
+        this.moderation = false;
+        this.archived = false;
+        this.archivedAt = null;
+        this.moderatedAt = LocalDateTime.now();
+        log.debug("Объявление опубликовано после админского редактирования, hashId: {}", hashId);
+
+    }
+
+
+    // ===== АБСТРАКТНЫЙ МЕТОД - ВИЗИТОР =====
+    //public abstract <T> T accept(PostDetailsVisitor<T> visitor);
+
+    public <T> T accept(PostDetailsVisitor<T> visitor) {
+        return visitor.visitDefault(this);
     }
 
     /**
@@ -370,4 +401,5 @@ public class PostText implements BasePostController.PostAccessInfo {
     public void setDonate(boolean donate) {
         this.donate = donate;
     }
+
 }

@@ -1,18 +1,25 @@
 package jobforsite.sitejob.module.shared.controller.sharedcontroller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jobforsite.sitejob.module.product.dto.PostTextListDTO;
+import jobforsite.sitejob.module.product.dto.ProductFilterDTO;
+import jobforsite.sitejob.module.product.mapper.ProductFilterMapper;
+import jobforsite.sitejob.module.product.model.PostText;
+import jobforsite.sitejob.module.product.repository.PostRepo;
+import jobforsite.sitejob.module.product.service.FilterRangeService;
+import jobforsite.sitejob.module.product.service.PostTextListService;
+import jobforsite.sitejob.module.product.service.filter.LoadMoreFilterFactory;
+import jobforsite.sitejob.module.product.service.filter.ProductLoadMoreService;
 import jobforsite.sitejob.module.resume.model.Resume;
 import jobforsite.sitejob.module.resume.repository.PostResumeRepository;
+import jobforsite.sitejob.module.service.model.PostTextJob;
+import jobforsite.sitejob.module.service.repository.PostRepoJob;
 import jobforsite.sitejob.module.shared.config.categoryconfig.*;
 import jobforsite.sitejob.module.shared.config.globalconfig.RegionsConfig;
-import jobforsite.sitejob.module.product.model.PostText;
-import jobforsite.sitejob.module.service.model.PostTextJob;
-import jobforsite.sitejob.module.vacancy.model.Vacancy;
 import jobforsite.sitejob.module.shared.controller.sharedglobal.BaseController;
-import jobforsite.sitejob.module.product.repository.PostRepo;
-import jobforsite.sitejob.module.service.repository.PostRepoJob;
-import jobforsite.sitejob.module.vacancy.repository.PostVacancyRepository;
 import jobforsite.sitejob.module.shared.services.cachrateservice.RateLimitService;
+import jobforsite.sitejob.module.vacancy.model.Vacancy;
+import jobforsite.sitejob.module.vacancy.repository.PostVacancyRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -71,6 +79,13 @@ public class LoadPaginationController extends BaseController {
 
     private final PostResumeCategoryConfig postResumeCategoryConfig;
     private final RateLimitService rateLimitService;
+    private final FilterRangeService filterRangeService;
+
+    private final PostTextListService postTextListService;
+
+    private final LoadMoreFilterFactory loadMoreFilterFactory;
+
+
 
     public LoadPaginationController(PostRepo postRepo, PostRepoJob postRepoJob,
                                     PostVacancyRepository postVacancyRepository, PostResumeRepository postResumeRepository,
@@ -82,7 +97,9 @@ public class LoadPaginationController extends BaseController {
                                     ExperienceVacancyCategoryConfig experienceVacancyCategoryConfig,
                                     WorkFormatVacancyConfig workFormatVacancyConfig,
                                     WorkFormatResumeConfig workFormatResumeConfig,
-                                    RateLimitService rateLimitService) {
+                                    RateLimitService rateLimitService,
+                                    FilterRangeService filterRangeService, PostTextListService postTextListService,
+                                    LoadMoreFilterFactory loadMoreFilterFactory) {
         this.postRepo = postRepo;
         this.postRepoJob = postRepoJob;
         this.postVacancyRepository = postVacancyRepository;
@@ -97,6 +114,9 @@ public class LoadPaginationController extends BaseController {
         this.workFormatVacancyConfig = workFormatVacancyConfig;
         this.workFormatResumeConfig = workFormatResumeConfig;
         this.rateLimitService = rateLimitService;
+        this.filterRangeService = filterRangeService;
+        this.postTextListService = postTextListService;
+        this.loadMoreFilterFactory = loadMoreFilterFactory;
     }
 
     /**
@@ -127,22 +147,21 @@ public class LoadPaginationController extends BaseController {
      * @param request   HTTP запрос для получения IP
      * @return ResponseEntity с пагинированным ответом (список постов, hasMore, nextPage)
      */
+    /**
+     * Пагинированная загрузка товаров (постов) с фильтрацией и сортировкой.
+     */
+
     @GetMapping("/page_one/viewsone/load-more")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> loadMoreProducts(
-            @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "sort", defaultValue = "newest") String sort,
-            @RequestParam(value = "priceSort", defaultValue = "none") String priceSort,
-            @RequestParam(value = "region", required = false) String region,
-            @RequestParam(value = "city", required = false) String city,
+            @ModelAttribute ProductFilterDTO filter,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size,
             HttpServletRequest request) {
 
         String clientIp = getClientIp(request);
 
-        // Rate limiting защита от слишком частых запросов
+        // Rate limiting
         if (!rateLimitService.tryConsumeProductLoad(clientIp)) {
             log.warn("Rate limit превышен для load-more продуктов, IP: {}", clientIp);
             Map<String, Object> errorResponse = new HashMap<>();
@@ -152,43 +171,38 @@ public class LoadPaginationController extends BaseController {
         }
 
         try {
-            log.debug("Загрузка продуктов: категория={}, поиск={}, регион={}, город={}, страница={}, размер={}",
-                    category, search, region, city, page, size);
+
+            String normalizedCategory = filterRangeService.normalizeParam(filter.getCategory());
+            String normalizedSearch = filterRangeService.normalizeParam(filter.getSearch());
+            String normalizedRegion = filterRangeService.normalizeParam(filter.getRegion());
+            String normalizedCity = filterRangeService.normalizeParam(filter.getCity());
+            String sort = filter.getSort() != null ? filter.getSort() : "newest";
+            String priceSort = filter.getPriceSort() != null ? filter.getPriceSort() : "none";
+
+            filter.setCategory(normalizedCategory);
+            filter.setSearch(normalizedSearch);
+            filter.setRegion(normalizedRegion);
+            filter.setCity(normalizedCity);
+            filter.setSort(sort);
+            filter.setPriceSort(priceSort);
+
+            log.debug("Загрузка продуктов: фильтр={}, страница={}", filter, page);
 
             Pageable pageable = createPageable(page, size, sort, priceSort, "product");
+            boolean showOtherCities = "other_none".equals(filter.getCity());
+            List<String> standardCities = showOtherCities ? regionsConfig.getCitiesByRegion(filter.getRegion()) : null;
 
-            // Нормализация параметров фильтрации
-            String normalizedSearch = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
-            String normalizedCategory = (category != null && !category.isEmpty() && !"all".equals(category)) ? category : null;
-            String normalizedRegion = (region != null && !region.isEmpty() && !"all".equals(region)) ? region : null;
-            String normalizedCity = (city != null && !city.isEmpty() && !"all".equals(city)) ? city : null;
+            // ===== ВЫБОР СЕРВИСА =====
+            ProductLoadMoreService loadService = loadMoreFilterFactory.getService(filter.getCategory());
 
-            boolean showOtherCities = "other_none".equals(city);
+            // ===== ЗАГРУЗКА ID =====
+            Slice<Long> idsSlice = loadService.loadIds(filter, pageable, showOtherCities, standardCities);
 
-            Slice<Long> idsSlice;
-
-            if (showOtherCities) {
-                // Кейс: показать товары из других городов региона (исключая стандартные города)
-                List<String> standardCities = regionsConfig.getCitiesByRegion(region);
-                idsSlice = postRepo.findPostIdsByOtherCitiesSlice(
-                        normalizedSearch,
-                        normalizedCategory,
-                        normalizedRegion,
-                        standardCities,
-                        pageable
-                );
-            } else {
-                idsSlice = postRepo.findPostIdsWithFiltersSlice(
-                        normalizedSearch,
-                        normalizedCategory,
-                        normalizedRegion,
-                        normalizedCity,
-                        pageable
-                );
+            if (idsSlice == null) {
+                idsSlice = loadMoreFilterFactory.getService(null).loadIds(filter, pageable, showOtherCities, standardCities);
             }
 
             if (idsSlice.isEmpty()) {
-                log.debug("Продукты не найдены для запроса");
                 Map<String, Object> response = new HashMap<>();
                 response.put("posts", new ArrayList<>());
                 response.put("hasMore", false);
@@ -197,7 +211,7 @@ public class LoadPaginationController extends BaseController {
                 return ResponseEntity.ok(response);
             }
 
-            // Получаем сами посты по ID и сохраняем порядок
+            // ===== ПОЛУЧЕНИЕ ПОСТОВ =====
             List<PostText> posts = postRepo.findPostsByIdsWithImages(idsSlice.getContent());
 
             Map<Long, PostText> postMap = posts.stream()
@@ -208,28 +222,30 @@ public class LoadPaginationController extends BaseController {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
 
-            List<Map<String, Object>> simplePosts = orderedPosts.stream()
-                    .map(this::convertToProductMap)
-                    .collect(Collectors.toList());
+            List<PostTextListDTO> postDTOs = postTextListService.toListDTO(orderedPosts);
 
+            // ===== ФОРМИРОВАНИЕ ОТВЕТА =====
             Map<String, Object> response = new HashMap<>();
-            response.put("posts", simplePosts);
+            response.put("posts", postDTOs);
             response.put("hasMore", idsSlice.hasNext());
             response.put("nextPage", idsSlice.hasNext() ? page + 1 : page);
             response.put("status", "success");
 
             // Возвращаем текущие параметры для синхронизации состояния на клиенте
-            response.put("currentCategory", category);
-            response.put("currentRegion", region);
-            response.put("currentCity", city);
-            response.put("currentSort", sort);
-            response.put("currentPriceSort", priceSort);
+            response.put("currentCategory", filter.getCategory());
+            response.put("currentRegion", filter.getRegion());
+            response.put("currentCity", filter.getCity());
+            response.put("currentSort", filter.getSort());
+            response.put("currentPriceSort", filter.getPriceSort());
 
-            log.debug("Загружено {} продуктов, hasMore={}", simplePosts.size(), idsSlice.hasNext());
+            loadService.addResponseParams(response, filter);
+
+            log.debug("Загружено {} продуктов, hasMore={}", postDTOs.size(), idsSlice.hasNext());
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке продуктов: категория={}, страница={}, ошибка={}", category, page, e.getClass().getSimpleName(), e);
+            log.error("Ошибка при загрузке продуктов: категория={}, страница={}, ошибка={}",
+                    filter.getCategory(), page, e.getClass().getSimpleName(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
             errorResponse.put("message", e.getMessage());

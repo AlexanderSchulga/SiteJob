@@ -150,25 +150,209 @@ class LoadMorePagination {
         const params = new URLSearchParams();
         const urlParams = new URLSearchParams(window.location.search);
 
-        const category = urlParams.get('category');
-        const search = urlParams.get('search');
-        const sort = urlParams.get('sort') || 'newest';
-        const priceSort = urlParams.get('priceSort') || 'none';
-        const region = urlParams.get('region');
-        const city = urlParams.get('city');
+        // Собираем ВСЕ параметры из URL в объект filter
+        const filter = {};
 
+        // Базовые параметры
+        const category = urlParams.get('category');
+        if (category && category !== 'all') filter.category = category;
+
+        const search = urlParams.get('search');
+        if (search) filter.search = search;
+
+        const sort = urlParams.get('sort') || 'newest';
+        filter.sort = sort;
+
+        const priceSort = urlParams.get('priceSort') || 'none';
+        filter.priceSort = priceSort;
+
+        const region = urlParams.get('region');
+        if (region && region !== 'all') filter.region = region;
+
+        const city = urlParams.get('city');
+        if (city && city !== 'all') filter.city = city;
+
+        // ===== ФИЛЬТРЫ НЕДВИЖИМОСТИ =====
+        const propertyType = urlParams.get('propertyType');
+        if (propertyType) filter.propertyType = propertyType;
+
+        const roomsCount = urlParams.get('roomsCount');
+        if (roomsCount) filter.roomsCount = roomsCount;
+
+        const floorsApartment = urlParams.get('floorsApartment');
+        if (floorsApartment) filter.floorsApartment = floorsApartment;
+
+        const floorsCount = urlParams.get('floorsCount');
+        if (floorsCount) filter.floorsCount = floorsCount;
+
+        const apartmentBuildYear = urlParams.get('apartmentBuildYear');
+        if (apartmentBuildYear) filter.apartmentBuildYear = apartmentBuildYear;
+
+        const floorsCountHouse = urlParams.get('floorsCountHouse');
+        if (floorsCountHouse) filter.floorsCountHouse = floorsCountHouse;
+
+        const houseBuildYear = urlParams.get('houseBuildYear');
+        if (houseBuildYear) filter.houseBuildYear = houseBuildYear;
+
+        const hasElevator = urlParams.get('hasElevator');
+        if (hasElevator !== null && hasElevator !== undefined && hasElevator !== '') {
+            filter.hasElevator = hasElevator;
+        }
+
+        const houseArea = urlParams.get('houseArea');
+        if (houseArea) filter.houseArea = houseArea;
+
+        const landArea = urlParams.get('landArea');
+        if (landArea) filter.landArea = landArea;
+
+        const distanceToCity = urlParams.get('distanceToCity');
+        if (distanceToCity) filter.distanceToCity = distanceToCity;
+
+        const materialUp = urlParams.get('materialUp');
+        if (materialUp) filter.materialUp = materialUp;
+
+        const repairUp = urlParams.get('repairUp');
+        if (repairUp) filter.repairUp = repairUp;
+
+        const materialHouse = urlParams.get('materialHouse');
+        if (materialHouse) filter.materialHouse = materialHouse;
+
+        const repairHouse = urlParams.get('repairHouse');
+        if (repairHouse) filter.repairHouse = repairHouse;
+
+        const distanceToCityHouse = urlParams.get('distanceToCityHouse');
+        if (distanceToCityHouse) filter.distanceToCityHouse = distanceToCityHouse;
+
+        const landAreaGarage = urlParams.get('landAreaGarage');
+        if (landAreaGarage) filter.landAreaGarage = landAreaGarage;
+
+        const landAreaCommercial = urlParams.get('landAreaCommercial');
+        if (landAreaCommercial) filter.landAreaCommercial = landAreaCommercial;
+
+        // ===== ФИЛЬТРЫ АВТОТРАНСПОРТА =====
+        const vehicleType = urlParams.get('vehicleType');
+        if (vehicleType) filter.vehicleType = vehicleType;
+
+        const vehicleOrigin = urlParams.get('vehicleOrigin');
+        if (vehicleOrigin) filter.vehicleOrigin = vehicleOrigin;
+
+        const vehicleYear = urlParams.get('vehicleYear');
+        if (vehicleYear) filter.vehicleYear = vehicleYear;
+
+        const mileage = urlParams.get('mileage');
+        if (mileage) filter.mileage = mileage;
+
+        const numberOfOwners = urlParams.get('numberOfOwners');
+        if (numberOfOwners) filter.numberOfOwners = numberOfOwners;
+
+
+        //--Автозапчасти и автотовары--//
+        const autoType = urlParams.get('autoType');
+        if (autoType) filter.autoType = autoType;
+
+        const conditionAuto = urlParams.get('conditionAuto');
+        if (conditionAuto) filter.conditionAuto = conditionAuto;
+
+        //---Строительные материалы--------------/////
+        const constructionsType = urlParams.get('constructionsType');
+        if (constructionsType) filter.constructionsType = constructionsType;
+
+        //----Дом и интерьер----////
+
+        const interiorType = urlParams.get('interiorType');
+        if (interiorType) filter.interiorType = interiorType;
+
+        const conditionInterior = urlParams.get('conditionInterior');
+        if (conditionInterior) filter.conditionInterior = conditionInterior;
+
+        //----Инструменты----
+
+        const toolsType = urlParams.get('toolsType');
+        if (toolsType) filter.toolsType = toolsType;
+
+        const conditionTools = urlParams.get('conditionTools');
+        if (conditionTools) filter.conditionTools = conditionTools;
+
+        //------Бытовая техника----///
+
+        const appliancesType = urlParams.get('appliancesType');
+        if (appliancesType) filter.appliancesType = appliancesType;
+
+        const conditionAppliances = urlParams.get('conditionAppliances');
+        if (conditionAppliances) filter.conditionAppliances = conditionAppliances;
+
+        //---Электроника и гаджеты---///
+
+        const electronicsType = urlParams.get('electronicsType');
+        if (electronicsType) filter.electronicsType = electronicsType;
+
+        const conditionElectronics = urlParams.get('conditionElectronics');
+        if (conditionElectronics) filter.conditionElectronics = conditionElectronics;
+
+        //-----Одежда и обувь----//
+
+        const clothingType = urlParams.get('clothingType');
+        if (clothingType) filter.clothingType = clothingType;
+
+        const gender = urlParams.get('gender');
+        if (gender) filter.gender = gender;
+
+        const conditionClothing = urlParams.get('conditionClothing');
+        if (conditionClothing) filter.conditionClothing = conditionClothing;
+
+        //--Детские товары--//
+        const genderChildrenPr = urlParams.get('genderChildrenPr');
+        if (genderChildrenPr) filter.genderChildrenPr = genderChildrenPr;
+
+        const conditionChildrenPr = urlParams.get('conditionChildrenPr');
+        if (conditionChildrenPr) filter.conditionChildrenPr = conditionChildrenPr;
+
+        //---Товары для спорта----//
+
+        const sportsKind = urlParams.get('sportsKind');
+        if (sportsKind) filter.sportsKind = sportsKind;
+
+        const sportsType = urlParams.get('sportsType');
+        if (sportsType) filter.sportsType = sportsType;
+
+        //--Детские товары--//
+        const genderSports = urlParams.get('genderSports');
+        if (genderSports) filter.genderSports = genderSports;
+
+        const conditionSports = urlParams.get('conditionSports');
+        if (conditionSports) filter.conditionSports = conditionSports;
+
+        //-----Продукты питания-----//
+        const foodKind = urlParams.get('foodKind');
+        if (foodKind) filter.foodKind = foodKind;
+
+        //-----Здоровье и красота------//
+
+        const healthKind = urlParams.get('healthKind');
+        if (healthKind) filter.healthKind = healthKind;
+
+        const healthType = urlParams.get('healthType');
+        if (healthType) filter.healthType = healthType;
+
+        const genderHealth = urlParams.get('genderHealth');
+        if (genderHealth) filter.genderHealth = genderHealth;
+
+        //---------Флора и фауна----------//
+
+        const animalsKind = urlParams.get('animalsKind');
+        if (animalsKind) filter.animalsKind = animalsKind;
+
+
+        // Добавляем все параметры фильтра в URL
+        Object.keys(filter).forEach(key => {
+            if (filter[key] !== null && filter[key] !== undefined && filter[key] !== '') {
+                params.append(key, filter[key]);
+            }
+        });
+
+        // Пагинация
         params.append('page', page);
         params.append('size', 8);
-
-        if (category) params.append('category', category);
-        if (search) params.append('search', search);
-        if (region) params.append('region', region);
-        if (city) params.append('city', city);
-
-        params.append('sort', sort);
-        if (priceSort) {
-            params.append('priceSort', priceSort);
-        }
 
         return baseUrl + (params.toString() ? '?' + params.toString() : '');
     }

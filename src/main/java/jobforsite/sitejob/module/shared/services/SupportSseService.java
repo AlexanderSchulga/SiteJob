@@ -177,4 +177,5 @@ public class SupportSseService {
         notification.put("redirectUrl", "/message/support/" + ticketId + "?replyId=" + replyId);
         sendNotification(userId, "new_reply", notification);
     }
+
 }

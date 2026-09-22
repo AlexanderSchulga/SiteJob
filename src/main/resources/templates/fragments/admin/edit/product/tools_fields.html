@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="toolsFields(el)">
+    <div id="toolsFieldsEdit" class="filter-group mb-4" th:attr="data-category=${el.category}">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-screwdriver-wrench me-2"></i>Инструменты
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Тип <span class="text-danger">*</span></label>
+                        <select id="toolsType" name="toolsType" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('tools','tools','toolsType')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.toolsType != null and el.toolsType == option.key}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Состояние <span class="text-danger">*</span></label>
+                        <select id="conditionTools" name="conditionTools" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('tools','tools','conditionTools')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.conditionTools != null and el.conditionTools == option.key}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

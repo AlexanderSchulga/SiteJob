@@ -231,8 +231,8 @@ public class DeletePostUserController {
             return "redirect:/page_two/redactor";
 
         } catch (Exception e) {
-            log.error("Error deleting {} with hashId: {}", type, hashId, e);
-            model.addAttribute("error", "Ошибка при удалении: " + e.getMessage());
+            log.warn("Error deleting {} with hashId: {}", type, hashId);
+            model.addAttribute("error", "Ошибка при удалении");
             return "error";
         }
     }

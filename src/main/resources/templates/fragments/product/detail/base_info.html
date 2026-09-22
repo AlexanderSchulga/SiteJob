@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="baseInfo(post)">
+    <!-- НАЗВАНИЕ + КАТЕГОРИЯ + ЦЕНА -->
+    <div class="info-group-1">
+        <h1 class="post-title" th:text="${post.title}"></h1>
+        <small class="text-muted d-block">
+            <strong>Категория:</strong>
+            <span th:text="${post.categoryDisplayName}"></span>
+        </small>
+        <strong>Цена:</strong>
+        <p class="post-anons" th:text="${post.price}"></p>
+    </div>
+
+    <!-- СПЕЦИФИЧНЫЕ ПОЛЯ-->
+    <div class="info-group-specific" th:if="${post.postType != null}">
+        <div th:if="${post.postType == 'realty'}">
+            <div th:replace="~{fragments/product/detail/realty_details :: realtyDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'vehicle'}">
+            <div th:replace="~{fragments/product/detail/vehicle_details :: vehicleDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'auto'}">
+            <div th:replace="~{fragments/product/detail/auto_details :: autoDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'constructions'}">
+            <div th:replace="~{fragments/product/detail/constructions_details :: constructionsDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'interior'}">
+            <div th:replace="~{fragments/product/detail/interior_details :: interiorDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'tools'}">
+            <div th:replace="~{fragments/product/detail/tools_details :: toolsDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'appliances'}">
+            <div th:replace="~{fragments/product/detail/appliances_details :: appliancesDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'electronics'}">
+            <div th:replace="~{fragments/product/detail/electronics_details :: electronicsDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'clothing'}">
+            <div th:replace="~{fragments/product/detail/clothing_details :: clothingDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'childrenPr'}">
+            <div th:replace="~{fragments/product/detail/children_details :: childrenPrDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'sports'}">
+            <div th:replace="~{fragments/product/detail/sports_details :: sportsDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'food'}">
+            <div th:replace="~{fragments/product/detail/food_details :: foodDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'health'}">
+            <div th:replace="~{fragments/product/detail/health_details :: healthDetails(post=${post})}"></div>
+        </div>
+        <div th:if="${post.postType == 'animals'}">
+            <div th:replace="~{fragments/product/detail/animals_details :: animalsDetails(post=${post})}"></div>
+        </div>
+    </div>
+
+    <!-- ПРОСМОТРЫ + ДАТЫ + АВТОР + РЕЙТИНГ + ТЕЛЕФОН + РЕГИОН -->
+    <div class="info-group-2">
+        <small class="text-muted d-block">
+            <strong>Просмотров:</strong>
+            <i class="fas fa-eye"></i> <span th:text="${post.viewCount}"></span>
+        </small>
+        <small class="text-muted d-block">
+            <strong>Опубликовано:</strong>
+            <span th:text="${#temporals.format(post.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+        </small>
+        <small class="text-muted d-block" th:if="${post.updatedAt != null and post.updatedAt != post.createdAt}">
+            <strong>Обновлено:</strong>
+            <span th:text="${#temporals.format(post.updatedAt, 'dd.MM.yyyy HH:mm')}"></span>
+        </small>
+
+        <div class="post-user-info">
+            <small class="text-muted d-block">
+                <strong>Автор:</strong>
+                <span class="user-name-wrapper" th:text="${post.user != null ? post.user.nameuse : 'Неизвестный пользователь'}"></span>
+            </small>
+            <span th:if="${post.user != null and post.user.online}" class="status-online">
+                <i class="fas fa-circle"></i>
+                <small>онлайн</small>
+            </span>
+            <span th:unless="${post.user != null and post.user.online}" class="status-offline">
+                <i class="fas fa-circle"></i>
+                <small>офлайн</small>
+            </span>
+        </div>
+
+        <div class="seller-rating mb-2">
+            <small class="text-muted d-block">
+                <strong>Рейтинг пользователя:</strong>
+                <span class="rating-stars" th:attr="data-seller-id=${post.user != null ? post.user.hashId : ''}"></span>
+                <span class="rating-text">
+                    (<span class="average-rating" th:text="${post.user != null ? post.user.averageRating : 0}">0</span> из 5 на основе
+                    <span class="rating-count" th:text="${post.user != null ? post.user.ratingCount : 0}">0</span> оценок)
+                </span>
+                <span th:if="${#authentication.isAuthenticated() and currentUser != null and post.user != null and currentUser.id != post.user.id and not #authorization.expression('hasRole(''SUPER'')') and not #authorization.expression('hasRole(''ADMIN'')')}"
+                      class="rate-seller-text">
+                    • <a href="#" class="rate-seller-link" th:attr="data-seller-id=${post.user.hashId}">Оценить</a>
+                </span>
+            </small>
+        </div>
+
+        <small class="text-muted d-block" th:if="${#authorization.expression('isAuthenticated()')}">
+            <strong>Тел:</strong>
+            <span th:text="${post.user != null ? post.user.phonePost : 'Отсутствуют контакты'}"></span>
+        </small>
+        <small class="text-muted d-block" th:unless="${#authorization.expression('isAuthenticated()')}">
+            <strong>Статус:</strong> Не авторизован - телефон скрыт
+        </small>
+
+        <div class="post-user-info">
+            <small class="text-muted d-block">
+                <strong>Регион:</strong>
+                <span th:text="${post.user != null ? post.user.regionDisplayName : ''}"></span>
+            </small>
+        </div>
+
+        <div class="post-user-info">
+            <small class="text-muted d-block">
+                <strong>Населенный пункт:</strong>
+                <span th:text="${post.user != null ? post.user.city : 'Не указан'}"></span>
+            </small>
+        </div>
+    </div>
+
+    <!-- КНОПКИ -->
+    <div class="info-group-3">
+        <div class="seller-actions mt-1">
+            <a th:if="${post.user != null}"
+               th:href="@{/user/{hashId}/posts(hashId=${post.user.hashId})}"
+               class="btn btn-sm btn-outline-info">
+                <i class="fas fa-list me-1"></i>Все объявления пользователя
+            </a>
+        </div>
+        <div class="seller-actions mt-1">
+            <a th:if="${post.user != null}"
+               th:href="@{/page_one/reviews/{hashId}(hashId=${post.user.hashId})}"
+               class="btn btn-sm btn-outline-info">
+                <i class="fas fa-comments me-1"></i>Отзывы о пользователе
+            </a>
+        </div>
+        <div class="favorite-section mt-2">
+            <div th:if="${#authentication.isAuthenticated() and currentUser != null and post.user != null and currentUser.id != post.user.id}">
+                <button class="btn btn-outline-warning favorite-btn"
+                        th:attr="data-type='product', data-id=${post.id}">
+                    <i class="far fa-heart"></i> В избранное
+                </button>
+            </div>
+            <div th:if="${#authentication.isAuthenticated() and currentUser != null and post.user != null and currentUser.id == post.user.id}"
+                 class="alert alert-info p-2 mb-0">
+                <small><i class="fas fa-info-circle me-1"></i> Это ваше объявление</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ОПИСАНИЕ -->
+    <div class="info-group-description">
+        <strong>Описание:</strong>
+        <p class="post-full-text" th:text="${post.fullText}"></p>
+    </div>
+</div>
+
+</body>
+</html>

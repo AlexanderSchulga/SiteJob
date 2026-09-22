@@ -1,53 +1,44 @@
-# ===== APPLICATION CONFIGS =====
-# Полностью исключаем все конфиги с секретами
+# ===== APPLICATION CONFIGS (полностью исключаем, без исключений) =====
 application*.properties
 application*.yml
 application*.yaml
 
-# НО разрешаем шаблоны (без секретов)
-!application-template.properties
-!application-dev-template.properties
-!application-example.yml
-
-# ===== ОСТАЛЬНЫЕ ПРАВИЛА =====
+# ===== BUILD =====
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
+# ===== IDE =====
 .idea/
 *.iws
 *.iml
 *.ipr
-
-### VS Code ###
 .vscode/
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
 
-### Logs ###
+# ===== LOGS =====
 *.log
 logs/
 
-### OS files ###
+# ===== OS =====
 .DS_Store
 Thumbs.db
 *.tmp
+*.swp
+*.swo
+*~
 
-### Uploads ###
+# ===== UPLOADS (только пользовательские фото) =====
 uploads/
 /var/www/sitejob/uploads/
 
-### SSL Certificates ###
+# ===== SSL =====
 *.p12
 *.jks
 *.keystore
@@ -56,13 +47,13 @@ uploads/
 *.key
 *.pem
 
-### Backups ###
-*.sql
+# ===== BACKUPS =====
+/opt/backups/
+/backups/
 *.bak
 *.backup
-/opt/backups/
 
-### System files ###
-*.swp
-*.swo
-*~
+# ===== TEST ARTIFACTS =====
+**/allure-results/
+**/screenshots/
+test-output/

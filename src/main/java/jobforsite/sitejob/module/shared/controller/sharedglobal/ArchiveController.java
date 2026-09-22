@@ -254,8 +254,8 @@ public class ArchiveController {
             return "redirect:/page_two/redactor";
 
         } catch (Exception e) {
-            log.error("Ошибка при восстановлении из архива: type={}, hashId={}, error={}", type, hashId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка при обновлении: " + e.getMessage());
+            log.warn("Ошибка при восстановлении из архива: type={}, hashId={}", type, hashId);
+            model.addAttribute("error", "Ошибка при обновлении");
             return "error";
         }
     }
@@ -309,8 +309,8 @@ public class ArchiveController {
             return "redirect:/page_two/redactor";
 
         } catch (Exception e) {
-            log.error("Ошибка при архивации товара с hashId {}: {}", hashId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка при скрытии: " + e.getMessage());
+            log.warn("Ошибка при архивации товара с hashId: {}", hashId);
+            model.addAttribute("error", "Ошибка при скрытии");
             return "error";
         }
     }
@@ -363,8 +363,8 @@ public class ArchiveController {
             return "redirect:/page_two/redactor";
 
         } catch (Exception e) {
-            log.error("Ошибка при архивации услуги с hashId {}: {}", hashId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка при скрытии: " + e.getMessage());
+            log.warn("Ошибка при архивации услуги с hashId: {}", hashId);
+            model.addAttribute("error", "Ошибка при скрытии");
             return "error";
         }
     }
@@ -417,8 +417,8 @@ public class ArchiveController {
             return "redirect:/page_two/redactor";
 
         } catch (Exception e) {
-            log.error("Ошибка при архивации вакансии с hashId {}: {}", hashId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка при скрытии: " + e.getMessage());
+            log.warn("Ошибка при архивации вакансии с hashId: {}", hashId);
+            model.addAttribute("error", "Ошибка при скрытии");
             return "error";
         }
     }
@@ -468,8 +468,8 @@ public class ArchiveController {
             return "redirect:/page_two/redactor";
 
         } catch (Exception e) {
-            log.error("Ошибка при архивации резюме с hashId {}: {}", hashId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка при скрытии: " + e.getMessage());
+            log.warn("Ошибка при архивации резюме с hashId: {}", hashId);
+            model.addAttribute("error", "Ошибка при скрытии");
             return "error";
         }
     }

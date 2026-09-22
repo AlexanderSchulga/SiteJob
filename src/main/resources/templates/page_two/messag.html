@@ -94,7 +94,7 @@
                                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Удалить этот комментарий?')">Удалить</button>
                                     </form>
 
-                                    <!-- НОВАЯ КНОПКА: Удалить всю ветку -->
+                                    <!--Удалить всю ветку -->
                                     <form th:action="@{/postidviews/{postId}/commentPersonal/{commentPersonalId}/deleteBranch(postId=${postwo[0].id}, commentPersonalId=${comment.id})}"
                                           method="post" class="d-inline ms-1">
                                         <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Удалить ВСЮ ветку переписки? Это действие нельзя отменить!')">
@@ -148,7 +148,7 @@
 </div>
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/comment-post/respons_comment.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/comment-post/respons_comment.js}"></script>
 </body>
 </html>

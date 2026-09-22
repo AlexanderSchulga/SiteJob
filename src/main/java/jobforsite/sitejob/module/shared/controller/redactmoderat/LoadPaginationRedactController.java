@@ -129,8 +129,8 @@ public class LoadPaginationRedactController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке данных типа {}: {}", type, e.getMessage(), e);
-            PaginationSliceRedactResponseDTO<?> errorResponse = createErrorSliceRedactResponse(e.getMessage());
+            log.warn("Ошибка при загрузке данных типа: {}", type);
+            PaginationSliceRedactResponseDTO<?> errorResponse = createErrorSliceRedactResponse("Ошибка при загрузке данных");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }

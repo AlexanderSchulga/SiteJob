@@ -173,9 +173,9 @@ public class UpdateUserPagination extends BaseController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке объявлений пользователя: ", e);
+            log.warn("Ошибка при загрузке объявлений пользователя", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(createErrorResponse("Ошибка загрузки: " + e.getMessage()));
+                    .body(createErrorResponse("Ошибка загрузки данных"));
         }
     }
 

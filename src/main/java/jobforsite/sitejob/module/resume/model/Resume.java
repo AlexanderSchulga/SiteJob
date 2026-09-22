@@ -5,6 +5,7 @@ import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostControll
 import jobforsite.sitejob.module.shared.model.Favorites;
 import jobforsite.sitejob.module.shared.model.ImagesFoto;
 import jobforsite.sitejob.module.users.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 
 /**
  * Сущность резюме.
- * Содержит информацию о вакансии/резюме пользователя, включая текст, категорию, опыт, изображения.
+ * Содержит информацию о резюме пользователя, включая текст, категорию, опыт, изображения.
  * Реализует интерфейс PostAccessInfo для контроля доступа к посту.
  */
+
+@Slf4j
 @Entity
 public class Resume implements BasePostController.PostAccessInfo {
 
@@ -175,6 +178,21 @@ public class Resume implements BasePostController.PostAccessInfo {
         this.archived = false;
         this.archivedAt = null;
     }
+
+    /**
+     * Публикует объявление после редактирования администратором.
+     * Снимает модерацию, убирает из архива, обновляет дату модерации.
+     */
+    public void publishAfterAdminEdit() {
+        this.blocked = false;
+        this.blockedAt = null;
+        this.moderation = false;
+        this.archived = false;
+        this.archivedAt = null;
+        this.moderatedAt = LocalDateTime.now();
+        log.debug("Объявление опубликовано после админского редактирования, hashId: {}", hashId);
+    }
+
 
     /**
      * Возвращает путь к первому валидному изображению резюме.

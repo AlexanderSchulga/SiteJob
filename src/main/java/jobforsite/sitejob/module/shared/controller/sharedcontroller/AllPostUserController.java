@@ -222,7 +222,7 @@ public class AllPostUserController extends BaseController {
             return "fragments/user_posts_fragment :: postsFragment";
 
         } catch (Exception e) {
-            log.error("Load-more error for user hash: {}, type: {}", userHash, type, e);
+            log.warn("Load-more error for user hash: {}, type: {}", userHash, type);
             return "fragments/error_fragment :: errorFragment(errorMessage='Ошибка загрузки данных')";
         }
     }

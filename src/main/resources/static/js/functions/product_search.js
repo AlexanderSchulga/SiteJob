@@ -9,6 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
+    // ===== ВОССТАНАВЛИВАЕМ ЗНАЧЕНИЕ ПОИСКА ИЗ URL =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('search');
+    if (searchQuery) {
+        searchInput.value = searchQuery;
+    }
+
     // Поиск при нажатии кнопки лупы
     searchButton.addEventListener('click', function() {
         performSearch();

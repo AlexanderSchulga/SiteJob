@@ -27,7 +27,7 @@ import java.util.Optional;
 
 /**
  * Контроллер для управления блокировкой и удалением различных типов постов (товары, услуги, вакансии, резюме).
- * Доступ к методам контроллера имеют только пользователи с правами супер-администратора.
+ * Доступ к методам контроллера имеют только пользователи с правами администратора.
  *
  * @see BaseController
  * @see PostText
@@ -159,8 +159,8 @@ public class TooglePostController extends BaseController {
 
             return "redirect:/page_one/viewsone";
         } catch (Exception e) {
-            log.error("Ошибка при удалении товара с hashId {}: {}", hashId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка при удалении товара: " + e.getMessage());
+            log.warn("Ошибка при удалении товара с hashId: {}", hashId);
+            model.addAttribute("error", "Ошибка при удалении товара");
             return "redirect:/page_one/viewsone";
         }
     }

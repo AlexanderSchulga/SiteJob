@@ -98,7 +98,7 @@ public class RegionsConfig {
                     regions.size(), totalCities);
 
         } catch (Exception e) {
-            log.error("Failed to load geo data from files, falling back to default data", e);
+            log.warn("Failed to load geo data from files, falling back to default data");
             loadDefaultData();
         }
     }
@@ -182,7 +182,7 @@ public class RegionsConfig {
         // regions.put("leningrad_oblast", "Ленинградская область");
         // regions.put("belgorod", "Белгородская область");
         // regions.put("voronezh", "Воронежская область");
-        // regions.put("other", "Другой регион");
+         regions.put("other", "Другой регион");
 
         log.debug("Loaded {} default regions", regions.size());
     }
@@ -197,8 +197,8 @@ public class RegionsConfig {
         // citiesByRegion.put("leningrad_oblast", Arrays.asList("Санкт-Петербург", "Выборг"));
         // citiesByRegion.put("belgorod", Arrays.asList("Белгород", "Старый Оскол"));
         // citiesByRegion.put("voronezh", Arrays.asList("Воронеж"));
-        // citiesByRegion.put("other", new ArrayList<>());
-        // citiesByRegion.put("all", new ArrayList<>());
+         citiesByRegion.put("other", new ArrayList<>());
+         citiesByRegion.put("all", new ArrayList<>());
 
         log.debug("Loaded default cities for {} regions", citiesByRegion.size());
     }

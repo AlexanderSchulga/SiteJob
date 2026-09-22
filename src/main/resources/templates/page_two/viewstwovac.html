@@ -136,12 +136,12 @@
                     <!-- Описание вакансии -->
                     <div class="mb-4">
                         <label for="full_text" class="form-label">
-                            <i class="fas fa-align-left me-1 text-muted"></i>Описание вакансии <span class="text-danger">*</span>
+                            <i class="fas fa-align-left me-1 text-muted"></i>Описание вакансии
                         </label>
                         <textarea id="full_text" name="full_text"
-                                  placeholder="Введите описание вакансии"
-                                  class="form-control" rows="5" required></textarea>
-                        <div class="form-text">Подробно опишите вакансии, в чем заключается...</div>
+                                  placeholder="Введите описание вакансии (необязательно)"
+                                  class="form-control" rows="5"></textarea>
+                        <div class="form-text">Подробно опишите обязанности, требования и условия работы.</div>
                     </div>
 
                     <!-- Блок местоположения -->
@@ -194,12 +194,12 @@
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/map_location.js"></script>
-<script type="text/javascript" src="/js/functions/imagelimit.js"></script>
-<script type="text/javascript" src="/js/functions/custom-select-set.js"></script>
-<script type="text/javascript" src="/js/functions/custom-select-experience-set.js"></script>
-<script type="text/javascript" src="/js/functions/menu_work_format-set.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/map_location.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/imagelimit.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select-set.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select-experience-set.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_work_format-set.js}"></script>
 
 <script>
     document.getElementById('files').addEventListener('change', function(e) {

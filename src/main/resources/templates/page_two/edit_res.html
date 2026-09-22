@@ -46,6 +46,14 @@
                     <strong>Важно:</strong> Изменения и отмеченные для удаления изображения будут применены только после прохождения модерации.
                 </div>
 
+                <!-- ===== БЛОК ОШИБКИ ===== -->
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Ошибка:</strong>
+                    <span th:text="${error}">Можно загрузить не более 5 фото</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                </div>
+
                 <!-- ========== ФОРМА ДЛЯ РЕЗЮМЕ ========== -->
                 <div th:if="${type == 'resume'}">
                     <div th:each="el : ${res}">
@@ -68,17 +76,11 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="resume_category" class="form-label">
-                                    <i class="fas fa-tag me-1 text-muted"></i>Категория <span class="text-danger">*</span>
-                                </label>
-                                <select id="resume_category" name="category" class="form-select" required>
-                                    <option th:each="category : ${categories}"
-                                            th:if="${category.key != 'all'}"
-                                            th:value="${category.key}"
-                                            th:selected="${category.key == el.category}"
-                                            th:text="${category.value}">
-                                    </option>
-                                </select>
+                                <label class="form-label">Категория резюме</label>
+                                <input type="text" class="form-control"
+                                       th:value="${categories.get(el.category)}" disabled>
+                                <input type="hidden" name="category" th:value="${el.category}">
+                                <div class="form-text text-muted">Категория не может быть изменена</div>
                             </div>
 
                             <div class="mb-4">
@@ -112,9 +114,9 @@
 
                             <div class="mb-4">
                                 <label for="resume_full_text" class="form-label">
-                                    <i class="fas fa-align-left me-1 text-muted"></i>Описание <span class="text-danger">*</span>
+                                    <i class="fas fa-align-left me-1 text-muted"></i>Описание
                                 </label>
-                                <textarea id="resume_full_text" name="full_text" placeholder="Полное описание" class="form-control" rows="5" required th:text="${el.full_text}"></textarea>
+                                <textarea id="resume_full_text" name="full_text" placeholder="Полное описание" class="form-control" rows="5" th:text="${el.full_text != null ? el.full_text : ''}"></textarea>
                                 <div class="form-text">Опишите ваши навыки, обязанности и достижения.</div>
                             </div>
 
@@ -180,11 +182,11 @@
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/functions/editimagelimitres.js"></script>
-<script type="text/javascript" src="/js/functions/custom-select-edit.js"></script>
-<script type="text/javascript" src="/js/functions/custom-select-experience-edit.js"></script>
-<script type="text/javascript" src="/js/functions/custom-select-workformat-edit.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/editimagelimitres.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select-edit.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select-experience-edit.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select-workformat-edit.js}"></script>
 
 <script>
     // Валидация количества файлов

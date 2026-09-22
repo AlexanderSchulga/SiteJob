@@ -310,8 +310,8 @@ public class DeleteForRedactBlockedAndModerController {
             return "redirect:/page_two/redactorblocked";
 
         } catch (Exception e) {
-            log.error("Ошибка при удалении из заблокированных типа: {}, ID: {}: {}", type, id, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка при удалении: " + e.getMessage());
+            log.warn("Ошибка при удалении из заблокированных типа: {}, ID: {}", type, id);
+            model.addAttribute("error", "Ошибка при удалении");
             return "error";
         }
     }

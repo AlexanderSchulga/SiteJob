@@ -382,7 +382,7 @@ class LoadMorePublicCommentsJob {
         cancelBtn.style.display = 'inline-block';
 
         document.getElementById('publicCommentText').focus();
-        document.getElementById('publicCommentText').placeholder = 'Ваш ответ...';
+        document.getElementById('publicCommentText').placeholder = 'Ваш ответ...(не менее 3-х символов)';
         document.getElementById('public-comment-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 

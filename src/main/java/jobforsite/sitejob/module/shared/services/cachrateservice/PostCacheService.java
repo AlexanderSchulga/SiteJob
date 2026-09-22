@@ -1,7 +1,10 @@
 package jobforsite.sitejob.module.shared.services.cachrateservice;
 
+import jobforsite.sitejob.module.product.dto.ProductFilterDTO;
 import jobforsite.sitejob.module.product.model.PostText;
-import jobforsite.sitejob.module.product.repository.PostRepo;
+import jobforsite.sitejob.module.product.model.extendsPost.modelExtends.MotorVehiclesPostText;
+import jobforsite.sitejob.module.product.model.extendsPost.modelExtends.RealEstatePostText;
+import jobforsite.sitejob.module.product.service.ProductService;
 import jobforsite.sitejob.module.resume.model.Resume;
 import jobforsite.sitejob.module.resume.repository.PostResumeRepository;
 import jobforsite.sitejob.module.service.model.PostTextJob;
@@ -40,104 +43,15 @@ import java.util.stream.Collectors;
 @Service
 public class PostCacheService {
 
-    private final PostRepo postRepo;
     private final PostRepoJob postRepoJob;
     private final PostVacancyRepository postVacancyRepository;
     private final PostResumeRepository postResumeRepository;
     private final RegionsConfig regionsConfig;
 
+    private final ProductService productService;
+
+
     // ==================== ТОВАРЫ (PRODUCTS) ====================
-
-    /**
-     * Получает страницу товаров с фильтрацией и пагинацией.
-     * Результат кэшируется.
-     *
-     * @param category   категория товара (может быть null или "all")
-     * @param search     поисковый запрос (поиск по заголовку)
-     * @param region     регион
-     * @param city       город (специальное значение "other_none" для всех остальных городов региона)
-     * @param sort       сортировка по дате ("oldest" - сначала старые, иначе - новые)
-     * @param priceSort  сортировка по цене ("price_asc", "price_desc", null)
-     * @param page       номер страницы (начиная с 0)
-     * @param size       размер страницы
-     * @return Page с товарами
-     */
-    @Cacheable(value = "productsPage",
-            key = "#category + '_' + #search + '_' + #region + '_' + #city + '_' + #sort + '_' + #priceSort + '_' + #page + '_' + #size",
-            unless = "#result == null or #result.isEmpty()")
-    public Page<PostText> getProductsPage(String category, String search, String region, String city,
-                                          String sort, String priceSort, int page, int size) {
-        log.info("CACHE MISS for products page with filters");
-
-        Pageable pageable = createPageable(page, size, sort, priceSort, "product");
-        String normalizedSearch = normalizeParam(search);
-        String normalizedCategory = normalizeParam(category);
-        String normalizedRegion = normalizeParam(region);
-        String normalizedCity = normalizeParam(city);
-
-        // Получаем общее количество
-        long total;
-        Slice<Long> idsSlice;
-
-        if ("other_none".equals(city)) {
-            List<String> standardCities = regionsConfig.getCitiesByRegion(region);
-            total = postRepo.countByOtherCities(
-                    normalizedSearch,
-                    normalizedCategory,
-                    normalizedRegion,
-                    standardCities
-            );
-
-            if (total == 0) {
-                return new PageImpl<>(new ArrayList<>(), pageable, 0);
-            }
-
-            idsSlice = postRepo.findPostIdsByOtherCitiesSlice(
-                    normalizedSearch,
-                    normalizedCategory,
-                    normalizedRegion,
-                    standardCities,
-                    pageable
-            );
-        } else {
-            total = postRepo.countWithAllFilters(
-                    normalizedSearch,
-                    normalizedCategory,
-                    normalizedRegion,
-                    normalizedCity
-            );
-
-            if (total == 0) {
-                return new PageImpl<>(new ArrayList<>(), pageable, 0);
-            }
-
-            idsSlice = postRepo.findPostIdsWithFiltersSlice(
-                    normalizedSearch,
-                    normalizedCategory,
-                    normalizedRegion,
-                    normalizedCity,
-                    pageable
-            );
-        }
-
-        if (idsSlice.isEmpty()) {
-            return new PageImpl<>(new ArrayList<>(), pageable, total);
-        }
-
-        // Загружаем посты с изображениями по ID
-        List<PostText> posts = postRepo.findPostsByIdsWithImages(idsSlice.getContent());
-
-        // Сохраняем порядок
-        Map<Long, PostText> postMap = posts.stream()
-                .collect(Collectors.toMap(PostText::getId, Function.identity()));
-
-        List<PostText> orderedPosts = idsSlice.getContent().stream()
-                .map(postMap::get)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(orderedPosts, pageable, total);
-    }
 
     /**
      * Получает список товаров с фильтрацией и пагинацией (без информации об общем количестве).
@@ -145,108 +59,150 @@ public class PostCacheService {
      *
      * @param category   категория товара
      * @param search     поисковый запрос
-     * @param region     регион
-     * @param city       город
      * @param sort       сортировка по дате
      * @param priceSort  сортировка по цене
      * @param page       номер страницы
      * @param size       размер страницы
      * @return List товаров
      */
+    // ===== ТОВАРЫ С РЕГИОНОМ И ГОРОДОМ =====
     @Cacheable(value = "productsList",
-            key = "#category + '_' + #search + '_' + #region + '_' + #city + '_' + #sort + '_' + #priceSort + '_' + #page + '_' + #size")
-    public List<PostText> getProductsList(String category, String search, String region, String city,
-                                          String sort, String priceSort, int page, int size) {
-        log.info("CACHE MISS for products list with filters");
-
-        // НОРМАЛИЗАЦИЯ ПАРАМЕТРОВ
-        String normalizedSearch = normalizeParam(search);
-        String normalizedCategory = normalizeParam(category);
-        String normalizedRegion = normalizeParam(region);
-        String normalizedCity = normalizeParam(city);
+            key = "#category + '_' + #search + '_' + #region + '_' + #city + '_' + #page + '_' + #size + '_' + #sort + '_' + #priceSort")
+    public List<PostText> getProductsList(String category, String search,
+                                          String region, String city,
+                                          String sort, String priceSort,
+                                          int page, int size) {
+        log.info("CACHE MISS for products list with region and city: region={}, city={}", region, city);
 
         Pageable pageable = createPageable(page, size, sort, priceSort, "product");
-        Slice<Long> idsSlice;
-
-        // ОБРАБОТКА "ДРУГИХ НАСЕЛЕННЫХ ПУНКТОВ"
-        if ("other_none".equals(city)) {
-            // Получаем стандартные города для региона
-            List<String> standardCities = regionsConfig.getCitiesByRegion(region);
-
-            idsSlice = postRepo.findPostIdsByOtherCitiesSlice(
-                    normalizedSearch,
-                    normalizedCategory,
-                    normalizedRegion,
-                    standardCities,
-                    pageable
-            );
-        } else {
-            idsSlice = postRepo.findPostIdsWithFiltersSlice(
-                    normalizedSearch,
-                    normalizedCategory,
-                    normalizedRegion,
-                    normalizedCity,
-                    pageable
-            );
-        }
-
-        if (idsSlice.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // Загружаем посты с изображениями по ID
-        List<PostText> posts = postRepo.findPostsByIdsWithImages(idsSlice.getContent());
-
-        // Сохраняем порядок
-        Map<Long, PostText> postMap = posts.stream()
-                .collect(Collectors.toMap(PostText::getId, Function.identity()));
-
-        List<PostText> orderedPosts = idsSlice.getContent().stream()
-                .map(postMap::get)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        log.debug("Found {} products", orderedPosts.size());
-        return orderedPosts;
+        return productService.findPostsWithRegionAndCity(category, search, region, city, pageable);
     }
 
-    /**
-     * Получает количество товаров, соответствующих фильтрам.
-     * Результат кэшируется.
-     *
-     * @param category категория
-     * @param search   поисковый запрос
-     * @param region   регион
-     * @param city     город
-     * @return количество товаров
-     */
+    // ===== НЕДВИЖИМОСТЬ С РЕГИОНОМ, ГОРОДОМ, СОРТИРОВКОЙ =====
+
+    @Cacheable(value = "realtyList",
+            key = "#filter.search + '_' + #filter.propertyType + '_' + " +
+                    // Квартира
+                    "#filter.roomsCount + '_' + " +
+                    "#filter.floorsApartment + '_' + " +
+                    "#filter.floorsCount + '_' + " +
+                    "#filter.hasElevator + '_' + " +
+                    "#filter.apartmentBuildYear + '_' + " +
+                    "#filter.materialUp + '_' + " +
+                    "#filter.repairUp + '_' + " +
+                    // Дом
+                    "#filter.floorsCountHouse + '_' + " +
+                    "#filter.houseArea + '_' + " +
+                    "#filter.landArea + '_' + " +
+                    "#filter.houseBuildYear + '_' + " +
+                    "#filter.materialHouse + '_' + " +
+                    "#filter.repairHouse + '_' + " +
+                    "#filter.distanceToCityHouse + '_' + " +
+                    // Участок
+                    "#filter.landArea + '_' + " +
+                    "#filter.distanceToCity + '_' + " +
+                    // Гараж
+                    "#filter.landAreaGarage + '_' + " +
+                    // Коммерческая
+                    "#filter.landAreaCommercial + '_' + " +
+                    // Базовые
+                    "#filter.region + '_' + #filter.city + '_' + #filter.sort + '_' + #filter.priceSort + '_' + " +
+                    "#page + '_' + #size")
+    public List<RealEstatePostText> getRealtyList(ProductFilterDTO filter, int page, int size) {
+        log.info("CACHE MISS for realty list: propertyType={}, floorsApartment={}, houseArea={}, landArea={}",
+                filter.getPropertyType(), filter.getFloorsApartment(), filter.getHouseArea(), filter.getLandArea());
+        Pageable pageable = createPageable(page, size, filter.getSort(), filter.getPriceSort(), "product");
+        return productService.filterRealtyWithRegionAndSort(filter, pageable);
+    }
+
+    // Детальная фильтрация квартир
+    @Cacheable(value = "apartmentsList",
+            key = "#roomsCount + '_' + #minFloors + '_' + #maxFloors + '_' + #hasElevator + '_' + #minYear + '_' + #maxYear + '_' + #page + '_' + #size")
+    public List<RealEstatePostText> getApartmentsList(Integer roomsCount, Integer minFloors, Integer maxFloors,
+                                                      Boolean hasElevator, Integer minYear, Integer maxYear,
+                                                      int page, int size) {
+        log.info("CACHE MISS for apartments list");
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "moderatedAt"));
+        return productService.filterApartmentsOptimized(roomsCount, minFloors, maxFloors,
+                hasElevator, minYear, maxYear, pageable);
+    }
+
+    // ===== АВТОТРАНСПОРТ С РЕГИОНОМ, ГОРОДОМ, СОРТИРОВКОЙ =====
+
+    @Cacheable(value = "vehicleList",
+            key = "#filter.search + '_' + #filter.category + '_' + " +
+                    "#filter.vehicleType + '_' + #filter.vehicleOrigin + '_' + " +
+                    "#filter.minYear + '_' + #filter.maxYear + '_' + " +
+                    "#filter.minPrice + '_' + #filter.maxPrice + '_' + " +
+                    "#filter.minMileage + '_' + #filter.maxMileage + '_' + " +
+                    "#filter.minNumberOfOwners + '_' + #filter.maxNumberOfOwners + '_' + " +
+                    "#filter.region + '_' + #filter.city + '_' + #filter.sort + '_' + #filter.priceSort + '_' + " +
+                    "#page + '_' + #size")
+    public List<MotorVehiclesPostText> getVehicleList(ProductFilterDTO filter, int page, int size) {
+        log.info("CACHE MISS for vehicle list with region and city");
+        Pageable pageable = createPageable(page, size, filter.getSort(), filter.getPriceSort(), "product");
+        return productService.filterVehiclesWithRegionAndSort(filter, pageable);
+    }
+
+    // ===== ПОДСЧЕТ ТОВАРОВ С РЕГИОНОМ И ГОРОДОМ =====
     @Cacheable(value = "productsCount",
-            key = "#category + '_' + #search + '_' + #region + '_' + #city",
-            unless = "#result == null")
+            key = "#category + '_' + #search + '_' + #region + '_' + #city")
     public long getProductsCount(String category, String search, String region, String city) {
-        log.info("CACHE MISS for products count with filters");
+        return productService.countPostsWithRegionAndCity(category, search, region, city);
+    }
 
-        String normalizedSearch = normalizeParam(search);
-        String normalizedCategory = normalizeParam(category);
-        String normalizedRegion = normalizeParam(region);
+    // ===== ТОВАРЫ БЕЗ РЕГИОНА (для обратной совместимости) =====
+    @Cacheable(value = "productsListNoRegion",
+            key = "#category + '_' + #search + '_' + #page + '_' + #size + '_' + #sort + '_' + #priceSort")
+    public List<PostText> getProductsListNoRegion(String category, String search,
+                                                  String sort, String priceSort,
+                                                  int page, int size) {
+        log.info("CACHE MISS for products list without region");
+        Pageable pageable = createPageable(page, size, sort, priceSort, "product");
+        return productService.findPostsOptimized(category, search, pageable);
+    }
 
-        if ("other_none".equals(city)) {
-            List<String> standardCities = regionsConfig.getCitiesByRegion(region);
-            return postRepo.countByOtherCities(
-                    normalizedSearch,
-                    normalizedCategory,
-                    normalizedRegion,
-                    standardCities
-            );
-        } else {
-            String normalizedCity = normalizeParam(city);
-            return postRepo.countWithAllFilters(
-                    normalizedSearch,
-                    normalizedCategory,
-                    normalizedRegion,
-                    normalizedCity
-            );
-        }
+    // ===== ПОДСЧЕТ ТОВАРОВ БЕЗ РЕГИОНА =====
+    @Cacheable(value = "productsCountNoRegion", key = "#category + '_' + #search")
+    public long getProductsCountNoRegion(String category, String search) {
+        return productService.countPostsWithRegionAndCity(category, search, null, null);
+    }
+
+    // ===== ПОДСЧЕТ НЕДВИЖИМОСТИ =====
+    @Cacheable(value = "realtyCount",
+            key = "#filter.search + '_' + " +
+                    "#filter.propertyType + '_' + #filter.roomsCount + '_' + " +
+                    "#filter.minFloorsApartment + '_' + #filter.maxFloorsApartment + '_' + " +
+                    "#filter.floorsCountMin + '_' + #filter.floorsCountMax + '_' + " +
+                    "#filter.floorsCountHouseMin + '_' + #filter.floorsCountHouseMax + '_' + " +
+                    "#filter.hasElevator + '_' + " +
+                    "#filter.minBuildYear + '_' + #filter.maxBuildYear + '_' + " +
+                    "#filter.minHouseArea + '_' + #filter.maxHouseArea + '_' + " +
+                    "#filter.minLandArea + '_' + #filter.maxLandArea + '_' + " +
+                    "#filter.minDistanceToCity + '_' + #filter.maxDistanceToCity + '_' + " +
+                    "#filter.materialUp + '_' + #filter.repairUp + '_' + " +
+                    "#filter.materialHouse + '_' + #filter.repairHouse + '_' + " +
+                    "#filter.minDistanceToCityHouse + '_' + #filter.maxDistanceToCityHouse + '_' + " +
+                    "#filter.minLandAreaGarage + '_' + #filter.maxLandAreaGarage + '_' + " +
+                    "#filter.minLandAreaCommercial + '_' + #filter.maxLandAreaCommercial + '_' + " +
+                    "#filter.region + '_' + #filter.city")
+    public long getRealtyCount(ProductFilterDTO filter) {
+        return productService.countRealtyWithFilters(filter);
+    }
+
+
+    // ===== ПОДСЧЕТ АВТОТРАНСПОРТА =====
+    @Cacheable(value = "vehicleCount",
+            key = "#filter.search + '_' + #filter.category + '_' + " +
+                    "#filter.vehicleType + '_' + #filter.vehicleOrigin + '_' + " +
+                    "#filter.minYear + '_' + #filter.maxYear + '_' + " +
+                    "#filter.minPrice + '_' + #filter.maxPrice + '_' + " +
+                    "#filter.minMileage + '_' + #filter.maxMileage + '_' + " +
+                    "#filter.minNumberOfOwners + '_' + #filter.maxNumberOfOwners + '_' + " +
+                    "#filter.region + '_' + #filter.city")
+    public long getVehicleCount(ProductFilterDTO filter) {
+        return productService.countVehiclesWithFilters(filter);
     }
 
     // ==================== УСЛУГИ (SERVICES) ====================
@@ -971,17 +927,18 @@ public class PostCacheService {
      * @param type      тип сущности ("product", "service", "vacancy", "resume")
      * @return настроенный Pageable
      */
+    // ===== ВСПОМОГАТЕЛЬНЫЙ МЕТОД ДЛЯ СОЗДАНИЯ PAGEABLE =====
     private Pageable createPageable(int page, int size, String sort, String priceSort, String type) {
         List<Sort.Order> orders = new ArrayList<>();
 
+        // Сортировка по цене
         if ("price_asc".equals(priceSort)) {
-            String field = ("vacancy".equals(type) || "resume".equals(type)) ? "cash" : "price";
-            orders.add(Sort.Order.asc(field));
+            orders.add(Sort.Order.asc("price"));
         } else if ("price_desc".equals(priceSort)) {
-            String field = ("vacancy".equals(type) || "resume".equals(type)) ? "cash" : "price";
-            orders.add(Sort.Order.desc(field));
+            orders.add(Sort.Order.desc("price"));
         }
 
+        // Сортировка по дате
         if ("oldest".equals(sort)) {
             orders.add(Sort.Order.asc("moderatedAt"));
         } else {

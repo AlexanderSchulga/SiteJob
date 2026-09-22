@@ -10,6 +10,7 @@ import jobforsite.sitejob.module.product.repository.PostRepo;
 import jobforsite.sitejob.module.service.repository.PostRepoJob;
 import jobforsite.sitejob.module.vacancy.repository.PostVacancyRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,12 +35,10 @@ import java.util.List;
  * При архивации объявление также удаляется из избранного у всех пользователей.
  * </p>
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class PostArchiveService {
-
-    private static final Logger log = LoggerFactory.getLogger(PostArchiveService.class);
-
     private final PostRepo postRepo;
     private final PostRepoJob postRepoJob;
     private final PostVacancyRepository postVacancyRepository;
@@ -53,7 +52,7 @@ public class PostArchiveService {
      * <ul>
      *   <li>Объявление не на модерации</li>
      *   <li>Объявление не заблокировано</li>
-     *   <li>Дата модерации не null и старше 30 дней</li>
+     *   <li>Дата модерации не null и старше 90 дней</li>
      *   <li>Объявление ещё не в архиве</li>
      * </ul>
      * При архивации объявление удаляется из избранного у всех пользователей.
@@ -69,11 +68,11 @@ public class PostArchiveService {
         log.info("Запуск архивации старых постов...");
 
         //LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusMinutes(5);
-        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(60);
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(90);
         LocalDateTime now = LocalDateTime.now();
         int archivedCount = 0;
 
-        // Архивируем товары старше 30 дней
+        // Архивируем товары старше 90 дней
         List<PostText> oldProducts = postRepo.findAll().stream()
                 .filter(post -> !post.isModeration())
                 .filter(post -> !post.isBlocked())
@@ -96,7 +95,7 @@ public class PostArchiveService {
         }
         postRepo.saveAll(oldProducts);
 
-        // Архивируем услуги старше 30 дней
+        // Архивируем услуги старше 90 дней
         List<PostTextJob> oldServices = postRepoJob.findAll().stream()
                 .filter(service -> !service.isModeration())
                 .filter(service -> !service.isBlocked())
@@ -119,7 +118,7 @@ public class PostArchiveService {
         }
         postRepoJob.saveAll(oldServices);
 
-        // Архивируем вакансии старше 30 дней
+        // Архивируем вакансии старше 90 дней
         List<Vacancy> oldVacancies = postVacancyRepository.findAll().stream()
                 .filter(vacancy -> !vacancy.isModeration())
                 .filter(vacancy -> !vacancy.isBlocked())
@@ -170,7 +169,7 @@ public class PostArchiveService {
      * Условия удаления:
      * <ul>
      *   <li>Объявление архивировано (isArchived = true)</li>
-     *   <li>Дата архивации не null и старше 30 дней</li>
+     *   <li>Дата архивации не null и старше 60 дней</li>
      * </ul>
      * Объявления удаляются из базы данных без возможности восстановления.
      * </p>
@@ -184,7 +183,7 @@ public class PostArchiveService {
     public void cleanupArchivedPosts() {
         log.info("Запуск очистки архивных постов...");
 
-        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(60);
         //LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusMinutes(5);
         int deletedCount = 0;
 

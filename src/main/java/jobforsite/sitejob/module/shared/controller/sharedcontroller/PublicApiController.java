@@ -46,7 +46,6 @@ public class PublicApiController {
     private final PostRepo postRepo;
     private final PostRepoJob postRepoJob;
     private final PostVacancyRepository postVacancyRepository;
-
     private final PostResumeRepository postResumeRepository;
     private final PostTextCategoryConfig postTextCategoryConfig;
     private final PostTextJobCategoryConfig postTextJobCategoryConfig;

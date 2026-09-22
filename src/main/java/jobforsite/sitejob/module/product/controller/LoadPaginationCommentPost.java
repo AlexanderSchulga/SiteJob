@@ -125,9 +125,9 @@ public class LoadPaginationCommentPost extends BasePostController {
             ));
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке личных комментариев: hashId={}, page={}, errorType={}", hashId, page, e.getClass().getSimpleName(), e);
+            log.warn("Ошибка при загрузке личных комментариев: hashId={}, page={}, errorType={}", hashId, page, e.getClass().getSimpleName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("status", "error", "message", "Ошибка при загрузке комментариев: " + e.getMessage()));
+                    .body(Map.of("status", "error", "message", "Ошибка при загрузке комментариев"));
         }
     }
 
@@ -349,9 +349,9 @@ public class LoadPaginationCommentPost extends BasePostController {
             }
 
         } catch (Exception e) {
-            log.error("Ошибка при добавлении личного комментария, hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
+            log.warn("Ошибка при добавлении личного комментария, hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("status", "error", "message", "Ошибка при добавлении комментария: " + e.getMessage()));
+                    .body(Map.of("status", "error", "message", "Ошибка при добавлении комментария"));
         }
     }
 
@@ -397,8 +397,8 @@ public class LoadPaginationCommentPost extends BasePostController {
             }
 
         } catch (Exception e) {
-            log.error("Ошибка при удалении личного комментария, hashId: {}, commentId: {}, errorType: {}", hashId, commentPersonalId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка удаления: " + e.getMessage());
+            log.warn("Ошибка при удалении личного комментария, hashId: {}, commentId: {}, errorType: {}", hashId, commentPersonalId, e.getClass().getSimpleName(), e);
+            model.addAttribute("error", "Ошибка удаления");
         }
         return "redirect:/postidviews/" + hashId;
     }

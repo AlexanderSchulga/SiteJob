@@ -14,7 +14,6 @@
 
 <script th:inline="javascript">
     // Передаем данные о текущем пользователе в JavaScript
-
     window.currentUser = {
         id: [[${currentUser?.id}]],
         role: [[${currentUser?.role}]],
@@ -24,7 +23,6 @@
     // Передаем CSRF токен для динамических форм
     window.csrfTokenName = [[${_csrf?.parameterName}]];
     window.csrfTokenValue = [[${_csrf?.token}]];
-
 </script>
 
 <div class="container-wrapper">
@@ -62,16 +60,180 @@
                 </div>
             </div>
 
+            <!-- Скрытые поля для передачи параметров фильтров при сортировке -->
+            <input type="hidden" id="hiddenPropertyType" th:value="${propertyType}">
+            <input type="hidden" id="hiddenRoomsCount" th:value="${roomsCount}">
+            <input type="hidden" id="hiddenApartmentFloorsCount" th:value="${apartmentFloorsCount}">
+            <input type="hidden" id="hiddenFloorsCountHouse" th:value="${floorsCountHouse}">
+            <input type="hidden" id="hiddenHasElevator" th:value="${hasElevator}">
+            <input type="hidden" id="hiddenApartmentBuildYear" th:value="${apartmentBuildYear}">
+            <input type="hidden" id="hiddenHouseBuildYear" th:value="${houseBuildYear}">
+            <input type="hidden" id="hiddenHouseArea" th:value="${houseArea}">
+            <input type="hidden" id="hiddenLandArea" th:value="${landArea}">
+            <input type="hidden" id="hiddenDistanceToCity" th:value="${distanceToCity}">
+            <input type="hidden" id="hiddenVehicleType" th:value="${vehicleType}">
+            <input type="hidden" id="hiddenVehicleOrigin" th:value="${vehicleOrigin}">
+            <input type="hidden" id="hiddenVehicleYear" th:value="${vehicleYear}">
+
+            <input type="hidden" id="hiddenMaterialUp" th:value="${materialUp}">
+            <input type="hidden" id="hiddenRepairUp" th:value="${repairUp}">
+            <input type="hidden" id="hiddenMaterialHouse" th:value="${materialHouse}">
+            <input type="hidden" id="hiddenRepairHouse" th:value="${repairHouse}">
+            <input type="hidden" id="hiddenDistanceToCityHouse" th:value="${distanceToCityHouse}">
+            <input type="hidden" id="hiddenLandAreaGarage" th:value="${landAreaGarage}">
+            <input type="hidden" id="hiddenLandAreaCommercial" th:value="${landAreaCommercial}">
+
+            <input type="hidden" id="hiddenMileage" th:value="${mileage}">
+            <input type="hidden" id="hiddenNumberOfOwners" th:value="${numberOfOwners}">
+
+            <!-- Для автозапчастей (auto) -->
+            <input type="hidden" id="hiddenAutoType" th:value="${autoType}">
+            <input type="hidden" id="hiddenConditionAuto" th:value="${conditionAuto}">
+
+            <!-- Для строительных материалов (constructions) -->
+            <input type="hidden" id="hiddenConstructionsType" th:value="${constructionsType}">
+
+            <!-- Для дома и интерьера (interior) -->
+            <input type="hidden" id="hiddenInteriorType" th:value="${interiorType}">
+            <input type="hidden" id="hiddenConditionInterior" th:value="${conditionInterior}">
+
+            <!-- Для инструментов (tools) -->
+            <input type="hidden" id="hiddenToolsType" th:value="${toolsType}">
+            <input type="hidden" id="hiddenConditionTools" th:value="${conditionTools}">
+
+            <!-- Для бытовой техники (appliances) -->
+            <input type="hidden" id="hiddenAppliancesType" th:value="${appliancesType}">
+            <input type="hidden" id="hiddenConditionAppliances" th:value="${conditionAppliances}">
+
+            <!-- Для электроники (electronics) -->
+            <input type="hidden" id="hiddenElectronicsType" th:value="${electronicsType}">
+            <input type="hidden" id="hiddenConditionElectronics" th:value="${conditionElectronics}">
+
+            <!-- Для одежды и обуви (clothing) -->
+            <input type="hidden" id="hiddenClothingType" th:value="${clothingType}">
+            <input type="hidden" id="hiddenGenderClothing" th:value="${genderClothing}">
+            <input type="hidden" id="hiddenConditionClothing" th:value="${conditionClothing}">
+
+            <!-- Для детских товаров (childrenPr) -->
+            <input type="hidden" id="hiddenGenderChildrenPr" th:value="${genderChildrenPr}">
+            <input type="hidden" id="hiddenConditionChildrenPr" th:value="${conditionChildrenPr}">
+
+            <!-- Для спортивных товаров (sports) -->
+            <input type="hidden" id="hiddenSportsKind" th:value="${sportsKind}">
+            <input type="hidden" id="hiddenSportsType" th:value="${sportsType}">
+            <input type="hidden" id="hiddenGenderSports" th:value="${genderSports}">
+            <input type="hidden" id="hiddenConditionSports" th:value="${conditionSports}">
+
+            <!-- Для продуктов питания (food) -->
+            <input type="hidden" id="hiddenFoodKind" th:value="${foodKind}">
+
+            <!-- Для здоровья и красоты (health) -->
+            <input type="hidden" id="hiddenHealthKind" th:value="${healthKind}">
+            <input type="hidden" id="hiddenHealthType" th:value="${healthType}">
+            <input type="hidden" id="hiddenGenderHealth" th:value="${genderHealth}">
+
+            <!-- Для флоры и фауны (animals) -->
+            <input type="hidden" id="hiddenAnimalsKind" th:value="${animalsKind}">
+
+            <!-- ====== РАСШИРЕННЫЕ ФИЛЬТРЫ ====== -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="filter-container">
+                        <h3>Дополнительные фильтры</h3>
+
+                        <!-- Фильтры для НЕДВИЖИМОСТИ -->
+                        <div id="realtyFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/realty_filters :: realtyFilters}"></div>
+                        </div>
+
+                        <!-- Фильтры для АВТОТРАНСПОРТА -->
+                        <div id="vehicleFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/vehicle_filters :: vehicleFilters}"></div>
+                        </div>
+
+                        <!---Автозапчасти и автотовары---->
+                        <div id="autoFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/auto_fields :: autoFilters}"></div>
+                        </div>
+
+                        <!---Строительные материалы----->
+                        <div id="constructionsFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/constructions_fields :: constructionsFilters}"></div>
+                        </div>
+
+                        <!---"Дом и интерьер----->
+                        <div id="interiorFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/interior_fields :: interiorFilters}"></div>
+                        </div>
+
+                        <!---"Инструменты----->
+                        <div id="toolsFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/tools_fields :: toolsFilters}"></div>
+                        </div>
+
+                        <!---"Бытовая техника----->
+                        <div id="appliancesFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/appliances_fields :: appliancesFilters}"></div>
+                        </div>
+
+                        <!---Электроника и гаджеты---->
+                        <div id="electronicsFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/electronics_fields :: electronicsFilters}"></div>
+                        </div>
+
+                        <!---Одежда и обувь---->
+                        <div id="clothingFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/clothing_fields :: clothingFilters}"></div>
+                        </div>
+
+                        <!---Детские товары---->
+                        <div id="childrenPrFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/children_fields :: childrenPrFilters}"></div>
+                        </div>
+
+                        <!---Товары для спорта---->
+                        <div id="sportsFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/sports_fields :: sportsFilters}"></div>
+                        </div>
+
+                        <!---Продукты питания---->
+                        <div id="foodFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/food_fields :: foodFilters}"></div>
+                        </div>
+
+                        <!---Здоровье и красота---->
+                        <div id="healthFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/health_fields :: healthFilters}"></div>
+                        </div>
+
+                        <!---Флора и фауна--->
+                        <div id="animalsFilters" class="filter-group" style="display: none;">
+                            <div th:replace="~{fragments/product/views/animals_fields :: animalsFilters}"></div>
+                        </div>
+
+                        <!-- Кнопка применения фильтров -->
+                        <div id="filterButtonsContainer" style="display: none;">
+                            <button id="applyFilters" class="btn btn-primary">
+                                <i class="fas fa-filter"></i><span>Применить фильтры</span>
+                            </button>
+                            <button id="resetFilters" class="btn btn-secondary">
+                                <i class="fas fa-undo"></i><span>Сбросить</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Строка 2: Сортировка по дате + Сортировка по цене (каждая по 50% ширины) -->
             <div class="row">
                 <div class="col-6 col-md-6 mb-3">
-                <h3>Сортировка по дате</h3>
+                    <h3>Сортировка по дате</h3>
                     <div class="sort-dropdown" id="sortDropdown">
                         <input type="hidden" id="currentSort" th:value="${currentSort}">
                         <div class="sort-select" id="sortSelect">
                             <span id="selectedSortText">
-                                <span th:if="${param.sort != null and param.sort[0] == 'oldest'}">Сначала старые</span>
-                                <span th:if="${param.sort == null or param.sort[0] == 'newest'}">Сначала свежие</span>
+                                <span th:if="${param.sort != null and param.sort[0] == 'old'}">Сначала старые</span>
+                                <span th:if="${param.sort == null or param.sort[0] == 'new'}">Сначала свежие</span>
                             </span>
                             <span class="dropdown-arrow">▼</span>
                         </div>
@@ -130,10 +292,10 @@
                         <div class="city-select" id="citySelect">
                             <span id="selectedCityText">
                                 <span th:if="${selectedCity == 'all' or selectedCity == null}">
-                                    Все населенные пункты
+                                    Все пункты
                                 </span>
                                 <span th:if="${selectedCity == 'other_none'}">
-                                    Другие населенные пункты
+                                    Другие пункты
                                 </span>
                                 <span th:if="${selectedCity == 'none'}">
                                     Город не указан
@@ -146,7 +308,7 @@
                             <span class="dropdown-arrow">▼</span>
                         </div>
                         <div class="city-options" id="cityOptions">
-                            <div class="city-option" data-city="all">Все населенные пункты</div>
+                            <div class="city-option" data-city="all">Все пункты</div>
 
                             <div th:if="${citiesByGroup != null and citiesByGroup.containsKey('standard')
                          and not citiesByGroup['standard'].isEmpty()}">
@@ -165,7 +327,7 @@
                                 <div class="city-group-header">Другие варианты</div>
 
                                 <div th:if="${citiesByGroup.containsKey('other')}">
-                                    <div class="city-option" data-city="other_none">Другие населенные пункты</div>
+                                    <div class="city-option" data-city="other_none">Другие пункты</div>
                                 </div>
 
                                 <div th:if="${citiesByGroup.containsKey('none')}">
@@ -217,8 +379,8 @@
                 <!-- Кнопка сброса фильтров -->
                 <div th:if="${selectedCategory != 'all' or selectedRegion != 'all'}"
                      class="col-12 mb-3">
-                    <a th:href="@{/page_one/viewsone}" class="btn btn-warning">
-                        <i class="fas fa-times-circle me-2"></i>
+                    <a th:href="@{/page_one/viewsone}" class="btn btn-secondary" id="resetAllFilters">
+                        <i class="fas fa-undo"></i>
                         Сбросить все фильтры
                     </a>
                 </div>
@@ -331,16 +493,17 @@
 </div>
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/functions/menu_cat.js"></script>
-<script type="text/javascript" src="/js/functions/product_search.js"></script>
-<script type="text/javascript" src="/js/functions/sort_date.js"></script>
-<script type="text/javascript" src="/js/functions/rating.js"></script>
-
-<script type="text/javascript" src="/js/functions/sort_price.js"></script>
-<script type="text/javascript" src="/js/functions/menu_region.js"></script>
-<script type="text/javascript" src="/js/functions/city_config.js"></script>
-<script type="text/javascript" src="/js/functions/menu_city.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_cat_product.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/product_search.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/sort_date_product.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/rating.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/sort_price_product.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_region.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/city_config.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_city.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/filter/filter_down_category.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/filter/custom-filter-select.js}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -409,9 +572,46 @@
             }
         });
     });
+
+
+    // ===== УПРАВЛЕНИЕ ОТОБРАЖЕНИЕМ КНОПОК ФИЛЬТРОВ =====
+    function toggleFilterButtons() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+        const filterButtonsContainer = document.getElementById('filterButtonsContainer');
+
+        if (filterButtonsContainer) {
+            // Показываем кнопки только для определенных
+            if (category === 'realty' || category === 'motor' || category === 'auto' ||
+                category === 'constructions' || category === 'interior' || category === 'tools' ||
+                category === 'appliances' || category === 'electronics' || category === 'clothing' ||
+                category === 'childrenPr' || category === 'sports' || category === 'food' ||
+                category === 'health' || category === 'animals') {
+                filterButtonsContainer.style.display = 'block';
+            } else {
+                filterButtonsContainer.style.display = 'none';
+            }
+        }
+    }
+
+    // Вызываем при загрузке
+    toggleFilterButtons();
+
+    // Следим за изменением категории в URL
+    window.addEventListener('popstate', function() {
+        setTimeout(toggleFilterButtons, 50);
+    });
+
+    // Следим за кликами по категориям
+    document.addEventListener('click', function(e) {
+        const categoryOption = e.target.closest('.category-option');
+        if (categoryOption) {
+            setTimeout(toggleFilterButtons, 100);
+        }
+    });
 </script>
 
-<script type="text/javascript" src="/js/paginationPost/load-more.js"></script>
+<script type="text/javascript" th:src="@{/js/paginationPost/load-more.js}"></script>
 
 <!-- Модальное окно для подтверждения блокировки/разблокировки -->
 <div class="modal fade" id="toggleBlockModal" tabindex="-1" aria-labelledby="toggleBlockModalLabel" aria-hidden="true">

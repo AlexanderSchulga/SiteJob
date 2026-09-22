@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="title(el)">
+    <div class="mb-4">
+        <label class="form-label">Название резюме <span class="text-danger">*</span></label>
+        <input type="text" th:value="${el.title}" name="title" class="form-control" required>
+    </div>
+</div>
+
+<div th:fragment="salary(el)">
+    <div class="mb-4">
+        <label class="form-label">Желаемая зарплата <span class="text-danger">*</span></label>
+        <div class="input-group">
+            <span class="input-group-text">₽</span>
+            <input type="number" th:value="${el.cash}" name="cash" class="form-control" required min="0" step="1">
+        </div>
+    </div>
+</div>
+
+<div th:fragment="categoryReadonly(el, categories)">
+    <div class="mb-4">
+        <label class="form-label">Категория резюме</label>
+        <input type="text" class="form-control" th:value="${categories.get(el.category)}" disabled>
+        <input type="hidden" name="category" th:value="${el.category}">
+        <div class="form-text text-muted">Категория не может быть изменена</div>
+    </div>
+</div>
+
+<!-- ===== ОПЫТ РАБОТЫ ===== -->
+<div th:fragment="experience(el, experience)">
+    <div class="mb-4">
+        <label class="form-label">Опыт работы <span class="text-danger">*</span></label>
+        <select id="resume_experience" name="experience" class="form-select" required>
+            <option th:each="exp : ${experience}"
+                    th:if="${exp.key != 'all'}"
+                    th:value="${exp.key}"
+                    th:selected="${exp.key == el.experience}"
+                    th:text="${exp.value}">
+            </option>
+        </select>
+    </div>
+</div>
+
+<!-- ===== ФОРМАТ РАБОТЫ ===== -->
+<div th:fragment="workformat(el, workformat)">
+    <div class="mb-4">
+        <label class="form-label">Формат работы <span class="text-danger">*</span></label>
+        <select id="resume_workformat" name="workformat" class="form-select" required>
+            <option th:each="wf : ${workformat}"
+                    th:if="${wf.key != 'all'}"
+                    th:value="${wf.key}"
+                    th:selected="${wf.key == el.workformat}"
+                    th:text="${wf.value}">
+            </option>
+        </select>
+    </div>
+</div>
+
+<div th:fragment="description(el)">
+    <div class="mb-4">
+        <label for="admin_fullText" class="form-label">
+            <i class="fas fa-align-left me-1 text-muted"></i>Описание
+        </label>
+        <textarea id="admin_fullText" name="full_text"
+                  placeholder="Опишите свои навыки, опыт и ожидания от работы"
+                  class="form-control" rows="5"
+                  th:text="${el.full_text != null ? el.full_text : ''}"></textarea>
+    </div>
+</div>
+
+
+<!-- ===== ИЗОБРАЖЕНИЯ ===== -->
+<div th:fragment="images(el, prefix)">
+    <div class="mb-4">
+        <label class="form-label fw-bold">Изображения</label>
+        <div th:if="${not #lists.isEmpty(el.images)}" class="row g-3 mb-3">
+            <div th:each="image, stat : ${el.images}" class="col-6 col-md-4 col-lg-3">
+                <div class="border rounded p-2">
+                    <img th:src="${image.imagePath}" class="img-fluid rounded"
+                         style="height:120px;width:100%;object-fit:cover;">
+                    <div class="form-check mt-2">
+                        <input type="checkbox" name="deleteImageIds" th:value="${image.id}"
+                               class="form-check-input" th:id="${prefix} + 'DelImg_' + ${stat.index}">
+                        <label class="form-check-label small text-muted" th:for="${prefix} + 'DelImg_' + ${stat.index}">
+                            <i class="fas fa-trash-alt me-1"></i>Удалить
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(el.images)}" class="alert alert-light mb-3">
+            <i class="fas fa-info-circle me-2"></i>Нет изображений
+        </div>
+        <label class="form-label mt-2">Добавить новые изображения</label>
+        <input type="file" th:id="${prefix} + '_files'" name="files" class="form-control" multiple accept="image/*">
+        <div class="form-text">Максимум 5 изображений</div>
+    </div>
+</div>
+
+<div th:fragment="submitButtons(hashId)">
+    <div class="d-flex gap-3 mt-4">
+        <button type="submit" class="btn btn-success"><i class="fas fa-save me-2"></i>Обновить</button>
+        <a th:href="@{'/users/' + ${hashId} + '/page_two/admin_edit_user'}" class="btn btn-outline-secondary">
+            <i class="fas fa-times me-2"></i>Отмена
+        </a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -139,9 +139,9 @@ public class LoadPaginationPublicCommentPost extends BasePostController {
             }
 
         } catch (Exception e) {
-            log.error("Ошибка при добавлении публичного комментария, hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
+            log.warn("Ошибка при добавлении публичного комментария, hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("status", "error", "message", "Ошибка при добавлении комментария: " + e.getMessage()));
+                    .body(Map.of("status", "error", "message", "Ошибка при добавлении комментария"));
         }
     }
 
@@ -175,8 +175,8 @@ public class LoadPaginationPublicCommentPost extends BasePostController {
                 return "redirect:/postidviews/" + hashId;
             }
         } catch (Exception e) {
-            log.error("Ошибка при удалении ветки публичных комментариев, hashId: {}, commentId: {}, errorType: {}", hashId, commentId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка удаления: " + e.getMessage());
+            log.warn("Ошибка при удалении ветки публичных комментариев, hashId: {}, commentId: {}, errorType: {}", hashId, commentId, e.getClass().getSimpleName(), e);
+            model.addAttribute("error", "Ошибка удаления");
             return "redirect:/postidviews/" + hashId;
         }
     }
@@ -247,9 +247,9 @@ public class LoadPaginationPublicCommentPost extends BasePostController {
             ));
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке публичных комментариев (плоский список), hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
+            log.warn("Ошибка при загрузке публичных комментариев (плоский список), hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("status", "error", "message", "Ошибка при загрузке комментариев: " + e.getMessage()));
+                    .body(Map.of("status", "error", "message", "Ошибка при загрузке комментариев"));
         }
     }
 
@@ -322,8 +322,8 @@ public class LoadPaginationPublicCommentPost extends BasePostController {
                 log.warn("Попытка удаления публичного комментария без прав, hashId: {}, commentId: {}", hashId, commentId);
             }
         } catch (Exception e) {
-            log.error("Ошибка при удалении публичного комментария, hashId: {}, commentId: {}, errorType: {}", hashId, commentId, e.getClass().getSimpleName(), e);
-            model.addAttribute("error", "Ошибка удаления: " + e.getMessage());
+            log.warn("Ошибка при удалении публичного комментария, hashId: {}, commentId: {}, errorType: {}", hashId, commentId, e.getClass().getSimpleName(), e);
+            model.addAttribute("error", "Ошибка удаления");
         }
         return "redirect:/postidviews/" + hashId;
     }
@@ -401,9 +401,9 @@ public class LoadPaginationPublicCommentPost extends BasePostController {
             ));
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке публичных комментариев (древовидная структура), hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
+            log.warn("Ошибка при загрузке публичных комментариев (древовидная структура), hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("status", "error", "message", "Ошибка при загрузке комментариев: " + e.getMessage()));
+                    .body(Map.of("status", "error", "message", "Ошибка при загрузке комментариев"));
         }
     }
 
@@ -435,9 +435,9 @@ public class LoadPaginationPublicCommentPost extends BasePostController {
             return ResponseEntity.ok(Map.of("status", "success", "count", count));
 
         } catch (Exception e) {
-            log.error("Ошибка при получении количества публичных комментариев, hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
+            log.warn("Ошибка при получении количества публичных комментариев, hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("status", "error", "message", e.getMessage()));
+                    .body(Map.of("status", "error", "message", "Ошибка при получении количества комментариев"));
         }
     }
 

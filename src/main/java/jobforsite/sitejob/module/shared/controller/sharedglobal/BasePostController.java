@@ -448,9 +448,9 @@ public abstract class BasePostController extends BaseController {
             model.addAttribute("error", "Пожалуйста, выберите хотя бы один файл для загрузки");
             throw new IllegalArgumentException("No files");
         }
-        if (files.length > 10) {
+        if (files.length > 5) {
             log.warn("Превышено максимальное количество файлов: {}", files.length);
-            model.addAttribute("error", "Можно загрузить не более 10 изображений");
+            model.addAttribute("error", "Можно загрузить не более 5 изображений");
             throw new IllegalArgumentException("Too many files");
         }
         log.debug("Валидация файлов пройдена успешно");

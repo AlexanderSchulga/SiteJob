@@ -5,6 +5,7 @@ import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostControll
 import jobforsite.sitejob.module.shared.model.Favorites;
 import jobforsite.sitejob.module.shared.model.ImagesFoto;
 import jobforsite.sitejob.module.users.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  * - Загрузку изображений
  * - Добавление в избранное
  */
+@Slf4j
 @Entity
 public class Vacancy implements BasePostController.PostAccessInfo {
 
@@ -171,6 +173,16 @@ public class Vacancy implements BasePostController.PostAccessInfo {
         this.moderation = true;
         this.archived = false;
         this.archivedAt = null;
+    }
+
+    public void publishAfterAdminEdit() {
+        this.blocked = false;
+        this.blockedAt = null;
+        this.moderation = false;
+        this.archived = false;
+        this.archivedAt = null;
+        this.moderatedAt = LocalDateTime.now();
+        log.debug("Объявление опубликовано после админского редактирования, hashId: {}", hashId);
     }
 
     /**

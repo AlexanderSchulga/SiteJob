@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="realtyDetails(post)">
+        <div class="row">
+            <div class="col-md-6">
+
+                <!-- Тип -->
+                <div th:if="${post.propertyTypeDisplayName != null and post.propertyTypeDisplayName != ''}">
+                    <small class="text-muted d-block">
+                        <strong>Тип:</strong>
+                        <span th:text="${post.propertyTypeDisplayName}"></span>
+                    </small>
+                </div>
+
+                <!-- ====== КВАРТИРА ====== -->
+                <div th:if="${post.propertyType == 'APARTMENT' or (post.materialUpDisplayName != null and post.materialUpDisplayName != '')}">
+
+                    <div th:if="${post.materialUpDisplayName != null and post.materialUpDisplayName != ''}">
+                        <small class="text-muted d-block">
+                            <strong>Материал дома:</strong>
+                            <span th:text="${post.materialUpDisplayName}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.roomsCount != null}">
+                        <small class="text-muted d-block">
+                            <strong>Кол-во комнат:</strong>
+                            <span th:text="${post.roomsCount == 0 ? 'Студия' : post.roomsCount + ' комн.'}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.floorsApartment != null}">
+                        <small class="text-muted d-block">
+                            <strong>Этаж:</strong>
+                            <span th:text="${post.floorsApartment}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.floorsCount != null}">
+                        <small class="text-muted d-block">
+                            <strong>Этажей в доме:</strong>
+                            <span th:text="${post.floorsCount}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.hasElevator != null}">
+                        <small class="text-muted d-block">
+                            <strong>Лифт:</strong>
+                            <span th:text="${post.hasElevator ? 'Есть' : 'Нет'}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.buildYear != null}">
+                        <small class="text-muted d-block">
+                            <strong>Год постройки:</strong>
+                            <span th:text="${post.buildYear}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.repairUpDisplayName != null and post.repairUpDisplayName != ''}">
+                        <small class="text-muted d-block">
+                            <strong>Ремонт:</strong>
+                            <span th:text="${post.repairUpDisplayName}"></span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- ====== ДОМ ====== -->
+                <div th:if="${post.propertyType == 'HOUSE' or (post.materialHouseDisplayName != null and post.materialHouseDisplayName != '')}">
+                    <div th:if="${post.houseArea != null}">
+                        <small class="text-muted d-block">
+                            <strong>Площадь дома:</strong>
+                            <span th:text="${post.houseArea} + ' м²'"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.materialHouseDisplayName != null and post.materialHouseDisplayName != ''}">
+                        <small class="text-muted d-block">
+                            <strong>Материал дома:</strong>
+                            <span th:text="${post.materialHouseDisplayName}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.landArea != null}">
+                        <small class="text-muted d-block">
+                            <strong>Площадь участка:</strong>
+                            <span th:text="${post.landArea} + ' сот.'"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.distanceToCity != null}">
+                        <small class="text-muted d-block">
+                            <strong>Расстояние до города:</strong>
+                            <span th:text="${post.distanceToCity} + ' км'"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.floorsCountHouse != null}">
+                        <small class="text-muted d-block">
+                            <strong>Этажей в доме:</strong>
+                            <span th:text="${post.floorsCountHouse}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.buildYear != null}">
+                        <small class="text-muted d-block">
+                            <strong>Год постройки:</strong>
+                            <span th:text="${post.buildYear}"></span>
+                        </small>
+                    </div>
+
+                    <div th:if="${post.repairHouseDisplayName != null and post.repairHouseDisplayName != ''}">
+                        <small class="text-muted d-block">
+                            <strong>Ремонт:</strong>
+                            <span th:text="${post.repairHouseDisplayName}"></span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- ====== Участок ====== -->
+                <div th:if="${post.propertyType == 'LAND' or post.propertyType == 'land'}">
+                    <div th:if="${post.landArea != null}">
+                        <small class="text-muted d-block">
+                            <strong>Площадь участка:</strong>
+                            <span th:text="${post.landArea} + ' сот.'"></span>
+                        </small>
+                    </div>
+                    <div th:if="${post.distanceToCity != null}">
+                        <small class="text-muted d-block">
+                            <strong>Расстояние до города:</strong>
+                            <span th:text="${post.distanceToCity} + ' км'"></span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- ====== ГАРАЖ ====== -->
+                <div th:if="${post.propertyType == 'GARAGE' or post.landAreaGarage != null}">
+                    <div th:if="${post.landAreaGarage != null}">
+                        <small class="text-muted d-block">
+                            <strong>Площадь гаража:</strong>
+                            <span th:text="${post.landAreaGarage} + ' м²'"></span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- ====== КОММЕРЦИЯ ====== -->
+                <div th:if="${post.propertyType == 'COMMERCIAL' or post.landAreaCommercial != null}">
+                    <div th:if="${post.landAreaCommercial != null}">
+                        <small class="text-muted d-block">
+                            <strong>Площадь недвижимости:</strong>
+                            <span th:text="${post.landAreaCommercial} + ' м²'"></span>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- ====== УНИВЕРСАЛЬНЫЕ ПОЛЯ (если нет привязки к типу) ====== -->
+                <div th:if="${post.distanceToCityHouse != null and post.distanceToCity == null}">
+                    <small class="text-muted d-block">
+                        <strong>Расстояние до города:</strong>
+                        <span th:text="${post.distanceToCityHouse} + ' км'"></span>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+</div>
+</body>
+</html>

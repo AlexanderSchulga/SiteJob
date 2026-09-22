@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="electronicsFields(el)">
+    <div id="electronicsFieldsEdit" class="filter-group mb-4" th:attr="data-category=${el.category}">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-car me-2"></i>Электроника и гаджеты
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Тип <span class="text-danger">*</span></label>
+                        <select id="electronicsType" name="electronicsType" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('electronics', 'electronics', 'electronicsType')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.electronicsType != null and el.electronicsType == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Состояние <span class="text-danger">*</span></label>
+                        <select id="conditionElectronics" name="conditionElectronics" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('electronics', 'electronics', 'conditionElectronics')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.conditionElectronics != null and el.conditionElectronics == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

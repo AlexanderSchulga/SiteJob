@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="sportsFields(el)">
+    <div id="sportsFieldsEdit" class="filter-group mb-4" th:attr="data-category=${el.category}">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-car me-2"></i>Товары для спорта
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Вид <span class="text-danger">*</span></label>
+                        <select id="sportsKind" name="sportsKind" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('sports', 'sports', 'sportsKind')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.sportsKind != null and el.sportsKind == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Тип <span class="text-danger">*</span></label>
+                        <select id="sportsType" name="sportsType" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('sports', 'sports', 'sportsType')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.sportsType != null and el.sportsType == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Пол <span class="text-danger">*</span></label>
+                        <select id="genderSports" name="genderSports" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('sports', 'sports', 'genderSports')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.genderSports != null and el.genderSports == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Состояние <span class="text-danger">*</span></label>
+                        <select id="conditionSports" name="conditionSports" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('sports', 'sports', 'conditionSports')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.conditionSports != null and el.conditionSports == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

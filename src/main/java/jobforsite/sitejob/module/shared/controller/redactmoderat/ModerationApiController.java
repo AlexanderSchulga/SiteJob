@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * REST-контроллер для работы с модерацией публикаций.
+ * <p>
+ * Предоставляет API для получения статистики по количеству
+ * объектов, находящихся на модерации (товары, услуги, вакансии, резюме).
+ */
 @RestController
 @RequestMapping("/api/moderation")
 @RequiredArgsConstructor

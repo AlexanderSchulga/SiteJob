@@ -90,8 +90,8 @@
                 <div class="col-6 col-md-6 mb-3">
                     <h3>Населенный пункт</h3>
                     <div class="city-dropdown" id="cityDropdown">
-                        <div class="city-select" id="citySelect"><span id="selectedCityText"><span th:if="${selectedCity == 'all' or selectedCity == null}">Все населенные пункты</span><span th:if="${selectedCity == 'other_none'}">Другие населенные пункты</span><span th:if="${selectedCity == 'none'}">Город не указан</span><span th:if="${selectedCity != 'all' and selectedCity != 'other_none' and selectedCity != 'none' and selectedCity != null}"><span th:text="${@regionsConfig.getCityDisplayName(selectedRegion, selectedCity)}"></span></span></span><span class="dropdown-arrow">▼</span></div>
-                        <div class="city-options" id="cityOptions"><div class="city-option" data-city="all">Все населенные пункты</div><div th:if="${citiesByGroup != null and citiesByGroup.containsKey('standard') and not citiesByGroup['standard'].isEmpty()}"><div class="dropdown-divider"></div><div class="city-group-header">Основные города</div><div th:each="city : ${citiesByGroup['standard']}" class="city-option" th:attr="data-city=${city}" th:text="${city}"></div></div><div th:if="${citiesByGroup != null and (citiesByGroup.containsKey('other') or citiesByGroup.containsKey('none'))}"><div class="dropdown-divider"></div><div class="city-group-header">Другие варианты</div><div th:if="${citiesByGroup.containsKey('other')}"><div class="city-option" data-city="other_none">Другие населенные пункты</div></div><div th:if="${citiesByGroup.containsKey('none')}"><div class="city-option" data-city="none">Город не указан</div></div></div></div>
+                        <div class="city-select" id="citySelect"><span id="selectedCityText"><span th:if="${selectedCity == 'all' or selectedCity == null}">Все пункты</span><span th:if="${selectedCity == 'other_none'}">Другие пункты</span><span th:if="${selectedCity == 'none'}">Город не указан</span><span th:if="${selectedCity != 'all' and selectedCity != 'other_none' and selectedCity != 'none' and selectedCity != null}"><span th:text="${@regionsConfig.getCityDisplayName(selectedRegion, selectedCity)}"></span></span></span><span class="dropdown-arrow">▼</span></div>
+                        <div class="city-options" id="cityOptions"><div class="city-option" data-city="all">Все пункты</div><div th:if="${citiesByGroup != null and citiesByGroup.containsKey('standard') and not citiesByGroup['standard'].isEmpty()}"><div class="dropdown-divider"></div><div class="city-group-header">Основные города</div><div th:each="city : ${citiesByGroup['standard']}" class="city-option" th:attr="data-city=${city}" th:text="${city}"></div></div><div th:if="${citiesByGroup != null and (citiesByGroup.containsKey('other') or citiesByGroup.containsKey('none'))}"><div class="dropdown-divider"></div><div class="city-group-header">Другие варианты</div><div th:if="${citiesByGroup.containsKey('other')}"><div class="city-option" data-city="other_none">Другие пункты</div></div><div th:if="${citiesByGroup.containsKey('none')}"><div class="city-option" data-city="none">Город не указан</div></div></div></div>
                     </div>
                 </div>
 
@@ -154,7 +154,8 @@
 
                 </div>
                 <div th:if="${selectedCategory != 'all' or selectedRegion != 'all' or selectedCity != 'all' or selectedExperience != 'all' or selectedWorkformat != 'all'}" class="col-12 mb-3">
-                    <a th:href="@{/page_one/viewsonevac}" class="btn btn-warning"><i class="fas fa-times-circle me-2"></i>Сбросить все фильтры</a>
+                    <a th:href="@{/page_one/viewsonevac}" class="btn btn-secondary" id="resetAllFilters">
+                        <i class="fas fa-undo"></i>Сбросить все фильтры</a>
                 </div>
             </div>
 
@@ -214,18 +215,18 @@
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/functions/menu_cat.js"></script>
-<script type="text/javascript" src="/js/functions/vacancy_search.js"></script>
-<script type="text/javascript" src="/js/functions/sort_date.js"></script>
-<script type="text/javascript" src="/js/functions/rating.js"></script>
-<script type="text/javascript" src="/js/functions/sort_price.js"></script>
-<script type="text/javascript" src="/js/functions/menu_region.js"></script>
-<script type="text/javascript" src="/js/functions/city_config.js"></script>
-<script type="text/javascript" src="/js/functions/menu_city.js"></script>
-<script type="text/javascript" src="/js/functions/menu_experience_vac.js"></script>
-<script type="text/javascript" src="/js/paginationPost/load-more-vacancies.js"></script>
-<script type="text/javascript" src="/js/functions/menu_work_vac_format.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_cat.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/vacancy_search.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/sort_date.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/rating.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/sort_price.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_region.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/city_config.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_city.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_experience_vac.js}"></script>
+<script type="text/javascript" th:src="@{/js/paginationPost/load-more-vacancies.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/menu_work_vac_format.js}"></script>
 
 <!-- Модальные окна -->
 <div class="modal fade" id="toggleBlockModal" tabindex="-1" aria-labelledby="toggleBlockModalLabel" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Подтверждение действия</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body" id="toggleBlockModalBody"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button><form id="toggleBlockForm" method="post"><input type="hidden" name="_csrf" th:value="${_csrf.token}"/><button type="submit" class="btn" id="toggleBlockConfirmBtn">Подтвердить</button></form></div></div></div></div>

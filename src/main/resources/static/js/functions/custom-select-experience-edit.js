@@ -185,6 +185,9 @@ class ExperienceEditSelect {
 
         this.positionDropdown();
 
+        this.wrapper.style.zIndex = '50';
+        this.dropdown.style.zIndex = '99999';
+
         this.dropdown.classList.add('show');
         this.dropdown.style.display = 'block';
         this.trigger.classList.add('active');

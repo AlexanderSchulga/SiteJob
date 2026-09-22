@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Resume search script loaded');
 
@@ -8,6 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!searchInput || !searchButton) {
         console.error('Search elements not found!');
         return;
+    }
+
+    // ===== ВОССТАНАВЛИВАЕМ ЗНАЧЕНИЕ ПОИСКА ИЗ URL =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('search');
+    if (searchQuery) {
+        searchInput.value = searchQuery;
     }
 
     // Поиск при нажатии кнопки лупы
@@ -26,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const query = searchInput.value.trim();
         if (query.length >= 2) {
             const currentUrl = new URL(window.location.href);
+            const urlParams = new URLSearchParams(window.location.search);
             const currentExperience = urlParams.get('experience');
             const currentWorkformat = urlParams.get('workformat');
 
@@ -37,9 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (currentWorkformat && currentWorkformat !== 'all') {
-                currentUrl.searchParams.set('workformat', currentWorkformat );
+                currentUrl.searchParams.set('workformat', currentWorkformat);
             }
-
 
             // Сохраняем все фильтры: категория, регион, город, опыт, сортировки
             // Сбрасываем пагинацию

@@ -187,6 +187,9 @@ class WorkformatSelect {
 
         this.positionDropdown();
 
+        this.wrapper.style.zIndex = '80';
+        this.dropdown.style.zIndex = '999999';
+
         this.dropdown.classList.add('show');
         this.dropdown.style.display = 'block';
         this.trigger.classList.add('active');

@@ -109,12 +109,12 @@
                     <!-- Описание услуги -->
                     <div class="mb-4">
                         <label for="full_text" class="form-label">
-                            <i class="fas fa-align-left me-1 text-muted"></i>Описание услуги <span class="text-danger">*</span>
+                            <i class="fas fa-align-left me-1 text-muted"></i>Описание услуги
                         </label>
                         <textarea id="full_text" name="full_text"
-                                  placeholder="Введите описание услуги"
-                                  class="form-control" rows="5" required></textarea>
-                        <div class="form-text">Подробно опишите услугу, в чем заключается...</div>
+                                  placeholder="Введите описание услуги (необязательно)"
+                                  class="form-control" rows="5"></textarea>
+                        <div class="form-text">Подробно опишите услугу, что входит в стоимость и условия.</div>
                     </div>
 
                     <!-- Блок местоположения -->
@@ -167,10 +167,10 @@
 
 <footer th:insert="~{block/footer :: footerhtml}"></footer>
 
-<script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="/js/map_location.js"></script>
-<script type="text/javascript" src="/js/functions/imagelimit.js"></script>
-<script type="text/javascript" src="/js/functions/custom-select-set.js"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/map_location.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/imagelimit.js}"></script>
+<script type="text/javascript" th:src="@{/js/functions/custom-select-set.js}"></script>
 
 <script>
     document.getElementById('files').addEventListener('change', function(e) {

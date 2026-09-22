@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="clothingFields(el)">
+  <div id="clothingFieldsEdit" class="filter-group mb-4" th:attr="data-category=${el.category}">
+    <div class="card">
+      <div class="card-header bg-light">
+        <i class="fas fa-car me-2"></i>Одежда и обувь
+      </div>
+      <div class="card-body">
+        <div class="row">
+
+          <div class="col-md-3 mb-3 filter-group">
+            <label class="form-label">Тип <span class="text-danger">*</span></label>
+            <select id="clothingType" name="clothingType" class="form-select">
+              <option th:each="option : ${@filterConfigService.getOptions('clothing', 'clothing', 'clothingType')}"
+                      th:if="${option.key != ''}"
+                      th:value="${option.key}"
+                      th:text="${option.value}"
+                      th:selected="${el.clothingType != null and el.clothingType == option.key}">
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-3 mb-3 filter-group">
+            <label class="form-label">Пол <span class="text-danger">*</span></label>
+            <select id="genderClothing" name="genderClothing" class="form-select">
+              <option th:each="option : ${@filterConfigService.getOptions('clothing', 'clothing', 'genderClothing')}"
+                      th:if="${option.key != ''}"
+                      th:value="${option.key}"
+                      th:text="${option.value}"
+                      th:selected="${el.genderClothing != null and el.genderClothing == option.key}">
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-3 mb-3 filter-group">
+            <label class="form-label">Состояние <span class="text-danger">*</span></label>
+            <select id="conditionClothing" name="conditionClothing" class="form-select">
+              <option th:each="option : ${@filterConfigService.getOptions('clothing', 'clothing', 'conditionClothing')}"
+                      th:if="${option.key != ''}"
+                      th:value="${option.key}"
+                      th:text="${option.value}"
+                      th:selected="${el.conditionClothing != null and el.conditionClothing == option.key}">
+              </option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

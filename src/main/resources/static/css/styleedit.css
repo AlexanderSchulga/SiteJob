@@ -1,5 +1,3 @@
-
-
 body, .container-wrapper, .edit-card,
 .card, .btn, .modal-content, h1, h2, h3, h4, h5, h6 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -203,7 +201,7 @@ textarea:focus {
     margin-top: 10px;
 }
 
-/* ИЗОБРАЖЕНИЯ - улучшенный блок */
+/* ИЗОБРАЖЕНИЯ */
 .image-card {
     transition: all 0.2s ease;
     background: #ffffff;
@@ -242,7 +240,7 @@ textarea:focus {
     margin-left: 0.25rem;
 }
 
-/* КАСТОМНЫЙ SELECT */
+/* КАСТОМНЫЙ SELECT (общий — для опыта/формата работы/категорий) */
 .custom-select-wrapper {
     position: relative;
     width: 100%;
@@ -300,7 +298,7 @@ textarea:focus {
     margin-top: 4px;
     max-height: 250px;
     overflow-y: auto;
-    z-index: 10000;
+    z-index: 99999 !important;
     display: none;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
@@ -363,8 +361,6 @@ textarea:focus {
 }
 
 /* ========== АДАПТИВНОСТЬ ========== */
-
-/* Планшеты */
 @media (max-width: 768px) {
     .container-wrapper {
         max-width: 100%;
@@ -412,7 +408,6 @@ textarea:focus {
     }
 }
 
-/* Мобильные телефоны */
 @media (max-width: 576px) {
     .container-wrapper {
         padding: 0 10px;
@@ -457,7 +452,6 @@ textarea:focus {
         height: 250px;
     }
 
-    /* Кастомный select на мобильных */
     .custom-select-trigger {
         min-height: 44px;
         font-size: 0.85rem;
@@ -479,7 +473,6 @@ textarea:focus {
         min-height: 44px;
     }
 
-    /* Изображения на мобильных - 2 в ряд */
     .image-card img {
         height: 90px !important;
     }
@@ -542,7 +535,6 @@ textarea:focus {
     }
 }
 
-/* Компактный alert для мобильных */
 @media (max-width: 576px) {
     .alert-info {
         font-size: 0.75rem;
@@ -558,8 +550,7 @@ textarea:focus {
     }
 }
 
-
-/* Premium и Donate блоки - улучшенные переключатели */
+/* Premium и Donate блоки */
 .premium-block .form-switch .form-check-input,
 .donate-block .form-switch .form-check-input {
     width: 2.5em !important;
@@ -579,11 +570,646 @@ textarea:focus {
     cursor: pointer;
 }
 
-/* Адаптация для мобильных */
 @media (max-width: 768px) {
     .premium-block .form-switch .form-check-input,
     .donate-block .form-switch .form-check-input {
         width: 2em !important;
         height: 1em !important;
+    }
+}
+
+/* Убираем стрелки у числовых полей */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+}
+input[type="number"] {
+    -moz-appearance: textfield !important;
+    appearance: textfield !important;
+}
+
+/* ===== ПОДКАТЕГОРИИ В РЕДАКТИРОВАНИИ — ЕДИНЫЙ СТИЛЬ С ЛЕНТОЙ ===== */
+#realtyFieldsEdit .card,
+#vehicleFieldsEdit .card,
+#realtyFieldsEditAdmin .card,
+#vehicleFieldsEditAdmin .card {
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+#realtyFieldsEdit .card-header,
+#vehicleFieldsEdit .card-header,
+#realtyFieldsEditAdmin .card-header,
+#vehicleFieldsEditAdmin .card-header {
+    background: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+#realtyFieldsEdit .card-body,
+#vehicleFieldsEdit .card-body,
+#realtyFieldsEditAdmin .card-body,
+#vehicleFieldsEditAdmin .card-body {
+    padding: 12px 14px;
+}
+
+#realtyFieldsEdit select,
+#realtyFieldsEdit input,
+#vehicleFieldsEdit select,
+#vehicleFieldsEdit input,
+#realtyFieldsEditAdmin select,
+#realtyFieldsEditAdmin input,
+#vehicleFieldsEditAdmin select,
+#vehicleFieldsEditAdmin input {
+    width: 100%;
+    padding: 8px 30px 8px 12px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    border: 2px solid #6c757d;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    min-height: 38px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+#realtyFieldsEdit select,
+#vehicleFieldsEdit select,
+#realtyFieldsEditAdmin select,
+#vehicleFieldsEditAdmin select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px 14px;
+}
+
+#realtyFieldsEdit select:hover,
+#realtyFieldsEdit input:hover,
+#vehicleFieldsEdit select:hover,
+#vehicleFieldsEdit input:hover,
+#realtyFieldsEditAdmin select:hover,
+#realtyFieldsEditAdmin input:hover,
+#vehicleFieldsEditAdmin select:hover,
+#vehicleFieldsEditAdmin input:hover {
+    border-color: #0d6efd;
+}
+
+#realtyFieldsEdit select:focus,
+#realtyFieldsEdit input:focus,
+#vehicleFieldsEdit select:focus,
+#vehicleFieldsEdit input:focus,
+#realtyFieldsEditAdmin select:focus,
+#realtyFieldsEditAdmin input:focus,
+#vehicleFieldsEditAdmin select:focus,
+#vehicleFieldsEditAdmin input:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+#realtyFieldsEdit label,
+#vehicleFieldsEdit label,
+#realtyFieldsEditAdmin label,
+#vehicleFieldsEditAdmin label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 4px;
+    display: block;
+}
+
+#realtyFieldsEdit .row,
+#vehicleFieldsEdit .row,
+#realtyFieldsEditAdmin .row,
+#vehicleFieldsEditAdmin .row {
+    margin-left: -6px;
+    margin-right: -6px;
+}
+
+#realtyFieldsEdit .row > [class*="col-"],
+#vehicleFieldsEdit .row > [class*="col-"],
+#realtyFieldsEditAdmin .row > [class*="col-"],
+#vehicleFieldsEditAdmin .row > [class*="col-"] {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+@media (max-width: 767px) {
+    #realtyFieldsEdit .card-body,
+    #vehicleFieldsEdit .card-body,
+    #realtyFieldsEditAdmin .card-body,
+    #vehicleFieldsEditAdmin .card-body {
+        padding: 8px 10px;
+    }
+
+    #realtyFieldsEdit .card-header,
+    #vehicleFieldsEdit .card-header,
+    #realtyFieldsEditAdmin .card-header,
+    #vehicleFieldsEditAdmin .card-header {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    #realtyFieldsEdit select,
+    #realtyFieldsEdit input,
+    #vehicleFieldsEdit select,
+    #vehicleFieldsEdit input,
+    #realtyFieldsEditAdmin select,
+    #realtyFieldsEditAdmin input,
+    #vehicleFieldsEditAdmin select,
+    #vehicleFieldsEditAdmin input {
+        padding: 6px 26px 6px 10px;
+        font-size: 0.8rem;
+        min-height: 34px;
+    }
+
+    #realtyFieldsEdit label,
+    #vehicleFieldsEdit label,
+    #realtyFieldsEditAdmin label,
+    #vehicleFieldsEditAdmin label {
+        font-size: 0.75rem;
+        margin-bottom: 2px;
+    }
+
+    #realtyFieldsEdit .row > [class*="col-"],
+    #vehicleFieldsEdit .row > [class*="col-"],
+    #realtyFieldsEditAdmin .row > [class*="col-"],
+    #vehicleFieldsEditAdmin .row > [class*="col-"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-bottom: 6px;
+    }
+
+    @media (min-width: 480px) and (max-width: 767px) {
+        #realtyFieldsEdit .row > [class*="col-"],
+        #vehicleFieldsEdit .row > [class*="col-"],
+        #realtyFieldsEditAdmin .row > [class*="col-"],
+        #vehicleFieldsEditAdmin .row > [class*="col-"] {
+            flex: 0 0 33.333%;
+            max-width: 33.333%;
+        }
+    }
+
+    @media (max-width: 360px) {
+        #realtyFieldsEdit .row > [class*="col-"],
+        #vehicleFieldsEdit .row > [class*="col-"],
+        #realtyFieldsEditAdmin .row > [class*="col-"],
+        #vehicleFieldsEditAdmin .row > [class*="col-"] {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    #realtyFieldsEdit .row > [class*="col-"],
+    #vehicleFieldsEdit .row > [class*="col-"],
+    #realtyFieldsEditAdmin .row > [class*="col-"],
+    #vehicleFieldsEditAdmin .row > [class*="col-"] {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+
+    #realtyFieldsEdit select,
+    #realtyFieldsEdit input,
+    #vehicleFieldsEdit select,
+    #vehicleFieldsEdit input,
+    #realtyFieldsEditAdmin select,
+    #realtyFieldsEditAdmin input,
+    #vehicleFieldsEditAdmin select,
+    #vehicleFieldsEditAdmin input {
+        font-size: 0.8rem;
+        padding: 6px 28px 6px 10px;
+        min-height: 34px;
+    }
+}
+
+@media (min-width: 992px) {
+    #realtyFieldsEdit .row > [class*="col-"],
+    #vehicleFieldsEdit .row > [class*="col-"],
+    #realtyFieldsEditAdmin .row > [class*="col-"],
+    #vehicleFieldsEditAdmin .row > [class*="col-"] {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+#propertyTypeEdit,
+#propertyTypeEditAdmin {
+    font-weight: 500;
+    border-color: #0d6efd !important;
+    background-color: #f8f9fa;
+}
+
+#propertyTypeEdit:focus,
+#propertyTypeEditAdmin:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2) !important;
+}
+
+#apartmentFieldsEdit,
+#houseFieldsEdit,
+#landFieldsEdit,
+#apartmentFieldsEditAdmin,
+#houseFieldsEditAdmin,
+#landFieldsEditAdmin {
+    display: none;
+    flex-wrap: wrap;
+    margin-left: -6px;
+    margin-right: -6px;
+}
+
+#apartmentFieldsEdit > [class*="col-"],
+#houseFieldsEdit > [class*="col-"],
+#landFieldsEdit > [class*="col-"],
+#apartmentFieldsEditAdmin > [class*="col-"],
+#houseFieldsEditAdmin > [class*="col-"],
+#landFieldsEditAdmin > [class*="col-"] {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+@media (max-width: 576px) {
+    #apartmentFieldsEdit .col-6,
+    #houseFieldsEdit .col-6,
+    #landFieldsEdit .col-6,
+    #apartmentFieldsEditAdmin .col-6,
+    #houseFieldsEditAdmin .col-6,
+    #landFieldsEditAdmin .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* ===== ФИКС ПЕРЕКРЫТИЯ (опыт/формат/категория) ===== */
+.custom-select-wrapper {
+    position: relative;
+    z-index: 100;
+}
+
+#vacancy_experience + .custom-select-wrapper,
+#vacancy_workformat + .custom-select-wrapper,
+#resume_experience + .custom-select-wrapper,
+#resume_workformat + .custom-select-wrapper {
+    z-index: 150;
+}
+
+.custom-dropdown {
+    z-index: 99999 !important;
+}
+
+/* Все .mb-4 — по умолчанию низкий z-index */
+.mb-4 {
+    position: relative;
+    z-index: 1;
+}
+
+/* Блоки с кастомными селектами — выше */
+.mb-4:has(.custom-select-wrapper) {
+    z-index: 10;
+}
+
+/* Опыт работы — САМЫЙ ВЫСОКИЙ среди всех .mb-4 (кроме dropdown) */
+.mb-4:has(#resume_experience),
+.mb-4:has(#vacancy_experience) {
+    position: relative;
+    z-index: 30 !important;
+}
+
+/* Формат работы — чуть ниже опыта */
+.mb-4:has(#resume_workformat),
+.mb-4:has(#vacancy_workformat) {
+    position: relative;
+    z-index: 25 !important;
+}
+
+/* Обёртки кастомных селектов внутри опыта/формата — ещё выше */
+.mb-4:has(#resume_experience) .custom-select-wrapper,
+.mb-4:has(#vacancy_experience) .custom-select-wrapper {
+    position: relative;
+    z-index: 35 !important;
+}
+
+.mb-4:has(#resume_workformat) .custom-select-wrapper,
+.mb-4:has(#vacancy_workformat) .custom-select-wrapper {
+    position: relative;
+    z-index: 30 !important;
+}
+
+/* Dropdown опыта/формата — поверх всего */
+.mb-4:has(#resume_experience) .custom-dropdown,
+.mb-4:has(#vacancy_experience) .custom-dropdown,
+.mb-4:has(#resume_workformat) .custom-dropdown,
+.mb-4:has(#vacancy_workformat) .custom-dropdown {
+    z-index: 999999 !important;
+}
+
+.card-body {
+    overflow: visible !important;
+}
+
+.edit-card .card-body {
+    overflow: visible !important;
+}
+
+form {
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .custom-dropdown {
+        z-index: 99999 !important;
+        max-height: 200px !important;
+    }
+
+    .custom-select-wrapper {
+        z-index: 100 !important;
+    }
+
+    .mb-4:has(select) {
+        z-index: 10;
+    }
+
+    .mb-4:has(#vacancy_experience),
+    .mb-4:has(#resume_experience) {
+        position: relative !important;
+        z-index: 30 !important;
+    }
+
+    .mb-4:has(#vacancy_workformat),
+    .mb-4:has(#resume_workformat) {
+        position: relative !important;
+        z-index: 25 !important;
+    }
+
+    .mb-4:has(#resume_experience) .custom-select-wrapper,
+    .mb-4:has(#vacancy_experience) .custom-select-wrapper {
+        z-index: 35 !important;
+    }
+
+    .mb-4:has(#resume_workformat) .custom-select-wrapper,
+    .mb-4:has(#vacancy_workformat) .custom-select-wrapper {
+        z-index: 30 !important;
+    }
+
+    .custom-dropdown {
+        z-index: 99999 !important;
+    }
+}
+
+/* ============================================================
+   ===== УНИВЕРСАЛЬНЫЕ СТИЛИ КАСТОМНЫХ FILTER SELECT (ВСЕ КАТЕГОРИИ) =====
+   ============================================================ */
+
+.filter-group .custom-filter-select-wrapper {
+    display: block !important;
+    width: 100% !important;
+    position: relative !important;
+    z-index: 20 !important;
+    overflow: visible !important;
+}
+
+.filter-group .custom-filter-select-trigger {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 8px 30px 8px 12px !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    color: #212529 !important;
+    background-color: #fff !important;
+    border: 2px solid #6c757d !important;
+    border-radius: 8px !important;
+    min-height: 38px !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.filter-group .custom-filter-select-trigger:hover {
+    border-color: #0d6efd !important;
+}
+
+.filter-group .custom-filter-select-trigger.active {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15) !important;
+}
+
+.filter-group .filter-selected-value {
+    flex: 1 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: #212529 !important;
+}
+
+.filter-group .filter-dropdown-arrow {
+    font-size: 10px !important;
+    color: #6c757d !important;
+    margin-left: 8px !important;
+    flex-shrink: 0 !important;
+    transition: transform 0.2s !important;
+}
+
+.filter-group .custom-filter-select-trigger.active .filter-dropdown-arrow {
+    transform: rotate(180deg) !important;
+}
+
+.filter-group .custom-filter-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    background: #fff !important;
+    border: 2px solid #0d6efd !important;
+    border-radius: 8px !important;
+    margin-top: 4px !important;
+    max-height: 250px !important;
+    overflow-y: auto !important;
+    z-index: 99999 !important;
+    display: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    min-width: 180px !important;
+}
+
+.filter-group .custom-filter-dropdown.show {
+    display: block !important;
+}
+
+.filter-group .custom-filter-option {
+    padding: 10px 12px !important;
+    cursor: pointer !important;
+    border-bottom: 1px solid #eee !important;
+    font-size: 0.9rem !important;
+    color: #212529 !important;
+    transition: background 0.2s !important;
+}
+
+.filter-group .custom-filter-option:last-child {
+    border-bottom: none !important;
+}
+
+.filter-group .custom-filter-option:hover {
+    background: #e8f0fe !important;
+}
+
+.filter-group .custom-filter-option.selected {
+    background: #e8f0fe !important;
+    font-weight: 600 !important;
+    color: #0d6efd !important;
+}
+
+.filter-group .custom-filter-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+.filter-group .custom-filter-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.filter-group .custom-filter-dropdown::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+.filter-group .custom-filter-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.filter-group .card,
+.filter-group .card-body,
+.filter-group .row,
+.filter-group [class*="col-"] {
+    overflow: visible !important;
+}
+
+@media (max-width: 767px) {
+    .filter-group .custom-filter-select-trigger {
+        padding: 6px 26px 6px 10px !important;
+        font-size: 0.8rem !important;
+        min-height: 34px !important;
+    }
+
+    .filter-group .custom-filter-option {
+        padding: 8px 10px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .filter-group .custom-filter-dropdown {
+        max-height: 200px !important;
+        z-index: 99999 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-group .custom-filter-select-trigger {
+        padding: 5px 24px 5px 8px !important;
+        font-size: 0.78rem !important;
+        min-height: 32px !important;
+    }
+
+    .filter-group .custom-filter-option {
+        padding: 7px 10px !important;
+        font-size: 0.82rem !important;
+    }
+}
+
+/* Скрываем нативный select после инициализации кастомного */
+select[data-custom-filter] {
+    display: none !important;
+}
+
+
+/* ============================================================
+   ===== ФИКС Z-INDEX И ПЕРЕКРЫТИЯ DROPDOWN ФИЛЬТРОВ =====
+   ============================================================ */
+
+/* Все .filter-group — stacking context, z-index по порядку */
+.filter-group {
+    position: relative;
+}
+
+/* Чем выше блок — тем выше z-index.
+   Первый filter-group будет поверх второго, второй поверх третьего и т.д. */
+.filter-group:nth-of-type(1)  { z-index: 100 !important; }
+.filter-group:nth-of-type(2)  { z-index: 95 !important; }
+.filter-group:nth-of-type(3)  { z-index: 90 !important; }
+.filter-group:nth-of-type(4)  { z-index: 85 !important; }
+.filter-group:nth-of-type(5)  { z-index: 80 !important; }
+.filter-group:nth-of-type(6)  { z-index: 75 !important; }
+.filter-group:nth-of-type(7)  { z-index: 70 !important; }
+.filter-group:nth-of-type(8)  { z-index: 65 !important; }
+.filter-group:nth-of-type(9)  { z-index: 60 !important; }
+.filter-group:nth-of-type(10) { z-index: 55 !important; }
+
+/* Внутри открытого filter-group dropdown всегда поверх */
+.filter-group .custom-filter-dropdown.show {
+    z-index: 999999 !important;
+}
+
+/* Всё, что идёт ПОСЛЕ фильтров (описание, карта, изображения, кнопки, премиум) —
+   должно быть НИЖЕ фильтров */
+.mb-4:not(.filter-group):not(:has(.custom-filter-select-wrapper)),
+#dynamicFields > .mb-4:not(.filter-group),
+.card-body > .mb-4:not(.filter-group),
+.card-body > div:not(.filter-group):not(:has(.custom-filter-select-wrapper)) {
+    position: relative;
+    z-index: 1 !important;
+}
+
+/* Карточки описания/карты/изображений — точно ниже */
+.map-container,
+.image-card,
+textarea#full_text,
+textarea[name="full_text"] {
+    position: relative;
+    z-index: 1 !important;
+}
+
+/* Родители не должны обрезать dropdown */
+.filter-group,
+.filter-group .card,
+.filter-group .card-body,
+.filter-group .row,
+.filter-group [class*="col-"],
+.card-body,
+.edit-card,
+form {
+    overflow: visible !important;
+}
+
+/* Обёртка и dropdown — поверх всего */
+.custom-filter-select-wrapper {
+    position: relative !important;
+    z-index: 999 !important;
+    overflow: visible !important;
+}
+
+.custom-filter-dropdown {
+    position: absolute !important;
+    z-index: 999999 !important;
+    overflow-y: auto !important;
+}
+
+/* На мобильных тоже */
+@media (max-width: 768px) {
+    .filter-group:nth-of-type(1)  { z-index: 100 !important; }
+    .filter-group:nth-of-type(2)  { z-index: 95 !important; }
+    .filter-group:nth-of-type(3)  { z-index: 90 !important; }
+    .filter-group:nth-of-type(4)  { z-index: 85 !important; }
+    .filter-group:nth-of-type(5)  { z-index: 80 !important; }
+
+    .custom-filter-dropdown.show {
+        z-index: 999999 !important;
     }
 }

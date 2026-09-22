@@ -274,9 +274,9 @@ public class RefControllerRes extends BasePostController {
             // Сохранение изображений
             imageService.saveImages(files, null, null, null, savedPost);
 
-            // Очистка кэша вакансий (чтобы новые резюме отображались в списке)
-            postCacheService.clearVacanciesCache();
-            log.debug("Кэш вакансий очищен после создания резюме");
+            // Очистка кэша резюме (чтобы новые резюме отображались в списке)
+            postCacheService.clearResumeCache();
+            log.debug("Кэш резюме очищен после создания резюме");
 
             return "redirect:/index";
 
@@ -369,7 +369,7 @@ public class RefControllerRes extends BasePostController {
      * @return ResponseEntity с HTTP-статусом 200 (OK) при успехе, 500 при ошибке
      */
     @Transactional
-    @PostMapping("/api/messages/{resId}/markAsRead")
+    @PostMapping("/api/messages/res/{resId}/markAsRead")
     @ResponseBody
     public ResponseEntity<?> markMessagesAsRead(@PathVariable Long resId, Authentication authentication) {
         log.debug("Запрос на отметку сообщений как прочитанных для резюме id: {}", resId);

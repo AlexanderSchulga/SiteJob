@@ -425,7 +425,7 @@ public class ImageService {
                 }
             }
         } catch (Exception e) {
-            log.error("Ошибка при удалении файла {}: {}", imagePath, e.getClass().getSimpleName(), e);
+            log.warn("Ошибка при удалении файла {}: {}", imagePath, e.getClass().getSimpleName(), e);
         }
     }
 
@@ -453,6 +453,8 @@ public class ImageService {
         }
         return "jpg";
     }
+
+
 
     /**
      * Возвращает количество изображений для поста.

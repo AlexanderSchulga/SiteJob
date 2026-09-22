@@ -152,8 +152,8 @@ public class NoBlockedForRadactAndModerController {
             return "redirect:/page_two/redactorblocked";
 
         } catch (Exception e) {
-            log.error("Ошибка при изменении статуса блокировки для типа {} с id {}: {}", type, id, e.getMessage(), e);
-            model.addAttribute("error", "Ошибка при блокировке: " + e.getMessage());
+            log.warn("Ошибка при изменении статуса блокировки для типа {}, id={}", type, id);
+            model.addAttribute("error", "Ошибка при блокировке");
             return "error";
         }
     }

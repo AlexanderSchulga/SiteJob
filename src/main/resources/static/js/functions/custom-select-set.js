@@ -187,6 +187,9 @@ class CategorySelect {
 
         this.positionDropdown();
 
+        this.wrapper.style.zIndex = '100';
+        this.dropdown.style.zIndex = '999999';
+
         this.dropdown.classList.add('show');
         this.dropdown.style.display = 'block';
         this.trigger.classList.add('active');
@@ -387,4 +390,15 @@ document.addEventListener('DOMContentLoaded', function() {
         clearInterval(interval);
         observer.disconnect();
     }, 10000);
+});
+
+// Переинициализация фильтров при изменении категории
+document.addEventListener('categoryChanged', function(e) {
+    // Даем время на появление новых полей
+    setTimeout(function() {
+        // Переинициализируем фильтры
+        if (typeof initFilterSelects === 'function') {
+            initFilterSelects();
+        }
+    }, 200);
 });
