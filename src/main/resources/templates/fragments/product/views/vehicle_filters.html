@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="vehicleFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-car me-2"></i>Автотранспорт
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="vehicleType">Тип транспорта</label>
+                    <select id="vehicleType" name="vehicleType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('motor', 'motor', 'vehicleType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${vehicleType != null and vehicleType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="vehicleOrigin">Регион бренда</label>
+                    <select id="vehicleOrigin" name="vehicleOrigin" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('motor', 'motor', 'vehicleOrigin')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${vehicleOrigin != null and vehicleOrigin.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-sm-6 mb-2">
+                    <label for="vehicleYearCount">Год выпуска</label>
+                    <select id="vehicleYearCount" name="vehicleYearCount" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('motor', 'motor', 'vehicleYear')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${vehicleYear != null and vehicleYear.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-sm-6 mb-2">
+                    <label for="mileage">Пробег (тыс.км)</label>
+                    <select id="mileage" name="mileage" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('motor', 'motor', 'mileage')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${mileage != null and mileage.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2 col-sm-6 mb-2">
+                    <label for="numberOfOwners">Кол-во владельцев</label>
+                    <select id="numberOfOwners" name="numberOfOwners" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('motor', 'motor', 'numberOfOwners')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${numberOfOwners != null and numberOfOwners.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="foodFields">
+    <div id="foodFields" class="filter-group mb-4" style="display: none;">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-car me-2"></i>Продукты питания
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Вид <span class="text-danger">*</span></label>
+                        <select id="foodKind" name="foodKind" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('food', 'food', 'foodKind')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

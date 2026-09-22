@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="healthDetails(post)">
+
+    <div class="row">
+      <div class="col-md-6">
+        <div th:if="${post.healthKindDisplayName != null}">
+          <small class="text-muted d-block">
+            <strong>Вид:</strong>
+            <span th:text="${post.healthKindDisplayName}"></span>
+          </small>
+        </div>
+
+        <div th:if="${post.healthTypeDisplayName != null}">
+          <small class="text-muted d-block">
+            <strong>Тип:</strong>
+            <span th:text="${post.healthTypeDisplayName}"></span>
+          </small>
+        </div>
+
+        <div th:if="${post.genderHealthDisplayName != null}">
+          <small class="text-muted d-block">
+            <strong>Пол:</strong>
+            <span th:text="${post.genderHealthDisplayName}"></span>
+          </small>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

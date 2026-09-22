@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="electronicsFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-laptop me-2"></i>Электроника и гаджеты
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="electronicsType">Тип</label>
+                    <select id="electronicsType" name="electronicsType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('electronics', 'electronics', 'electronicsType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${electronicsType != null and electronicsType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="conditionElectronics">Состояние</label>
+                    <select id="conditionElectronics" name="conditionElectronics" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('electronics', 'electronics', 'conditionElectronics')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${conditionElectronics != null and conditionElectronics.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

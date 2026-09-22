@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="clothingFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-tshirt me-2"></i>Одежда и обувь
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="clothingType">Тип</label>
+                    <select id="clothingType" name="clothingType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('clothing', 'clothing', 'clothingType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${clothingType != null and clothingType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="genderClothing">Пол</label>
+                    <select id="genderClothing" name="genderClothing" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('clothing', 'clothing', 'genderClothing')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${genderClothing != null and genderClothing.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="conditionClothing">Состояние</label>
+                    <select id="conditionClothing" name="conditionClothing" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('clothing', 'clothing', 'conditionClothing')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${conditionClothing != null and conditionClothing.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

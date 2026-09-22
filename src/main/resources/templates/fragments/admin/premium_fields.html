@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- ===== PREMIUM БЛОК ===== -->
+<div th:fragment="premiumBlock(el, entityId)">
+    <div class="premium-block mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="form-check form-switch">
+                <input type="checkbox"
+                       class="form-check-input premium-checkbox"
+                       th:id="'premium_checkbox_' + ${entityId}"
+                       th:checked="${el.premium}"
+                       style="width: 2.5em; height: 1.3em; cursor: pointer;">
+                <label class="form-check-label fw-bold" th:for="'premium_checkbox_' + ${entityId}"
+                       style="color: #ff6b35; cursor: pointer;">
+                    <i class="fas fa-gem me-1"></i> Premium (платное объявление)
+                </label>
+            </div>
+        </div>
+        <div class="premium-fields mt-2" th:id="'premium-fields-' + ${entityId}"
+             th:style="${el.premium} ? 'display: block' : 'display: none'">
+            <label class="small text-muted">Приоритет показа (0-100)</label>
+            <input type="number"
+                   class="form-control form-control-sm premium-priority"
+                   th:value="${el.premiumPriority}"
+                   min="0"
+                   max="100"
+                   th:data-entity-id="${entityId}">
+            <div class="small text-muted mt-1">Чем выше число, тем выше в карусели на главной</div>
+        </div>
+        <input type="hidden" name="premium" th:id="'hidden_premium_' + ${entityId}" th:value="${el.premium}">
+        <input type="hidden" name="premiumPriority" th:id="'hidden_priority_' + ${entityId}" th:value="${el.premiumPriority}">
+    </div>
+</div>
+
+<!-- ===== DONATE БЛОК ===== -->
+<div th:fragment="donateBlock(el, entityId)">
+    <div class="donate-block mb-4">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="form-check form-switch">
+                <input type="checkbox"
+                       class="form-check-input donate-checkbox"
+                       th:id="'donate_checkbox_' + ${entityId}"
+                       th:checked="${el.donate}"
+                       style="width: 2.5em; height: 1.3em; cursor: pointer;">
+                <label class="form-check-label fw-bold" th:for="'donate_checkbox_' + ${entityId}"
+                       style="color: #ff6b35; cursor: pointer;">
+                    <i class="fas fa-heart me-1"></i> Donate
+                </label>
+            </div>
+        </div>
+        <div class="small text-muted mt-2">
+            <i class="fas fa-info-circle me-1"></i> Donate
+        </div>
+        <input type="hidden" name="donate" th:id="'hidden_donate_' + ${entityId}" th:value="${el.donate}">
+    </div>
+</div>
+</body>
+</html>

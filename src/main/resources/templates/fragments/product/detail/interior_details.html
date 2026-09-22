@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="interiorDetails(post)">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div th:if="${post.interiorTypeDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Тип:</strong>
+                        <span th:text="${post.interiorTypeDisplayName}"></span>
+                    </small>
+                </div>
+
+                <div th:if="${post.conditionInteriorDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Состояние:</strong>
+                        <span th:text="${post.conditionInteriorDisplayName}"></span>
+                    </small>
+                </div>
+
+            </div>
+    </div>
+</div>
+</body>
+</html>

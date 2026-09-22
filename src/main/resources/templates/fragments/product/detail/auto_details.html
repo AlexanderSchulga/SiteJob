@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="autoDetails(post)">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div th:if="${post.autoTypeDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Тип:</strong>
+                        <span th:text="${post.autoTypeDisplayName}"></span>
+                    </small>
+                </div>
+
+                <div th:if="${post.conditionAutoDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Состояние:</strong>
+                        <span th:text="${post.conditionAutoDisplayName}"></span>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+
+</div>
+</body>
+</html>

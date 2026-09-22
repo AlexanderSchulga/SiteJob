@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="autoFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-car me-2"></i>Автозапчасти и автотовары
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="autoType">Тип</label>
+                    <select id="autoType" name="autoType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('auto', 'auto', 'autoType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${autoType != null and autoType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="conditionAuto">Состояние</label>
+                    <select id="conditionAuto" name="conditionAuto" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('auto', 'auto', 'conditionAuto')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${conditionAuto != null and conditionAuto.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

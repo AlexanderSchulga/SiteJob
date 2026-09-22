@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="realtyFields(el)">
+    <div id="realtyFieldsEdit" class="filter-group mb-4" th:attr="data-category=${el.category}">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-building me-2"></i>Характеристики недвижимости
+            </div>
+            <div class="card-body">
+                <!-- Тип недвижимости (только для чтения) -->
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Тип недвижимости</label>
+                        <div class="form-control">
+                            <span th:switch="${el.propertyType}">
+                                <span th:case="'apartment'">Квартира</span>
+                                <span th:case="'house'">Дом</span>
+                                <span th:case="'land'">Участок</span>
+                                <span th:case="'garage'">Гараж</span>
+                                <span th:case="'commercial'">Коммер. недвиж.</span>
+                                <span th:case="*">Не указан</span>
+                            </span>
+                        </div>
+                        <input type="hidden" name="propertyType" th:value="${el.propertyType}">
+                        <div class="form-text text-muted">Тип недвижимости не может быть изменён</div>
+                    </div>
+                </div>
+
+                <!-- ===== Квартира ===== -->
+                <div id="apartmentFieldsEdit"
+                     th:style="${el.propertyType == 'apartment'} ? 'display: flex' : 'display: none'"
+                     class="row flex-wrap">
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2 filter-group">
+                        <label class="form-label">Материал дома <span class="text-danger">*</span></label>
+                        <select id="materialUp" name="materialUp" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'materialUp')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.materialUp != null and el.materialUp.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <label class="form-label">Комнат <span class="text-danger">*</span></label>
+                        <input id="roomsCount" type="number" name="roomsCount" class="form-control"
+                               min="0" step="1" th:value="${el.roomsCount}" placeholder="Введите количество комнат">
+                        <small class="text-muted d-none d-sm-block">0-студия</small>
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <label class="form-label">Этаж <span class="text-danger">*</span></label>
+                        <input id="floorsApartment" type="number" name="floorsApartment" class="form-control"
+                               min="1" step="1" th:value="${el.floorsApartment}" placeholder="Введите этаж">
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <label class="form-label">Этажей <span class="text-danger">*</span></label>
+                        <input id="floorsCount" type="number" name="floorsCount" class="form-control"
+                               min="1" step="1" th:value="${el.floorsCount}" placeholder="Введите кол-во этажей">
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2 filter-group">
+                        <label class="form-label">Лифт <span class="text-danger">*</span></label>
+                        <select id="hasElevator" name="hasElevator" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'hasElevator')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.hasElevator != null and el.hasElevator.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <label class="form-label">Год постройки <span class="text-danger">*</span></label>
+                        <input id="apartmentBuildYear" type="number" name="apartmentBuildYear" class="form-control"
+                               min="1900" max="2099" step="1"
+                               th:value="${el.buildYear}" placeholder="Введите год постройки">
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2 filter-group">
+                        <label class="form-label">Ремонт <span class="text-danger">*</span></label>
+                        <select id="repairUp" name="repairUp" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'repairUp')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.repairUp != null and el.repairUp.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- ===== Дом ===== -->
+                <div id="houseFieldsEdit"
+                     th:style="${el.propertyType == 'house'} ? 'display: flex' : 'display: none'"
+                     class="row flex-wrap">
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2 filter-group">
+                        <label class="form-label">Материал дома <span class="text-danger">*</span></label>
+                        <select id="materialHouse" name="materialHouse" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'materialHouse')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.materialHouse != null and el.materialHouse.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <label class="form-label">Этажей <span class="text-danger">*</span></label>
+                        <input id="floorsCountHouse" type="number" name="floorsCountHouse" class="form-control"
+                               min="1" step="1" th:value="${el.floorsCountHouse}" placeholder="Введите кол-во этажей">
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2 filter-group">
+                        <label class="form-label">Ремонт <span class="text-danger">*</span></label>
+                        <select id="repairHouse" name="repairHouse" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'repairHouse')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.repairHouse != null and el.repairHouse.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <label class="form-label">Пл. дома (м²) <span class="text-danger">*</span></label>
+                        <input id="houseArea" type="number" name="houseArea" class="form-control"
+                               min="1" step="1" th:value="${el.houseArea}" placeholder="Введите площадь дома">
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <label class="form-label">Пл. земли (сот) <span class="text-danger">*</span></label>
+                        <input id="houseLandArea" type="number" name="houseLandArea" class="form-control"
+                               min="1" step="1" th:value="${el.landArea}" placeholder="Введите площадь земли">
+                    </div>
+
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <label class="form-label">Год постройки <span class="text-danger">*</span></label>
+                        <input id="houseBuildYear" type="number" name="houseBuildYear" class="form-control"
+                               min="1900" max="2099" step="1"
+                               th:value="${el.buildYear}" placeholder="Введите год постройки">
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label class="form-label">Расс. до города (км) <span class="text-danger">*</span></label>
+                        <input id="distanceToCityHouse" type="number" name="distanceToCityHouse" class="form-control"
+                               min="0" step="1" th:value="${el.distanceToCityHouse}" placeholder="Введите расстояние">
+                    </div>
+
+                </div>
+
+                <!-- ===== Участок ===== -->
+                <div id="landFieldsEdit"
+                     th:style="${el.propertyType == 'land'} ? 'display: flex' : 'display: none'"
+                     class="row flex-wrap">
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label class="form-label">Площадь (сот) <span class="text-danger">*</span></label>
+                        <input id="landArea" type="number" name="landArea" class="form-control"
+                               min="1" step="1" th:value="${el.landArea}" placeholder="Введите площадь">
+                    </div>
+
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label class="form-label">Расс. до города (км) <span class="text-danger">*</span></label>
+                        <input id="distanceToCity" type="number" name="distanceToCity" class="form-control"
+                               min="0" step="1" th:value="${el.distanceToCity}" placeholder="Введите расстояние">
+                    </div>
+                </div>
+
+                <!-- ===== Гараж ===== -->
+                <div id="garageFieldsEdit"
+                     th:style="${el.propertyType == 'garage'} ? 'display: flex' : 'display: none'"
+                     class="row flex-wrap">
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label class="form-label">Площадь (м²) <span class="text-danger">*</span></label>
+                        <input id="landAreaGarage" type="number" name="landAreaGarage" class="form-control"
+                               min="1" step="1" th:value="${el.landAreaGarage}" placeholder="Введите площадь">
+                    </div>
+                </div>
+
+                <!-- ===== Коммерческая ===== -->
+                <div id="commercialFieldsEdit"
+                     th:style="${el.propertyType == 'commercial'} ? 'display: flex' : 'display: none'"
+                     class="row flex-wrap">
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label class="form-label">Площадь (м²) <span class="text-danger">*</span></label>
+                        <input id="landAreaCommercial" type="number" name="landAreaCommercial" class="form-control"
+                               min="1" step="1" th:value="${el.landAreaCommercial}" placeholder="Введите площадь">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

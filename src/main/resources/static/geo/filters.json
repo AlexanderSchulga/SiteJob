@@ -1,0 +1,621 @@
+{
+  "filters": {
+    "realty": {
+      "apartment": {
+        "roomsCount": {
+          "label": "Комнат",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Студия",
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "Более 3"
+          }
+        },
+        "floorsApartment": {
+          "label": "Этаж",
+          "type": "select",
+          "options": {
+            "": "Любой",
+            "0": "с 1 по 5",
+            "1": "с 6 по 10",
+            "2": "с 11 по 20",
+            "3": "с 21 по 30",
+            "4": "с 31 и выше"
+          }
+        },
+        "floorsCount": {
+          "label": "Этажей в доме",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "До 5",
+            "1": "Более 5"
+          }
+        },
+        "hasElevator": {
+          "label": "Лифт",
+          "type": "select",
+          "options": {
+            "": "Не важно",
+            "true": "Есть",
+            "false": "Нет"
+          }
+        },
+        "buildYear": {
+          "label": "Год постройки",
+          "type": "select",
+          "options": {
+            "": "Любой",
+            "0": "До 1950",
+            "1": "1951-1961",
+            "2": "1962-1973",
+            "3": "1974-1985",
+            "4": "1986-1997",
+            "5": "1998-2009",
+            "6": "2010-2021",
+            "7": "2022-н.в."
+          }
+        },
+        "materialUp": {
+          "label": "Материал дома",
+          "type": "select",
+          "options": {
+            "": "Любой",
+            "brick": "Кирпич",
+            "panel": "Панель",
+            "monolith": "Монолит",
+            "block": "Блок"
+          }
+        },
+        "repairUp": {
+          "label": "Ремонт",
+          "type": "select",
+          "options": {
+            "": "Любой",
+            "forFinishing": "Под чистовую",
+            "withoutRepair": "Без ремонта",
+            "cosmetic": "Косметический",
+            "good": "Хороший",
+            "euro": "Евро"
+          }
+        }
+      },
+      "house": {
+          "materialHouse": {
+            "label": "Материал дома",
+            "type": "select",
+            "options": {
+              "": "Любой",
+              "brick": "Кирпич",
+              "tree": "Дерево",
+              "monolith": "Газосиликат",
+              "block": "Блок"
+            }
+          },
+          "repairHouse": {
+            "label": "Ремонт",
+            "type": "select",
+            "options": {
+              "": "Любой",
+              "forFinishing": "Под чистовую",
+              "withoutRepair": "Без ремонта",
+              "cosmetic": "Косметический",
+              "good": "Хороший",
+              "made": "Сделанный"
+            }
+          },
+          "floorsCountHouse": {
+            "label": "Этажей в доме",
+            "type": "select",
+            "options": {
+              "": "Любое",
+              "0": "1",
+              "1": "2",
+              "2": "3",
+              "3": "Более 3"
+            }
+          },
+          "houseArea": {
+            "label": "Пл. дома (м²)",
+            "type": "select",
+            "options": {
+              "": "Любая",
+              "0": "До 50",
+              "1": "от 51 до 100",
+              "2": "от 101 до 150",
+              "3": "от 151 до 200",
+              "4": "Более 200"
+            }
+          },
+          "landArea": {
+            "label": "Пл. земли (сот)",
+            "type": "select",
+            "options": {
+              "": "Любая",
+              "0": "До 10",
+              "1": "от 11 до 20",
+              "2": "от 21 до 30",
+              "3": "от 31 до 40",
+              "4": "от 41 до 50",
+              "5": "Более 50"
+            }
+          },
+          "houseBuildYear": {
+            "label": "Год постройки",
+            "type": "select",
+            "options": {
+              "": "Любой",
+              "0": "До 1950",
+              "1": "1951-1961",
+              "2": "1962-1973",
+              "3": "1974-1985",
+              "4": "1986-1997",
+              "5": "1998-2009",
+              "6": "2010-2021",
+              "7": "2022-н.в."
+            }
+          },
+          "distanceToCityHouse": {
+            "label": "Раст. до города (км)",
+            "type": "select",
+            "options": {
+              "": "Любая",
+              "0": "До 5",
+              "1": "от 6 до 10",
+              "2": "от 11 до 20",
+              "3": "от 21 до 30",
+              "4": "от 31 до 40",
+              "5": "от 41 до 50",
+              "6": "от 51 до 100",
+              "7": "Более 100"
+            }
+          }
+      },
+      "land": {
+        "landArea": {
+          "label": "Площадь (сот)",
+          "type": "select",
+          "options": {
+            "": "Любая",
+            "0": "До 10",
+            "1": " от 11 до 20",
+            "2": "от 21 до 30",
+            "3": "от 31 до 40",
+            "4": "от 41 до 50",
+            "5": "Более 50"
+          }
+        },
+        "distanceToCity": {
+          "label": "Раст. до города (км)",
+          "type": "select",
+          "options": {
+            "": "Любая",
+            "0": "До 5",
+            "1": "от 6 до 10",
+            "2": "от 11 до 20",
+            "3": "от 21 до 30",
+            "4": "от 31 до 40",
+            "5": "от 41 до 50",
+            "6": "от 51 до 100",
+            "7": "Более 100"
+          }
+        }
+      },
+      "garage": {
+        "landAreaGarage": {
+          "label": "Площадь (м²)",
+          "type": "select",
+          "options": {
+            "": "Любая",
+            "0": "До 40",
+            "1": " от 41 до 50",
+            "2": "от 51 до 60",
+            "3": "Более 60"
+          }
+        }
+      },
+      "commercial": {
+        "landAreaCommercial": {
+          "label": "Площадь (м²)",
+          "type": "select",
+          "options": {
+            "": "Любая",
+            "0": "До 40",
+            "1": " от 41 до 50",
+            "2": "от 51 до 60",
+            "3": "от 61 до 70",
+            "4": "от 71 до 100",
+            "5": "Более 100"
+          }
+        }
+      }
+    },
+    "motor": {
+      "motor": {
+        "vehicleType": {
+          "label": "Тип транспорта",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "cargo": "Грузовые",
+            "construction": "Строительная техника",
+            "agricultural": "Сельхоз назначения",
+            "passenger": "Легковые",
+            "bus": "Автобусы",
+            "motocycle": "Мото и квадро"
+          }
+        },
+        "vehicleOrigin": {
+          "label": "Регион бренда",
+          "type": "select",
+          "options": {
+            "": "Все страны",
+            "europe": "Европа",
+            "america": "Америка",
+            "asia": "Азия",
+            "cis": "СНГ"
+          }
+        },
+        "vehicleYear": {
+          "label": "Год выпуска",
+          "type": "select",
+          "options": {
+            "": "Любой",
+            "0": "До 1970",
+            "1": "1971-1981",
+            "2": "1982-1987",
+            "3": "1988-1993",
+            "4": "1994-1999",
+            "5": "2000-2005",
+            "6": "2006-2011",
+            "7": "2012-2017",
+            "8": "2018-2023",
+            "9": "2024-н.в."
+          }
+        },
+        "mileage": {
+          "label": "Пробег (тыс.км)",
+          "type": "select",
+          "options": {
+            "": "Любой",
+            "0": "До 10",
+            "1": "11-40",
+            "2": "41-80",
+            "3": "81-130",
+            "4": "131-180",
+            "5": "181-250",
+            "6": "251-320",
+            "7": "321-400",
+            "8": "401 и более"
+          }
+        },
+        "numberOfOwners": {
+          "label": "Количество владельцев",
+          "type": "select",
+          "options": {
+            "": "Любой",
+            "0": "1",
+            "1": "2",
+            "2": "3",
+            "3": "4",
+            "4": "5 и более"
+          }
+        }
+      }
+    },
+    "auto": {
+      "auto": {
+        "autoType": {
+          "label": "Тип",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "cargoA": "Для грузовых",
+            "constructionA": "Для строительной тех.",
+            "agriculturalA": "Для сельхоз назнач.",
+            "passengerA": "Для легковых",
+            "busA": "Для автобусов",
+            "motocycleA": "Для мото и квадро",
+            "miscellaneousA": "Разное"
+          }
+        },
+        "conditionAuto": {
+          "label": "Состояние",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Новый",
+            "1": "Б/У"
+          }
+        }
+      }
+    },
+    "constructions": {
+      "constructions": {
+        "constructionsType": {
+          "label": "Тип назначения",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "roof": "Крыша",
+            "walls": "Стены и перекрытия",
+            "floor": "Пол",
+            "yard": "Двор",
+            "road": "Дорожные",
+            "miscellaneousCC": "Разное"
+          }
+        }
+      }
+    },
+    "interior": {
+      "interior": {
+        "interiorType": {
+          "label": "Тип",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "furniture": "Мебель",
+            "electric": "Электрический",
+            "plumbing": "Сантехника",
+            "miscellaneousI": "Разное"
+          }
+        },
+        "conditionInterior": {
+          "label": "Состояние",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Новый",
+            "1": "Б/У"
+          }
+        }
+      }
+    },
+    "tools": {
+      "tools": {
+        "toolsType": {
+          "label": "Тип",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "electricT": "Электро",
+            "plumbingT": "Сантехнические",
+            "measuring": "Измерительные",
+            "roadT": "Дорожные",
+            "miscellaneousT": "Разное"
+          }
+        },
+        "conditionTools": {
+          "label": "Состояние",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Новый",
+            "1": "Б/У"
+          }
+        }
+      }
+    },
+    "appliances": {
+      "appliances": {
+        "appliancesType": {
+          "label": "Тип",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "washingMachine": "Стиральная машина",
+            "fridge": "Холодильник",
+            "microwave": "Микроволновка",
+            "dishwasher": "Посудомойка",
+            "vacuumCleaner": "Пылесос",
+            "stove": "Плита",
+            "miscellaneousA": "Разное"
+          }
+        },
+        "conditionAppliances": {
+          "label": "Состояние",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Новый",
+            "1": "Б/У"
+          }
+        }
+      }
+    },
+    "electronics": {
+      "electronics": {
+        "electronicsType": {
+          "label": "Тип",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "PhoneAndAccessories": "Телефон и аксессуары",
+            "tv": "Телевизор",
+            "monitor": "Монитор",
+            "laptop": "Ноутбук",
+            "computer": "Компьютер",
+            "componentsE": "Комплектующие ПК",
+            "miscellaneousE": "Разное"
+          }
+        },
+        "conditionElectronics": {
+          "label": "Состояние",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Новый",
+            "1": "Б/У"
+          }
+        }
+      }
+    },
+    "clothing": {
+      "clothing": {
+        "clothingType": {
+          "label": "Тип",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "adult": "Взрослое",
+            "childrens": "Детское"
+          }
+        },
+        "genderClothing": {
+          "label": "Пол",
+          "type": "select",
+          "options": {
+            "": "Все",
+            "men": "Мужское",
+            "woman": "Женское"
+          }
+        },
+        "conditionClothing": {
+          "label": "Состояние",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Новый",
+            "1": "Б/У"
+          }
+        }
+      }
+    },
+    "childrenPr": {
+      "childrenPr": {
+        "genderChildrenPr": {
+          "label": "Пол",
+          "type": "select",
+          "options": {
+            "": "Все",
+            "menC": "Мужское",
+            "womanC": "Женское"
+          }
+        },
+        "conditionChildrenPr": {
+          "label": "Состояние",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Новый",
+            "1": "Б/У"
+          }
+        }
+      }
+    },
+    "sports": {
+      "sports": {
+        "sportsKind": {
+          "label": "Вид",
+          "type": "select",
+          "options": {
+            "": "Все виды",
+            "weightlifting": "Тяжелая атл.",
+            "lightAthletics": "Легкая атл.",
+            "football": "Футбол",
+            "basketball": "Баскетбол",
+            "hockey": "Хоккей",
+            "tennis": "Тенис",
+            "tabletop": "Настольные",
+            "miscellaneousS": "Разное"
+          }
+        },
+        "sportsType": {
+          "label": "Тип",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "adultS": "Взрослое",
+            "childrensS": "Детское"
+          }
+        },
+        "genderSports": {
+          "label": "Пол",
+          "type": "select",
+          "options": {
+            "": "Все",
+            "menS": "Мужское",
+            "womanS": "Женское"
+          }
+        },
+        "conditionSports": {
+          "label": "Состояние",
+          "type": "select",
+          "options": {
+            "": "Любое",
+            "0": "Новый",
+            "1": "Б/У"
+          }
+        }
+      }
+    },
+    "food": {
+      "food": {
+        "foodKind": {
+          "label": "Вид",
+          "type": "select",
+          "options": {
+            "": "Все виды",
+            "OwnProduction": "Собственного производства",
+            "MassConsumption": "Массового потребления"
+          }
+        }
+      }
+    },
+    "health": {
+      "health": {
+        "healthKind": {
+          "label": "Вид",
+          "type": "select",
+          "options": {
+            "": "Все виды",
+            "personalHygiene": "Личная гигиена",
+            "careProducts": "Средства ухода",
+            "cosmetics": "Косметика",
+            "activeAdditives": "Активные добавки",
+            "medicines": "Лекарственные средства",
+            "medicalSupplies": "Медициские пренадлежности",
+            "miscellaneousH": "Разное"
+          }
+        },
+        "healthType": {
+          "label": "Тип",
+          "type": "select",
+          "options": {
+            "": "Все типы",
+            "adultH": "Взрослое",
+            "childrensH": "Детское"
+          }
+        },
+        "genderHealth": {
+          "label": "Пол",
+          "type": "select",
+          "options": {
+            "": "Все",
+            "menH": "Мужское",
+            "womanH": "Женское"
+          }
+        }
+      }
+    },
+    "animals": {
+      "animals": {
+        "animalsKind": {
+          "label": "Вид",
+          "type": "select",
+          "options": {
+            "": "Все виды",
+            "livestock": "Домашняя скотина",
+            "pets": "Комнатные животные",
+            "stern": "Корма",
+            "plants": "Саженцы и растения",
+            "miscellaneousAn": "Разное"
+          }
+        }
+      }
+    }
+  }
+}

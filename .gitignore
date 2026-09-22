@@ -3,6 +3,8 @@ application*.properties
 application*.yml
 application*.yaml
 
+migrateDB.properties
+
 # ===== BUILD =====
 HELP.md
 target/

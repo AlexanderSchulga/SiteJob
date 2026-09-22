@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="childrenPrFields">
+    <div id="childrenPrFields" class="filter-group mb-4" style="display: none;">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-car me-2"></i>Детские товары
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Пол <span class="text-danger">*</span></label>
+                        <select id="genderChildrenPr" name="genderChildrenPr" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('childrenPr', 'childrenPr', 'genderChildrenPr')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Состояние <span class="text-danger">*</span></label>
+                        <select id="conditionChildrenPr" name="conditionChildrenPr" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('childrenPr', 'childrenPr', 'conditionChildrenPr')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

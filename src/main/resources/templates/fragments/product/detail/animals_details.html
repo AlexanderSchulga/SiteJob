@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="animalsDetails(post)">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div th:if="${post.animalsKindDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Вид:</strong>
+                        <span th:text="${post.animalsKindDisplayName}"></span>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="constructionsFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-hard-hat me-2"></i>Строительные материалы
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="constructionsType">Тип назначения</label>
+                    <select id="constructionsType" name="constructionsType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('constructions', 'constructions', 'constructionsType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${constructionsType != null and constructionsType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

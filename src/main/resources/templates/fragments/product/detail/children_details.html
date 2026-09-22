@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="childrenPrDetails(post)">
+        <div class="row">
+            <div class="col-md-6">
+                <div th:if="${post.genderChildrenPrDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Пол:</strong>
+                        <span th:text="${post.genderChildrenPrDisplayName}"></span>
+                    </small>
+                </div>
+
+                <div th:if="${post.conditionChildrenPrDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Состояние:</strong>
+                        <span th:text="${post.conditionChildrenPrDisplayName}"></span>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+</div>
+</body>
+</html>

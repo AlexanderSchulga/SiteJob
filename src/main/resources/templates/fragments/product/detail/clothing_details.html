@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="clothingDetails(post)">
+        <div class="row">
+            <div class="col-md-6">
+                <div th:if="${post.clothingTypeDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Тип:</strong>
+                        <span th:text="${post.clothingTypeDisplayName}"></span>
+                    </small>
+                </div>
+
+                <div th:if="${post.genderClothingDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Пол:</strong>
+                        <span th:text="${post.genderClothingDisplayName}"></span>
+                    </small>
+                </div>
+
+                <div th:if="${post.conditionClothingDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Состояние:</strong>
+                        <span th:text="${post.conditionClothingDisplayName}"></span>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+</div>
+</body>
+</html>

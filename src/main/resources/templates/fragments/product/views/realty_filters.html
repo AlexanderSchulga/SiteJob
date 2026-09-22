@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="realtyFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-building me-2"></i>Недвижимость
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="propertyType">Тип недвижимости</label>
+                    <select id="propertyType" name="propertyType" class="form-select form-select-sm">
+                        <option value="">Все типы</option>
+                        <option value="apartment" th:selected="${propertyType == 'apartment'}">Квартира</option>
+                        <option value="house" th:selected="${propertyType == 'house'}">Дом</option>
+                        <option value="land" th:selected="${propertyType == 'land'}">Участок</option>
+                        <option value="garage" th:selected="${propertyType == 'garage'}">Гараж</option>
+                        <option value="commercial" th:selected="${propertyType == 'commercial'}">Коммер. недвиж.</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Квартира -->
+            <div id="apartmentFilters" style="display: none;">
+                <div class="row mt-2">
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="roomsCount">Комнат</label>
+                        <select id="roomsCount" name="roomsCount" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'roomsCount')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${roomsCount != null and roomsCount.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="floorsApartment">Этаж</label>
+                        <select id="floorsApartment" name="floorsApartment" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'floorsApartment')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${floorsApartment != null and floorsApartment.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="floorsCount">Этажей в доме</label>
+                        <select id="floorsCount" name="floorsCount" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'floorsCount')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${floorsCount != null and floorsCount.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="hasElevator">Лифт</label>
+                        <select id="hasElevator" name="hasElevator" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'hasElevator')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${hasElevator != null and hasElevator.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="buildYearCount">Год постройки</label>
+                        <select id="buildYearCount" name="buildYearCount" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'buildYear')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${buildYear != null and buildYear.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="materialUp">Материал дома</label>
+                        <select id="materialUp" name="materialUp" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'materialUp')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${materialUp != null and materialUp.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="repairUp">Ремонт</label>
+                        <select id="repairUp" name="repairUp" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'apartment', 'repairUp')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${repairUp != null and repairUp.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Дом -->
+            <div id="houseFilters" style="display: none;">
+                <div class="row mt-2">
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="floorsCountHouse">Этажей в доме</label>
+                        <select id="floorsCountHouse" name="floorsCountHouse" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'floorsCountHouse')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${floorsCountHouse != null and floorsCountHouse.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="houseAreaCount">Пл. дома (м²)</label>
+                        <select id="houseAreaCount" name="houseAreaCount" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'houseArea')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${houseArea != null and houseArea.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="landAreaHouseCount">Пл. земли (сот)</label>
+                        <select id="landAreaHouseCount" name="landAreaHouseCount" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'landArea')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${landArea != null and landArea.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="houseBuildYearCount">Год постройки</label>
+                        <select id="houseBuildYearCount" name="houseBuildYearCount" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'houseBuildYear')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${houseBuildYear != null and houseBuildYear.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="materialHouse">Материал дома</label>
+                        <select id="materialHouse" name="materialHouse" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'materialHouse')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${materialHouse != null and materialHouse.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="repairHouse">Ремонт</label>
+                        <select id="repairHouse" name="repairHouse" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'repairHouse')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${repairHouse != null and repairHouse.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 col-sm-6 mb-2">
+                        <label for="distanceToCityHouse">Раст. до города (км)</label>
+                        <select id="distanceToCityHouse" name="distanceToCityHouse" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'house', 'distanceToCityHouse')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${distanceToCityHouse != null and distanceToCityHouse.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Участок -->
+            <div id="landFilters" style="display: none;">
+                <div class="row mt-2">
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label for="landArea">Площадь (сот)</label>
+                        <select id="landArea" name="landArea" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'land', 'landArea')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${landArea != null and landArea.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label for="distanceToCityCount">Раст. до города (км)</label>
+                        <select id="distanceToCityCount" name="distanceToCityCount" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'land', 'distanceToCity')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${distanceToCity != null and distanceToCity.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Гараж -->
+            <div id="garageFilters" style="display: none;">
+                <div class="row mt-2">
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label for="landAreaGarage">Площадь (м²)</label>
+                        <select id="landAreaGarage" name="landAreaGarage" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'garage', 'landAreaGarage')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${landAreaGarage != null and landAreaGarage.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- коммерческая -->
+            <div id="commercialFilters" style="display: none;">
+                <div class="row mt-2">
+                    <div class="col-md-3 col-sm-6 mb-2">
+                        <label for="landAreaCommercial">Площадь (м²)</label>
+                        <select id="landAreaCommercial" name="landAreaCommercial" class="form-select form-select-sm">
+                            <option th:each="option : ${@filterConfigService.getOptions('realty', 'commercial', 'landAreaCommercial')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${landAreaCommercial != null and landAreaCommercial.toString() == option.key}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

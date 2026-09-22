@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="motorFields(el)">
+    <div id="vehicleFieldsEdit" class="filter-group mb-4" th:attr="data-category=${el.category}">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-car me-2"></i>Характеристики автотранспорта
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Тип транспорта <span class="text-danger">*</span></label>
+                        <select id="vehicleType" name="vehicleType" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('motor', 'motor', 'vehicleType')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.vehicleType != null and el.vehicleType == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 mb-3 filter-group">
+                        <label class="form-label">Регион бренда <span class="text-danger">*</span></label>
+                        <select id="vehicleOrigin" name="vehicleOrigin" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('motor', 'motor', 'vehicleOrigin')}"
+                                    th:if="${option.key != ''}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}"
+                                    th:selected="${el.vehicleOrigin != null and el.vehicleOrigin == option.key}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Пробег (тыс.км) <span class="text-danger">*</span></label>
+                        <input id="mileage" type="number" name="mileage" class="form-control"
+                               min="1" max="1999999" step="1"
+                               th:value="${el.mileage}" placeholder="Введите пробег">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Количество владельцев <span class="text-danger">*</span></label>
+                        <input id="numberOfOwners" type="number" name="numberOfOwners" class="form-control"
+                               min="1" max="99" step="1"
+                               th:value="${el.numberOfOwners}" placeholder="Введите кол-во владельцев">
+                    </div>
+
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label">Год выпуска <span class="text-danger">*</span></label>
+                        <input id="vehicleYear" type="number" name="vehicleYear" class="form-control"
+                               min="1900" max="2099" step="1"
+                               th:value="${el.vehicleYear}" placeholder="Введите год выпуска">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

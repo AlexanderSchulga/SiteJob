@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="healthFields">
+    <div id="healthFields" class="filter-group mb-4" style="display: none;">
+        <div class="card">
+            <div class="card-header bg-light">
+                <i class="fas fa-car me-2"></i>Здоровье и красота
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Вид <span class="text-danger">*</span></label>
+                        <select id="healthKind" name="healthKind" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('health', 'health', 'healthKind')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Тип <span class="text-danger">*</span></label>
+                        <select id="healthType" name="healthType" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('health', 'health', 'healthType')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label">Пол <span class="text-danger">*</span></label>
+                        <select id="genderHealth" name="genderHealth" class="form-select">
+                            <option th:each="option : ${@filterConfigService.getOptions('health', 'health', 'genderHealth')}"
+                                    th:value="${option.key}"
+                                    th:text="${option.value}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

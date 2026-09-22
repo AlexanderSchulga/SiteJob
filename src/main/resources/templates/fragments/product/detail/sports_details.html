@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sportsDetails(post)">
+        <div class="row">
+            <div class="col-md-6">
+                <div th:if="${post.sportsKindDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Вид:</strong>
+                        <span th:text="${post.sportsKindDisplayName}"></span>
+                    </small>
+                </div>
+
+                <div th:if="${post.sportsTypeDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Тип:</strong>
+                        <span th:text="${post.sportsTypeDisplayName}"></span>
+                    </small>
+                </div>
+
+                <div th:if="${post.genderSportsDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Пол:</strong>
+                        <span th:text="${post.genderSportsDisplayName}"></span>
+                    </small>
+                </div>
+
+                <div th:if="${post.conditionSportsDisplayName != null}">
+                    <small class="text-muted d-block">
+                        <strong>Состояние:</strong>
+                        <span th:text="${post.conditionSportsDisplayName}"></span>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sportsFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-running me-2"></i>Товары для спорта
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="sportsKind">Вид спорта</label>
+                    <select id="sportsKind" name="sportsKind" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('sports', 'sports', 'sportsKind')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${sportsKind != null and sportsKind.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="sportsType">Тип</label>
+                    <select id="sportsType" name="sportsType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('sports', 'sports', 'sportsType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${sportsType != null and sportsType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="genderSports">Пол</label>
+                    <select id="genderSports" name="genderSports" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('sports', 'sports', 'genderSports')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${genderSports != null and genderSports.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="conditionSports">Состояние</label>
+                    <select id="conditionSports" name="conditionSports" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('sports', 'sports', 'conditionSports')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${conditionSports != null and conditionSports.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="toolsFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-tools me-2"></i>Инструменты
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="toolsType">Тип</label>
+                    <select id="toolsType" name="toolsType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('tools', 'tools', 'toolsType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${toolsType != null and toolsType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="conditionTools">Состояние</label>
+                    <select id="conditionTools" name="conditionTools" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('tools', 'tools', 'conditionTools')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${conditionTools != null and conditionTools.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

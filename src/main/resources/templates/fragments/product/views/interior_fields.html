@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="interiorFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-couch me-2"></i>Дом и интерьер
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="interiorType">Тип</label>
+                    <select id="interiorType" name="interiorType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('interior', 'interior', 'interiorType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${interiorType != null and interiorType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="conditionInterior">Состояние</label>
+                    <select id="conditionInterior" name="conditionInterior" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('interior', 'interior', 'conditionInterior')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${conditionInterior != null and conditionInterior.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

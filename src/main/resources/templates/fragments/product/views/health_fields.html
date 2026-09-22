@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="healthFilters">
+    <div class="card mb-3">
+        <div class="card-header bg-light">
+            <i class="fas fa-heartbeat me-2"></i>Здоровье и красота
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="healthKind">Вид</label>
+                    <select id="healthKind" name="healthKind" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('health', 'health', 'healthKind')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${healthKind != null and healthKind.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="healthType">Тип</label>
+                    <select id="healthType" name="healthType" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('health', 'health', 'healthType')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${healthType != null and healthType.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 col-sm-6 mb-2">
+                    <label for="genderHealth">Пол</label>
+                    <select id="genderHealth" name="genderHealth" class="form-select form-select-sm">
+                        <option th:each="option : ${@filterConfigService.getOptions('health', 'health', 'genderHealth')}"
+                                th:value="${option.key}"
+                                th:text="${option.value}"
+                                th:selected="${genderHealth != null and genderHealth.toString() == option.key}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
