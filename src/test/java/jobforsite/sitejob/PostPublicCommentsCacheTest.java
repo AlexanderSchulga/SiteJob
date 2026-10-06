@@ -110,10 +110,8 @@ public class PostPublicCommentsCacheTest {
         assertThat(publicCommentsCache.getIfPresent(cacheKey)).isNull();
         assertThat(commentCountsCache.getIfPresent(countKey)).isNull();
 
-        System.out.println("Cache entries expired successfully after ~70 seconds");
+        System.out.println("Cache entries expired successfully after +-70 seconds");
     }
-
-    // Остальные тесты остаются без изменений...
 
     @Test
     public void testCacheEvictionOnNewComment() {

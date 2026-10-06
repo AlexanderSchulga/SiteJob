@@ -137,11 +137,11 @@ public class LoadPaginationCommentPostVac extends BasePostController {
             response.put("currentPage", page);
             response.put("isSuperUser", hasOnlySuperAccess);
 
-            log.debug("Успешно загружено {} комментариев, hasMore: {}", commentsData.size(), commentsSlice.hasNext());
+            log.info("Успешно загружено {} комментариев, hasMore: {}", commentsData.size(), commentsSlice.hasNext());
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке комментариев для hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
+            log.info("Ошибка при загрузке комментариев для hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
             errorResponse.put("message", "Ошибка при загрузке комментариев: " + e.getMessage());
@@ -151,6 +151,7 @@ public class LoadPaginationCommentPostVac extends BasePostController {
 
     /**
      * Преобразует объект CommentPersonalVac в Map для отправки на клиент.
+     * Рекурсивно собирает все ответы (replies) на любой уровень вложенности.
      * Учитывает права доступа: SUPER/ADMIN видят реальные имена, остальные — обезличенные данные.
      *
      * @param comment        комментарий для конвертации
@@ -195,8 +196,14 @@ public class LoadPaginationCommentPostVac extends BasePostController {
             commentData.put("hasRecipient", true);
             commentData.put("recipientId", comment.getRecipient().getHashId());
             commentData.put("recipientName", comment.getRecipient().getNameuse());
+        } else if (comment.getParentComment() != null && comment.getParentComment().getUser() != null) {
+            // Fallback: адресат — автор родительского комментария
+            commentData.put("hasRecipient", true);
+            commentData.put("recipientId", comment.getParentComment().getUser().getHashId());
+            commentData.put("recipientName", comment.getParentComment().getUser().getNameuse());
         } else {
             commentData.put("hasRecipient", false);
+            commentData.put("recipientName", null);
         }
 
         commentData.put("postId", comment.getVacancy().getId());
@@ -231,53 +238,8 @@ public class LoadPaginationCommentPostVac extends BasePostController {
         List<CommentPersonalVac> replies = commentRepoVacPersonal.findByParentCommentIdOrderByCreatedAtAsc(comment.getId());
 
         for (CommentPersonalVac reply : replies) {
-            boolean canSeeReply = hasSuperAccess ||
-                    currentUser.getId().equals(comment.getVacancy().getUser().getId()) ||
-                    currentUser.getId().equals(reply.getUser().getId()) ||
-                    (reply.getRecipient() != null && currentUser.getId().equals(reply.getRecipient().getId()));
-
-            if (canSeeReply) {
-                Map<String, Object> replyData = new HashMap<>();
-                replyData.put("id", reply.getId());
-                String replyOriginalText = reply.getText();
-                replyData.put("text", replyOriginalText);
-                replyData.put("textEncoded", false);
-
-                if (hasSuperAccess) {
-                    replyData.put("originalText", replyOriginalText);
-                }
-
-                replyData.put("createdAt", reply.getCreatedAt().toString());
-                replyData.put("formattedDate", formatDate(reply.getCreatedAt()));
-                replyData.put("parentId", reply.getParentComment() != null ? reply.getParentComment().getId() : null);
-
-                if (reply.getRecipient() != null) {
-                    replyData.put("hasRecipient", true);
-                    replyData.put("recipientId", reply.getRecipient().getHashId());
-                    replyData.put("recipientName", reply.getRecipient().getNameuse());
-                }
-
-                Map<String, Object> replyAuthorData = new HashMap<>();
-                if (reply.getUser() != null) {
-                    if (hasOnlySuperAccess) {
-                        replyAuthorData.put("id", reply.getUser().getId());
-                        replyAuthorData.put("username", reply.getUser().getUsername());
-                        replyAuthorData.put("nameuse", reply.getUser().getNameuse());
-                    } else {
-                        replyAuthorData.put("id", 0);
-                        replyAuthorData.put("username", "Пользователь");
-                        replyAuthorData.put("nameuse", reply.getUser().getNameuse());
-                    }
-                    replyAuthorData.put("online", reply.getUser().isOnline());
-                } else {
-                    replyAuthorData.put("id", null);
-                    replyAuthorData.put("username", "Удаленный пользователь");
-                    replyAuthorData.put("nameuse", "Удаленный пользователь");
-                    replyAuthorData.put("online", false);
-                }
-                replyData.put("author", replyAuthorData);
-                replyData.put("isSuperUser", hasOnlySuperAccess);
-
+            Map<String, Object> replyData = convertPersonalCommentToMapVac(reply, currentUser, authentication);
+            if (replyData != null) {
                 repliesData.add(replyData);
             }
         }
@@ -359,14 +321,17 @@ public class LoadPaginationCommentPostVac extends BasePostController {
             }
 
             // Установка получателя комментария (recipient)
-            if (user.getId().equals(vacancy.getUser().getId())) {
-                if (commentPersonalVac.getParentComment() != null) {
-                    commentPersonalVac.setRecipient(commentPersonalVac.getParentComment().getUser());
-                } else {
-                    commentPersonalVac.setRecipient(null);
-                }
+            if (commentPersonalVac.getParentComment() != null) {
+                // Ответ в ветке — получатель = автор родительского комментария
+                commentPersonalVac.setRecipient(commentPersonalVac.getParentComment().getUser());
             } else {
-                commentPersonalVac.setRecipient(vacancy.getUser());
+                // Корневой комментарий — получатель = владелец поста
+                // (если сам владелец пишет корневой комментарий — recipient = null)
+                if (user.getId().equals(vacancy.getUser().getId())) {
+                    commentPersonalVac.setRecipient(null);
+                } else {
+                    commentPersonalVac.setRecipient(vacancy.getUser());
+                }
             }
 
             commentRepoVacPersonal.save(commentPersonalVac);
@@ -459,7 +424,7 @@ public class LoadPaginationCommentPostVac extends BasePostController {
             Authentication authentication,
             Model model
     ) {
-        log.debug("Запрос на удаление ветки комментариев с корнем ID: {} у вакансии {}", commentPersonalVacId, hashId);
+        log.info("Запрос на удаление ветки комментариев с корнем ID: {} у вакансии {}", commentPersonalVacId, hashId);
 
         if (hasSuperAccess(authentication)) {
             commentRepoVacPersonal.findById(commentPersonalVacId)

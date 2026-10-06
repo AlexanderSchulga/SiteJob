@@ -337,28 +337,28 @@ public class RefControllerVac extends BasePostController {
         return "postidviewsvac";
     }
 
-    /**
-     * API-эндпоинт для отметки сообщений как прочитанных в рамках вакансии.
-     * Помечает все сообщения пользователя как прочитанные.
-     *
-     * @param postId         идентификатор вакансии
-     * @param authentication данные аутентификации пользователя
-     * @return HTTP-ответ с кодом 200 в случае успеха, иначе 500
-     */
-    @Transactional
-    @PostMapping("/api/messages/vac/{postId}/markAsRead")
-    @ResponseBody
-    public ResponseEntity<?> markMessagesAsRead(@PathVariable Long postId, Authentication authentication) {
-        log.info("Запрос на отметку сообщений как прочитанных: postId={}", postId);
-
-        try {
-            User currentUser = (User) authentication.getPrincipal();
-            commentRepoVacPersonal.markMessagesAsRead(postId, currentUser.getId());
-            log.info("Сообщения отмечены как прочитанные: postId={}", postId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            log.error("Ошибка при отметке сообщений как прочитанных: postId={}, errorType: {}", postId, e.getClass().getSimpleName(), e);
-            return ResponseEntity.status(500).build();
-        }
-    }
+//    /**
+//     * API-эндпоинт для отметки сообщений как прочитанных в рамках вакансии.
+//     * Помечает все сообщения пользователя как прочитанные.
+//     *
+//     * @param postId         идентификатор вакансии
+//     * @param authentication данные аутентификации пользователя
+//     * @return HTTP-ответ с кодом 200 в случае успеха, иначе 500
+//     */
+//    @Transactional
+//    @PostMapping("/api/messages/vac/{postId}/markAsRead")
+//    @ResponseBody
+//    public ResponseEntity<?> markMessagesAsRead(@PathVariable Long postId, Authentication authentication) {
+//        log.info("Запрос на отметку сообщений как прочитанных: postId={}", postId);
+//
+//        try {
+//            User currentUser = (User) authentication.getPrincipal();
+//            commentRepoVacPersonal.markMessagesAsRead(postId, currentUser.getId());
+//            log.info("Сообщения отмечены как прочитанные: postId={}", postId);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            log.error("Ошибка при отметке сообщений как прочитанных: postId={}, errorType: {}", postId, e.getClass().getSimpleName(), e);
+//            return ResponseEntity.status(500).build();
+//        }
+//    }
 }

@@ -9,6 +9,7 @@ import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostControll
 import jobforsite.sitejob.module.shared.services.cachrateservice.EnhancedRateLimitService;
 import jobforsite.sitejob.module.shared.services.cachrateservice.RateLimitService;
 import jobforsite.sitejob.module.users.model.User;
+import jobforsite.sitejob.module.vacancy.model.CommentPersonalVac;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -60,6 +61,10 @@ public class LoadPaginationCommentPost extends BasePostController {
             @RequestParam(defaultValue = "3") int size,
             Authentication authentication) {
 
+        // Логируем начало обработки запроса пагинации (без личных данных)
+        log.debug("Запрос на загрузку комментариев к товарам с hashId: {}, страница: {}, размер: {}", hashId, page, size);
+
+
         // Неавторизованные запросы
         if (authentication == null || !authentication.isAuthenticated()) {
             log.warn("Попытка загрузки личных комментариев без авторизации, hashId: {}", hashId);
@@ -83,8 +88,12 @@ public class LoadPaginationCommentPost extends BasePostController {
             if (!hasAdminAccess && !isOwner && (post.isBlocked() || post.isArchived() || post.isModeration())) {
                 log.warn("Запрос комментариев к недоступному посту, hashId: {}, причина: blocked={}, archived={}, moderation={}",
                         hashId, post.isBlocked(), post.isArchived(), post.isModeration());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(Map.of("status", "error", "error", "post_unavailable", "message", "Пост недоступен для просмотра", "redirect", "/"));
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("status", "error");
+                errorResponse.put("error", "post_unavailable");
+                errorResponse.put("message", "Пост недоступен для просмотра");
+                errorResponse.put("redirect", "/");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
             }
 
             Long postId = post.getId();
@@ -94,13 +103,19 @@ public class LoadPaginationCommentPost extends BasePostController {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
             Slice<CommentPersonal> commentsSlice;
 
-            // Логика видимости комментариев в зависимости от роли
+            // Разграничение доступа к комментариям в зависимости от роли пользователя
             if (hasSuperAccess) {
+                // SUPER и ADMIN видят ВСЕ личные комментарии
                 commentsSlice = commentRepoPersonal.findSliceByPostIdAndParentCommentIsNull(postId, pageable);
-            } else if (isOwner) {
+                log.debug("SUPER/ADMIN запросил все комментарии к товарам ID: {}", postId);
+            } else if (currentUser.getId().equals(post.getUser().getId())) {
+                // Автор поста видит ВСЕ личные комментарии к своему посту
                 commentsSlice = commentRepoPersonal.findSliceByPostIdAndParentCommentIsNull(postId, pageable);
+                log.debug("Владелец поста запросил все комментарии к своему товару ID: {}", postId);
             } else {
+                // Обычные пользователи видят ТОЛЬКО свои комментарии и ответы на них
                 commentsSlice = commentRepoPersonal.findVisibleCommentsSliceForUser(postId, currentUser.getId(), pageable);
+                log.debug("Обычный пользователь запросил только свои комментарии к товару ID: {}", postId);
             }
 
             // Конвертация комментариев в DTO
@@ -112,22 +127,24 @@ public class LoadPaginationCommentPost extends BasePostController {
                 }
             }
 
-            log.info("Загружена страница личных комментариев: hashId={}, page={}, size={}, commentsCount={}, hasMore={}",
-                    hashId, page, size, commentsData.size(), commentsSlice.hasNext());
+            // Формирование успешного ответа
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "Комментарии успешно загружены");
+            response.put("comments", commentsData);
+            response.put("hasMore", commentsSlice.hasNext());
+            response.put("currentPage", page);
+            response.put("isSuperUser", hasOnlySuperAccess);
 
-            return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "message", "Комментарии успешно загружены",
-                    "comments", commentsData,
-                    "hasMore", commentsSlice.hasNext(),
-                    "currentPage", page,
-                    "isSuperUser", hasOnlySuperAccess
-            ));
+            log.info("Успешно загружено {} комментариев, hasMore: {}", commentsData.size(), commentsSlice.hasNext());
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.warn("Ошибка при загрузке личных комментариев: hashId={}, page={}, errorType={}", hashId, page, e.getClass().getSimpleName(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("status", "error", "message", "Ошибка при загрузке комментариев"));
+            log.info("Ошибка при загрузке комментариев для hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("message", "Ошибка при загрузке комментариев: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
@@ -170,13 +187,19 @@ public class LoadPaginationCommentPost extends BasePostController {
         commentData.put("formattedDate", formatDate(comment.getCreatedAt()));
         commentData.put("parentId", comment.getParentComment() != null ? comment.getParentComment().getId() : null);
 
-        // Получатель
+        // Информация о получателе комментария
         if (comment.getRecipient() != null) {
             commentData.put("hasRecipient", true);
             commentData.put("recipientId", comment.getRecipient().getHashId());
             commentData.put("recipientName", comment.getRecipient().getNameuse());
+        } else if (comment.getParentComment() != null && comment.getParentComment().getUser() != null) {
+            // Fallback: адресат — автор родительского комментария
+            commentData.put("hasRecipient", true);
+            commentData.put("recipientId", comment.getParentComment().getUser().getHashId());
+            commentData.put("recipientName", comment.getParentComment().getUser().getNameuse());
         } else {
             commentData.put("hasRecipient", false);
+            commentData.put("recipientName", null);
         }
 
         commentData.put("postId", comment.getPost().getId());
@@ -206,58 +229,18 @@ public class LoadPaginationCommentPost extends BasePostController {
         commentData.put("isSuperAdminUser", hasSuperAccess);
         commentData.put("isPostOwner", currentUser.getId().equals(comment.getPost().getUser().getId()));
 
-        // Ответы на комментарий
+        // Рекурсивная загрузка ответов на комментарий (replies)
         List<Map<String, Object>> repliesData = new ArrayList<>();
         List<CommentPersonal> replies = commentRepoPersonal.findByParentCommentIdOrderByCreatedAtAsc(comment.getId());
 
         for (CommentPersonal reply : replies) {
-            boolean canSeeReply = hasSuperAccess ||
-                    currentUser.getId().equals(comment.getPost().getUser().getId()) ||
-                    currentUser.getId().equals(reply.getUser().getId()) ||
-                    (reply.getRecipient() != null && currentUser.getId().equals(reply.getRecipient().getId()));
-
-            if (canSeeReply) {
-                Map<String, Object> replyData = new HashMap<>();
-                replyData.put("id", reply.getId());
-                replyData.put("text", reply.getText());
-                replyData.put("textEncoded", false);
-                if (hasSuperAccess) {
-                    replyData.put("originalText", reply.getText());
-                }
-                replyData.put("createdAt", reply.getCreatedAt().toString());
-                replyData.put("formattedDate", formatDate(reply.getCreatedAt()));
-                replyData.put("parentId", reply.getParentComment() != null ? reply.getParentComment().getId() : null);
-
-                if (reply.getRecipient() != null) {
-                    replyData.put("hasRecipient", true);
-                    replyData.put("recipientId", reply.getRecipient().getHashId());
-                    replyData.put("recipientName", reply.getRecipient().getNameuse());
-                }
-
-                Map<String, Object> replyAuthorData = new HashMap<>();
-                if (reply.getUser() != null) {
-                    if (hasOnlySuperAccess) {
-                        replyAuthorData.put("id", reply.getUser().getId());
-                        replyAuthorData.put("username", reply.getUser().getUsername());
-                        replyAuthorData.put("nameuse", reply.getUser().getNameuse());
-                    } else {
-                        replyAuthorData.put("id", 0);
-                        replyAuthorData.put("username", "Пользователь");
-                        replyAuthorData.put("nameuse", reply.getUser().getNameuse());
-                    }
-                    replyAuthorData.put("online", reply.getUser().isOnline());
-                } else {
-                    replyAuthorData.put("id", null);
-                    replyAuthorData.put("username", "Удаленный пользователь");
-                    replyAuthorData.put("nameuse", "Удаленный пользователь");
-                    replyAuthorData.put("online", false);
-                }
-                replyData.put("author", replyAuthorData);
-                replyData.put("isSuperUser", hasOnlySuperAccess);
+            Map<String, Object> replyData = convertPersonalCommentToMap(reply, currentUser, authentication);
+            if (replyData != null) {
                 repliesData.add(replyData);
             }
         }
         commentData.put("replies", repliesData);
+
         return commentData;
     }
 
@@ -304,9 +287,13 @@ public class LoadPaginationCommentPost extends BasePostController {
 
             // Проверка доступности поста
             if (post.isBlocked() || post.isArchived() || post.isModeration()) {
-                log.warn("Попытка добавления комментария в недоступный пост, hashId: {}", hashId);
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(Map.of("error", "post_unavailable", "message", "Пост недоступен для просмотра", "redirect", "/"));
+                log.warn("Попытка добавить комментарий к недоступной товара. hashId: {}, заблокирована: {}, архивирована: {}, на модерации: {}",
+                        hashId, post.isBlocked(), post.isArchived(), post.isModeration());
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("error", "post_unavailable");
+                errorResponse.put("message", "Пост недоступен для просмотра");
+                errorResponse.put("redirect", "/");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
             }
 
             User user = (User) authentication.getPrincipal();
@@ -325,15 +312,18 @@ public class LoadPaginationCommentPost extends BasePostController {
                 }
             }
 
-            // Определение получателя комментария
-            if (user.getId().equals(post.getUser().getId())) {
-                if (commentPersonal.getParentComment() != null) {
-                    commentPersonal.setRecipient(commentPersonal.getParentComment().getUser());
-                } else {
-                    commentPersonal.setRecipient(null);
-                }
+            // Установка получателя комментария (recipient)
+            if (commentPersonal.getParentComment() != null) {
+                // Ответ в ветке — получатель = автор родительского комментария
+                commentPersonal.setRecipient(commentPersonal.getParentComment().getUser());
             } else {
-                commentPersonal.setRecipient(post.getUser());
+                // Корневой комментарий — получатель = владелец поста
+                // (если сам владелец пишет корневой комментарий — recipient = null)
+                if (user.getId().equals(post.getUser().getId())) {
+                    commentPersonal.setRecipient(null);
+                } else {
+                    commentPersonal.setRecipient(post.getUser());
+                }
             }
 
             commentRepoPersonal.save(commentPersonal);
@@ -419,6 +409,8 @@ public class LoadPaginationCommentPost extends BasePostController {
             @PathVariable Long commentPersonalId,
             Authentication authentication,
             Model model) {
+
+        log.info("Запрос на удаление ветки комментариев с корнем ID: {} у вакансии {}", commentPersonalId, hashId);
 
         if (hasSuperAccess(authentication)) {
             commentRepoPersonal.findById(commentPersonalId)

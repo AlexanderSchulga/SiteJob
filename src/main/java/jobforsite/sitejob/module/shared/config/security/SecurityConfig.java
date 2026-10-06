@@ -143,7 +143,11 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Статические ресурсы
-                        .requestMatchers("/webfonts/**", "/css/**", "/js/**", "/images/**", "/robots.txt", "/sitemap.xml").permitAll()
+                        .requestMatchers("/webfonts/**", "/css/**", "/js/**", "/images/**", "/robots.txt", "/sitemap.xml",
+                                "/favicon.ico", "/favicon-16x16.png", "/favicon-32x32.png",
+                                "/web-app-manifest-192x192.png",
+                                "/web-app-manifest-512x512.png",
+                                "/apple-touch-icon.png", "/site.webmanifest").permitAll()
 
                         // Административные эндпоинты (только SUPER-роль)
                         .requestMatchers("/admin-create-user/**").hasRole("SUPER")
@@ -331,6 +335,12 @@ public class SecurityConfig {
                 "/webfonts/**",
                 "/uploads/**",
                 "/favicon.ico",
+                "/favicon-16x16.png",
+                "/favicon-32x32.png",
+                "/web-app-manifest-192x192.png",
+                "/web-app-manifest-512x512.png",
+                "/apple-touch-icon.png",
+                "/site.webmanifest",
                 "/robots.txt",
                 "/sitemap.xml"
         );

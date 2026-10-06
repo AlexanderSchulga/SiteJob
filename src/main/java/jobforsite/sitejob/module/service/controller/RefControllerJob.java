@@ -281,26 +281,26 @@ public class RefControllerJob extends BasePostController {
         return "postidviewsjob";
     }
 
-    /**
-     * API-метод для отметки сообщений как прочитанных.
-     *
-     * @param postId         идентификатор поста
-     * @param authentication данные аутентификации пользователя
-     * @return HTTP-ответ 200 OK при успехе, 500 при ошибке
-     */
-    @Transactional
-    @PostMapping("/api/messages/job/{postId}/markAsRead")
-    @ResponseBody
-    public ResponseEntity<?> markMessagesAsRead(@PathVariable Long postId, Authentication authentication) {
-        log.debug("POST /api/messages/job/{}/markAsRead - marking messages as read", postId);
-        try {
-            User currentUser = (User) authentication.getPrincipal();
-            commentRepoJobPersonal.markMessagesAsRead(postId, currentUser.getId());
-            log.debug("Messages marked as read for postId: {}", postId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            log.error("Error marking messages as read for postId {}: errorType={}", postId, e.getClass().getSimpleName(), e);
-            return ResponseEntity.status(500).build();
-        }
-    }
+//    /**
+//     * API-метод для отметки сообщений как прочитанных.
+//     *
+//     * @param postId         идентификатор поста
+//     * @param authentication данные аутентификации пользователя
+//     * @return HTTP-ответ 200 OK при успехе, 500 при ошибке
+//     */
+//    @Transactional
+//    @PostMapping("/api/messages/job/{postId}/markAsRead")
+//    @ResponseBody
+//    public ResponseEntity<?> markMessagesAsRead(@PathVariable Long postId, Authentication authentication) {
+//        log.debug("POST /api/messages/job/{}/markAsRead - marking messages as read", postId);
+//        try {
+//            User currentUser = (User) authentication.getPrincipal();
+//            commentRepoJobPersonal.markMessagesAsRead(postId, currentUser.getId());
+//            log.debug("Messages marked as read for postId: {}", postId);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            log.error("Error marking messages as read for postId {}: errorType={}", postId, e.getClass().getSimpleName(), e);
+//            return ResponseEntity.status(500).build();
+//        }
+//    }
 }

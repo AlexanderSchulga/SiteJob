@@ -17,6 +17,12 @@ import java.util.List;
 public interface CommentRepositoryVac extends JpaRepository<CommentVacancy, Long> {
 
     /**
+     * Загружает ВСЕ комментарии вакансии (и корневые, и все уровни вложенности).
+     * Используется для построения полного дерева комментариев на клиенте.
+     */
+    List<CommentVacancy> findAllByVacancyIdOrderByCreatedAtAsc(Long vacancyId);
+
+    /**
      * Возвращает срез (slice) комментариев по идентификатору вакансии с пагинацией.
      * Slice не содержит общее количество страниц, что эффективнее для больших нагрузок.
      *

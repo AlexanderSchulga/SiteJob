@@ -335,36 +335,22 @@ function restoreExpandedBranchesState(expandedBranches) {
     });
 }
 
+
 // Умное обновление комментариев
 async function smartRefreshComments() {
     if (!window.commentsPagination) return;
 
-    try {
-        const currentPage = window.commentsPagination.currentPage;
+    const pagination = window.commentsPagination;
+    const pagesToLoad = Math.max(pagination.currentPage + 1, 1);
 
-        const container = document.getElementById(window.commentsPagination.containerId);
-        if (container) {
-            container.innerHTML = '';
-        }
+    // Полный сброс и загрузка первой страницы
+    await pagination.reload();
 
-        window.commentsPagination.loadedIds.clear();
-        window.commentsPagination.currentPage = 0;
-        window.commentsPagination.hasMore = true;
-
-        for (let page = 0; page <= currentPage; page++) {
-            if (page === currentPage && !window.commentsPagination.hasMore) {
-                break;
-            }
-
-            await window.commentsPagination.loadMore(page === 0);
-
-            if (!window.commentsPagination.hasMore) {
-                break;
-            }
-        }
-
-    } catch (error) {
-
+    // Догружаем остальные страницы
+    for (let i = 1; i < pagesToLoad; i++) {
+        if (!pagination.hasMore) break;
+        pagination.isLoading = false; // на всякий случай
+        await pagination.loadMore(false);
     }
 }
 

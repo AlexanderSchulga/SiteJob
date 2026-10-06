@@ -9,6 +9,7 @@ import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostControll
 import jobforsite.sitejob.module.shared.services.cachrateservice.EnhancedRateLimitService;
 import jobforsite.sitejob.module.shared.services.cachrateservice.RateLimitService;
 import jobforsite.sitejob.module.users.model.User;
+import jobforsite.sitejob.module.vacancy.model.CommentPersonalVac;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -92,16 +93,6 @@ public class LoadPaginationCommentPostJob extends BasePostController {
             }
 
             Long postId = post.getId();
-
-            // Повторная проверка аутентификации (на всякий случай)
-            if (authentication == null || !authentication.isAuthenticated()) {
-                log.debug("Аутентификация потеряна при загрузке комментариев, hashId: {}", hashId);
-                Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("status", "error");
-                errorResponse.put("message", "Требуется авторизация");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-            }
-
             boolean hasSuperAccess = hasSuperAccess(authentication);
             boolean hasOnlySuperAccess = hasOnlySuperAccess(authentication);
 
@@ -145,7 +136,7 @@ public class LoadPaginationCommentPostJob extends BasePostController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке комментариев для hashId={}: errorType={}", hashId, e.getClass().getSimpleName(), e);
+            log.info("Ошибка при загрузке комментариев для hashId={}: errorType={}", hashId, e.getClass().getSimpleName(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
             errorResponse.put("message", "Ошибка при загрузке комментариев: " + e.getMessage());
@@ -167,8 +158,6 @@ public class LoadPaginationCommentPostJob extends BasePostController {
         boolean hasOnlySuperAccess = hasOnlySuperAccess(authentication);
         boolean hasSuperAccess = hasSuperAccess(authentication);
 
-        Map<String, Object> commentData = new HashMap<>();
-
         // Проверка видимости комментария для текущего пользователя
         boolean canSeeComment = hasSuperAccess ||
                 currentUser.getId().equals(comment.getPostjob().getUser().getId()) ||
@@ -181,7 +170,9 @@ public class LoadPaginationCommentPostJob extends BasePostController {
         }
 
         // Основные поля комментария
+        Map<String, Object> commentData = new HashMap<>();
         commentData.put("id", comment.getId());
+
         String originalText = comment.getText();
         commentData.put("text", originalText);
         commentData.put("textEncoded", false);
@@ -194,13 +185,19 @@ public class LoadPaginationCommentPostJob extends BasePostController {
         commentData.put("formattedDate", formatDate(comment.getCreatedAt()));
         commentData.put("parentId", comment.getParentComment() != null ? comment.getParentComment().getId() : null);
 
-        // Информация о получателе
+        // Информация о получателе комментария
         if (comment.getRecipient() != null) {
             commentData.put("hasRecipient", true);
             commentData.put("recipientId", comment.getRecipient().getHashId());
             commentData.put("recipientName", comment.getRecipient().getNameuse());
+        } else if (comment.getParentComment() != null && comment.getParentComment().getUser() != null) {
+            // Fallback: адресат — автор родительского комментария
+            commentData.put("hasRecipient", true);
+            commentData.put("recipientId", comment.getParentComment().getUser().getHashId());
+            commentData.put("recipientName", comment.getParentComment().getUser().getNameuse());
         } else {
             commentData.put("hasRecipient", false);
+            commentData.put("recipientName", null);
         }
 
         // Данные поста (для отладки)
@@ -231,58 +228,13 @@ public class LoadPaginationCommentPostJob extends BasePostController {
         commentData.put("isSuperAdminUser", hasSuperAccess);
         commentData.put("isPostOwner", currentUser.getId().equals(comment.getPostjob().getUser().getId()));
 
-        // Рекурсивная обработка ответов (replies)
+        // Рекурсивная загрузка ответов на комментарий (replies)
         List<Map<String, Object>> repliesData = new ArrayList<>();
         List<CommentPersonalJob> replies = commentRepoJobPersonal.findByParentCommentIdOrderByCreatedAtAsc(comment.getId());
 
         for (CommentPersonalJob reply : replies) {
-            boolean canSeeReply = hasSuperAccess ||
-                    currentUser.getId().equals(comment.getPostjob().getUser().getId()) ||
-                    currentUser.getId().equals(reply.getUser().getId()) ||
-                    (reply.getRecipient() != null && currentUser.getId().equals(reply.getRecipient().getId()));
-
-            if (canSeeReply) {
-                Map<String, Object> replyData = new HashMap<>();
-                replyData.put("id", reply.getId());
-                String replyOriginalText = reply.getText();
-                replyData.put("text", replyOriginalText);
-                replyData.put("textEncoded", false);
-
-                if (hasSuperAccess) {
-                    replyData.put("originalText", replyOriginalText);
-                }
-
-                replyData.put("createdAt", reply.getCreatedAt().toString());
-                replyData.put("formattedDate", formatDate(reply.getCreatedAt()));
-                replyData.put("parentId", reply.getParentComment() != null ? reply.getParentComment().getId() : null);
-
-                if (reply.getRecipient() != null) {
-                    replyData.put("hasRecipient", true);
-                    replyData.put("recipientId", reply.getRecipient().getHashId());
-                    replyData.put("recipientName", reply.getRecipient().getNameuse());
-                }
-
-                Map<String, Object> replyAuthorData = new HashMap<>();
-                if (reply.getUser() != null) {
-                    if (hasOnlySuperAccess) {
-                        replyAuthorData.put("id", reply.getUser().getId());
-                        replyAuthorData.put("username", reply.getUser().getUsername());
-                        replyAuthorData.put("nameuse", reply.getUser().getNameuse());
-                    } else {
-                        replyAuthorData.put("id", 0);
-                        replyAuthorData.put("username", "Пользователь");
-                        replyAuthorData.put("nameuse", reply.getUser().getNameuse());
-                    }
-                    replyAuthorData.put("online", reply.getUser().isOnline());
-                } else {
-                    replyAuthorData.put("id", null);
-                    replyAuthorData.put("username", "Удаленный пользователь");
-                    replyAuthorData.put("nameuse", "Удаленный пользователь");
-                    replyAuthorData.put("online", false);
-                }
-                replyData.put("author", replyAuthorData);
-                replyData.put("isSuperUser", hasOnlySuperAccess);
-
+            Map<String, Object> replyData = convertPersonalCommentToMapJob(reply, currentUser, authentication);
+            if (replyData != null) {
                 repliesData.add(replyData);
             }
         }
@@ -312,6 +264,7 @@ public class LoadPaginationCommentPostJob extends BasePostController {
             HttpServletRequest request
     ) {
         String clientIp = getClientIp(request);
+        log.debug("Запрос на добавление комментария к услуги {} с IP: {}", hashId, clientIp);
 
         if (authentication == null || !authentication.isAuthenticated()) {
             log.warn("Попытка добавления комментария без аутентификации, IP: {}", clientIp);
@@ -360,17 +313,18 @@ public class LoadPaginationCommentPostJob extends BasePostController {
                 }
             }
 
-            // Определение получателя комментария
-            if (user.getId().equals(postj.getUser().getId())) {
-                // Автор поста отвечает — получатель — автор родительского комментария
-                if (commentPersonalJob.getParentComment() != null) {
-                    commentPersonalJob.setRecipient(commentPersonalJob.getParentComment().getUser());
-                } else {
-                    commentPersonalJob.setRecipient(null);
-                }
+            // Установка получателя комментария (recipient)
+            if (commentPersonalJob.getParentComment() != null) {
+                // Ответ в ветке — получатель = автор родительского комментария
+                commentPersonalJob.setRecipient(commentPersonalJob.getParentComment().getUser());
             } else {
-                // Обычный пользователь комментирует — получатель — автор поста
-                commentPersonalJob.setRecipient(postj.getUser());
+                // Корневой комментарий — получатель = владелец поста
+                // (если сам владелец пишет корневой комментарий — recipient = null)
+                if (user.getId().equals(postj.getUser().getId())) {
+                    commentPersonalJob.setRecipient(null);
+                } else {
+                    commentPersonalJob.setRecipient(postj.getUser());
+                }
             }
 
             commentRepoJobPersonal.save(commentPersonalJob);

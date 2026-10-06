@@ -662,7 +662,7 @@ public class MessageTicketsCacheAndLoadTest {
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(testUser, null, testUser.getAuthorities());
 
-        // Тестовые hashId (замените на реальные из базы)
+        // Тестовые hashId (заменить на реальные из базы)
         String[] testHashIds = {"aa279c1ed9d34f308a3c48d2333703da", "testhash456", "testhash789"};
         String[] redirectTypes = {"post", "service", "vacancy"};
 

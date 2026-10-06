@@ -283,65 +283,93 @@ class LoadMoreReviewsPagination {
 
         if (review.replies && review.replies.length > 0) {
             reviewHtml += `<div class="review-replies ms-4 mt-3">`;
-
-            review.replies.forEach(reply => {
-                reviewHtml += `
-                    <div class="review-reply-card card mb-2" id="reply-${reply.id}">
-                        <div class="card-body py-3">
-                            <div class="review-header d-flex justify-content-between align-items-start mb-2">
-                                <div class="d-flex align-items-center">
-                                    <div class="user-avatar-sm me-3">
-                                        <i class="fas fa-user-circle fa-lg ${reply.author.isDeleted ? 'text-muted' : 'text-success'}"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="card-subtitle mb-1 fw-bold ${reply.author.isDeleted ? 'text-muted' : 'text-success'}">
-                                            ${this.escapeHtml(reply.author.displayName)}
-                                        </h6>
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i>
-                                            ${reply.formattedDate}
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <p class="card-text mb-2">${this.escapeHtml(reply.text)}</p>
-                            
-                            <div class="review-actions">
-                `;
-
-                if (reply.canReply && this.currentUserId) {
-                    reviewHtml += `
-                        <button class="btn btn-sm btn-outline-primary reply-btn"
-                                data-review-id="${review.id}"
-                                data-nameuse="${this.escapeHtml(reply.author.displayName)}"
-                                data-review-text="${this.escapeHtml(reply.text)}">
-                            <i class="fas fa-reply me-1"></i> Ответить
-                        </button>
-                    `;
-                }
-
-                if (this.hasSuperAccess) {
-                    reviewHtml += `
-                        <form action="/page_one/reviews/${this.reviewedUserHashId}/reviecom/${reply.id}/delete"
-                              method="post" class="d-inline-block ms-2 delete-form"
-                              data-delete-message="Вы уверены, что хотите удалить этот ответ?">
-                            <input type="hidden" name="_csrf" value="${this.csrfToken}"/>
-                            <button type="button" class="btn btn-sm btn-danger delete-btn">
-                                <i class="fas fa-trash me-1"></i> Удалить
-                            </button>
-                        </form>
-                    `;
-                }
-
-                reviewHtml += `</div></div></div>`;
-            });
-
+            reviewHtml += this.renderReplies(review.replies, 0);
             reviewHtml += `</div>`;
         }
 
         reviewDiv.innerHTML = reviewHtml;
         return reviewDiv;
+    }
+
+    renderReplies(nodes, level) {
+        let html = '';
+        const maxIndent = 4;
+        const marginLeft = Math.min(level, maxIndent) * 24;
+
+        nodes.forEach(node => {
+            html += `<div class="reply-node" style="margin-left:${marginLeft}px;">`;
+            html += this.createReplyElement(node);
+            if (node.replies?.length) {
+                html += this.renderReplies(node.replies, level + 1);
+            }
+            html += `</div>`;
+        });
+
+        return html;
+    }
+
+    createReplyElement(reply) {
+        const authorName = reply.author.displayName || 'Пользователь';
+        const recipientName = reply.recipientName || null;
+        const recipientHtml = recipientName
+            ? `<span class="reply-recipient text-muted ms-1">
+               <i class="fas fa-arrow-right mx-1" style="font-size:0.75rem;"></i>
+               <span class="fw-semibold">${this.escapeHtml(recipientName)}</span>
+           </span>`
+            : '';
+
+        let replyHtml = `
+        <div class="review-reply-card card mb-2" id="reply-${reply.id}">
+            <div class="card-body py-3">
+                <div class="review-header d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex align-items-center">
+                        <div class="user-avatar-sm me-3">
+                            <i class="fas fa-user-circle fa-lg ${reply.author.isDeleted ? 'text-muted' : 'text-success'}"></i>
+                        </div>
+                        <div>
+                            <h6 class="card-subtitle mb-1 fw-bold ${reply.author.isDeleted ? 'text-muted' : 'text-success'}">
+                                ${this.escapeHtml(authorName)}
+                                ${recipientHtml}
+                            </h6>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                ${reply.formattedDate}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="card-text mb-2">${this.escapeHtml(reply.text)}</p>
+
+                <div class="review-actions">
+    `;
+
+        if (reply.canReply && this.currentUserId) {
+            replyHtml += `
+            <button class="btn btn-sm btn-outline-primary reply-btn"
+                    data-review-id="${reply.id}"
+                    data-nameuse="${this.escapeHtml(authorName)}"
+                    data-review-text="${this.escapeHtml(reply.text)}">
+                <i class="fas fa-reply me-1"></i> Ответить
+            </button>
+        `;
+        }
+
+        if (this.hasSuperAccess) {
+            replyHtml += `
+            <form action="/page_one/reviews/${this.reviewedUserHashId}/reviecom/${reply.id}/delete"
+                  method="post" class="d-inline-block ms-2 delete-form"
+                  data-delete-message="Вы уверены, что хотите удалить этот ответ?">
+                <input type="hidden" name="_csrf" value="${this.csrfToken}"/>
+                <button type="button" class="btn btn-sm btn-danger delete-btn">
+                    <i class="fas fa-trash me-1"></i> Удалить
+                </button>
+            </form>
+        `;
+        }
+
+        replyHtml += `</div></div></div>`;
+        return replyHtml;
     }
 
     escapeHtml(text) {

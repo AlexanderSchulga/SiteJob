@@ -1422,6 +1422,20 @@ body.has-sticky-header .container-wrapper {
     border-color: #e9ecef;
 }
 
+.reply-recipient {
+    font-size: 0.85rem;
+    color: #0d6efd;
+    background: rgba(13, 110, 253, 0.08);
+    padding: 1px 6px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+}
+.reply-recipient i {
+    color: #6c757d;
+}
+
+
 
 /* Группа специфичных полей (характеристики товара) */
 .info-group-specific {
@@ -1437,3 +1451,5 @@ body.has-sticky-header .container-wrapper {
     border-color: #dee2e6;
     background: #fefefe;
 }
+
+

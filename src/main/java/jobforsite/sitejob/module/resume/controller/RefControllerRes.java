@@ -357,31 +357,31 @@ public class RefControllerRes extends BasePostController {
         return "postidviewsres";
     }
 
-    /**
-     * Отмечает все сообщения в резюме как прочитанные для текущего пользователя.
-     * <p>
-     * Используется для приватных комментариев/сообщений. Обновляет статус прочтения
-     * в базе данных и возвращает успешный ответ.
-     * </p>
-     *
-     * @param resId          идентификатор резюме (поста)
-     * @param authentication объект аутентификации Spring Security
-     * @return ResponseEntity с HTTP-статусом 200 (OK) при успехе, 500 при ошибке
-     */
-    @Transactional
-    @PostMapping("/api/messages/res/{resId}/markAsRead")
-    @ResponseBody
-    public ResponseEntity<?> markMessagesAsRead(@PathVariable Long resId, Authentication authentication) {
-        log.debug("Запрос на отметку сообщений как прочитанных для резюме id: {}", resId);
-
-        try {
-            User currentUser = (User) authentication.getPrincipal();
-            commentRepoResPersonal.markMessagesAsRead(resId, currentUser.getId());
-            log.debug("Сообщения для резюме id: {} отмечены как прочитанные", resId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            log.error("Ошибка при отметке сообщений как прочитанных для резюме id: {}, errorType: {}", resId, e.getClass().getSimpleName(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//    /**
+//     * Отмечает все сообщения в резюме как прочитанные для текущего пользователя.
+//     * <p>
+//     * Используется для приватных комментариев/сообщений. Обновляет статус прочтения
+//     * в базе данных и возвращает успешный ответ.
+//     * </p>
+//     *
+//     * @param resId          идентификатор резюме (поста)
+//     * @param authentication объект аутентификации Spring Security
+//     * @return ResponseEntity с HTTP-статусом 200 (OK) при успехе, 500 при ошибке
+//     */
+//    @Transactional
+//    @PostMapping("/api/messages/res/{resId}/markAsRead")
+//    @ResponseBody
+//    public ResponseEntity<?> markMessagesAsRead(@PathVariable Long resId, Authentication authentication) {
+//        log.debug("Запрос на отметку сообщений как прочитанных для резюме id: {}", resId);
+//
+//        try {
+//            User currentUser = (User) authentication.getPrincipal();
+//            commentRepoResPersonal.markMessagesAsRead(resId, currentUser.getId());
+//            log.debug("Сообщения для резюме id: {} отмечены как прочитанные", resId);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            log.error("Ошибка при отметке сообщений как прочитанных для резюме id: {}, errorType: {}", resId, e.getClass().getSimpleName(), e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 }

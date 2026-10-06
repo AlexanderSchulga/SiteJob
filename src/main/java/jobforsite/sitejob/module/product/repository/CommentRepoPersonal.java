@@ -1,6 +1,7 @@
 package jobforsite.sitejob.module.product.repository;
 
 import jobforsite.sitejob.module.product.model.CommentPersonal;
+import jobforsite.sitejob.module.vacancy.model.CommentPersonalVac;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;

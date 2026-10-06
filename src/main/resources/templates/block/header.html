@@ -3,8 +3,12 @@
     <link rel="stylesheet" th:href="@{/css/styleheader.css}">
     <link rel="stylesheet" th:href="@{/css/sidebar.css}">
     <link rel="stylesheet" th:href="@{/css/all.min.css}">
-    <link rel="icon" type="image/png" th:href="@{/favicon.png}">
-    <link rel="shortcut icon" type="image/png" th:href="@{/favicon.png}">
+    <link rel="icon" th:href="@{/favicon.ico}" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/favicon-32x32.png}" />
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/favicon-16x16.png}" />
+    <link rel="apple-touch-icon" sizes="180x180" th:href="@{/apple-touch-icon.png}" />
+    <link rel="manifest" th:href="@{/site.webmanifest}" />
+    <meta name="application-name" content="Biranaku" />
     <meta name="user-hash-id" th:content="${#authentication.principal.hashId}" sec:authorize="isAuthenticated()">
 
   </head>

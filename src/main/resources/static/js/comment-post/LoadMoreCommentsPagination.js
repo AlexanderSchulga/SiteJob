@@ -269,6 +269,30 @@ class LoadMoreCommentsPagination {
         await this.loadMore(true);
     }
 
+    /**
+     * Полный сброс состояния и загрузка первой страницы.
+     * Используется после добавления нового комментария, чтобы
+     * перерисовать дерево с учётом новых данных.
+     */
+    async reload() {
+        this.currentPage = 0;
+        this.hasMore = true;
+        this.isLoading = false;
+        this.loadedIds.clear();
+
+        const container = document.getElementById(this.containerId);
+        if (container) container.innerHTML = '';
+
+        const buttonContainer = document.getElementById(this.buttonContainerId);
+        if (buttonContainer) buttonContainer.style.display = 'block';
+
+        this.hideAllLoadedMessage();
+        this.hideNoCommentsMessage();
+
+        await this.loadMore(true);
+    }
+
+
     async loadMore(isInitial = false) {
         if (this.isLoading) return;
         if (!this.hasMore && !isInitial) return;
@@ -365,22 +389,23 @@ class LoadMoreCommentsPagination {
         const isSuperUser = comment.isSuperUser || this.hasOnlySuperAccess;
         const isPostOwner = comment.isPostOwner || false;
         const isOnline = comment.author.online || false;
+        const hasAuthor = comment.author && comment.author.nameuse !== 'Удаленный пользователь';
 
-        // Определяем, показывать ли ID автора
         const showAuthorId = (isSuperUser || isPostOwner) && authorId;
 
-        // HTML для статуса онлайн/офлайн
-        const onlineStatusHtml = isOnline
-            ? '<span class="status-online ms-2"><i class="fas fa-circle"></i><small>онлайн</small></span>'
-            : '<span class="status-offline ms-2"><i class="fas fa-circle"></i><small>офлайн</small></span>';
+        const onlineStatusHtml = hasAuthor
+            ? (isOnline
+                ? '<span class="status-online ms-2"><i class="fas fa-circle"></i><small>онлайн</small></span>'
+                : '<span class="status-offline ms-2"><i class="fas fa-circle"></i><small>офлайн</small></span>')
+            : '';
 
         let commentHtml = `
         <div class="comment-card private-comment mb-3">
             <div class="comment-header d-flex justify-content-between align-items-start">
                 <div>
                     <span class="comment-user fw-bold">${this.escapeHtml(authorName)}</span>
-                    ${showAuthorId ? `<small class="text-muted ms-2">ID: ${authorId}</small>` : ''}
                     ${onlineStatusHtml}
+                    ${showAuthorId ? `<small class="text-muted ms-2">ID: ${authorId}</small>` : ''}                
                     <small class="comment-date text-muted ms-2">
                         <i class="fas fa-clock me-1"></i> ${comment.formattedDate}
                     </small>
@@ -396,14 +421,13 @@ class LoadMoreCommentsPagination {
                 <p class="mb-0">${this.escapeHtml(comment.text)}</p>
             </div>
             <div class="comment-actions mt-2">
-    <button class="btn btn-sm btn-outline-primary reply-btn"
-            data-comment-id="${comment.id}"
-            data-nameuse="${this.escapeHtml(authorName)}"
-            data-comment-text="${comment.text.replace(/"/g, '&quot;')}">
-        <i class="fas fa-reply me-1"></i> Ответить
-    </button>`;
+                <button class="btn btn-sm btn-outline-primary reply-btn"
+                        data-comment-id="${comment.id}"
+                        data-nameuse="${this.escapeHtml(authorName)}"
+                        data-comment-text="${comment.text.replace(/"/g, '&quot;')}">
+                    <i class="fas fa-reply me-1"></i> Ответить
+                </button>`;
 
-        // Кнопки удаления для администраторов или владельца поста/комментария
         if (this.hasSuperAccess || this.isAdminUser) {
             const deleteUrl = this.getDeleteUrl(comment.id);
             const deleteBranchUrl = this.getDeleteBranchUrl(comment.id);
@@ -425,9 +449,7 @@ class LoadMoreCommentsPagination {
             <div class="comment-replies ms-4 mt-2" id="replies-${comment.id}" style="display: none;">`;
 
         if (comment.replies?.length > 0) {
-            comment.replies.forEach(reply => {
-                commentHtml += this.createReplyElement(reply);
-            });
+            commentHtml += this.renderReplies(comment.replies, 0);
         }
 
         commentHtml += `</div>`;
@@ -435,22 +457,54 @@ class LoadMoreCommentsPagination {
         return commentDiv;
     }
 
+    // Рекурсивно рендерит дерево ответов с отступами по уровню вложенности.
+    renderReplies(nodes, level) {
+        let html = '';
+        const maxIndent = 4;
+        const marginLeft = Math.min(level, maxIndent) * 24;
+
+        nodes.forEach(node => {
+            html += `<div class="reply-node" style="margin-left:${marginLeft}px;">`;
+            html += this.createReplyElement(node);
+            if (node.replies?.length) {
+                html += this.renderReplies(node.replies, level + 1);
+            }
+            html += `</div>`;
+        });
+
+        return html;
+    }
+
+
     createReplyElement(reply) {
         const authorName = reply.author.nameuse || 'Пользователь';
         const authorId = reply.author.id || 0;
         const isSuperUser = reply.isSuperUser || this.hasOnlySuperAccess;
         const isOnline = reply.author.online || false;
+        const hasAuthor = reply.author && reply.author.nameuse !== 'Удаленный пользователь';
 
-        const onlineStatusHtml = isOnline
-            ? '<span class="status-online ms-2"><i class="fas fa-circle"></i><small>онлайн</small></span>'
-            : '<span class="status-offline ms-2"><i class="fas fa-circle"></i><small>офлайн</small></span>';
+        // Кому адресован ответ (берём с бэкенда — там уже правильно выставлен recipient)
+        const recipientName = reply.recipientName || null;
+        const recipientHtml = recipientName
+            ? `<span class="reply-recipient text-muted ms-1">
+                   <i class="fas fa-arrow-right mx-1" style="font-size:0.75rem;"></i>
+                   <span class="fw-semibold">${this.escapeHtml(recipientName)}</span>
+               </span>`
+            : '';
+
+        const onlineStatusHtml = hasAuthor
+            ? (isOnline
+                ? '<span class="status-online ms-2"><i class="fas fa-circle"></i><small>онлайн</small></span>'
+                : '<span class="status-offline ms-2"><i class="fas fa-circle"></i><small>офлайн</small></span>')
+            : '';
 
         let replyHtml = `
         <div class="comment-card private-comment reply-comment mb-2" id="reply-${reply.id}">
             <div class="comment-header">
                 <span class="comment-user fw-bold">${this.escapeHtml(authorName)}</span>
-                ${isSuperUser && authorId ? `<small class="text-muted ms-2">ID: ${authorId}</small>` : ''}
                 ${onlineStatusHtml}
+                ${recipientHtml}
+                ${isSuperUser && authorId ? `<small class="text-muted ms-2">ID: ${authorId}</small>` : ''}
                 <small class="comment-date text-muted ms-2">
                     <i class="fas fa-clock me-1"></i> ${reply.formattedDate}
                 </small>
@@ -459,12 +513,12 @@ class LoadMoreCommentsPagination {
                 <p class="mb-0">${this.escapeHtml(reply.text)}</p>
             </div>
             <div class="comment-actions mt-2">
-    <button class="btn btn-sm btn-outline-primary reply-btn"
-            data-comment-id="${reply.parentId || reply.id}"
-            data-nameuse="${this.escapeHtml(authorName)}"
-            data-comment-text="${reply.text.replace(/"/g, '&quot;')}">
-        <i class="fas fa-reply me-1"></i> Ответить
-    </button>`;
+                <button class="btn btn-sm btn-outline-primary reply-btn"
+                        data-comment-id="${reply.id}"
+                        data-nameuse="${this.escapeHtml(authorName)}"
+                        data-comment-text="${reply.text.replace(/"/g, '&quot;')}">
+                    <i class="fas fa-reply me-1"></i> Ответить
+                </button>`;
 
         if (this.hasSuperAccess || this.isAdminUser) {
             const deleteUrl = this.getDeleteUrl(reply.id);

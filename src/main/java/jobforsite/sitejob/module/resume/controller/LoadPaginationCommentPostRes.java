@@ -9,6 +9,7 @@ import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostControll
 import jobforsite.sitejob.module.shared.services.cachrateservice.EnhancedRateLimitService;
 import jobforsite.sitejob.module.shared.services.cachrateservice.RateLimitService;
 import jobforsite.sitejob.module.users.model.User;
+import jobforsite.sitejob.module.vacancy.model.CommentPersonalVac;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +82,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
         }
 
         try {
-            // 1. Поиск резюме по hashId
+            // Поиск резюме по hashId
             Resume res = postResumeRepository.findByHashId(hashId)
                     .orElseThrow(() -> new RuntimeException("Пост не найден"));
 
@@ -91,7 +92,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
             boolean hasAdminAccess = hasSuperAccess(authentication);
             boolean isOwner = currentUser.getId().equals(res.getUser().getId());
 
-            // 2. Проверка доступности поста для текущего пользователя
+            // Проверка доступности поста для текущего пользователя
             // Для админов пропускаем проверку доступности поста
             if (!hasAdminAccess && !isOwner && (res.isBlocked() || res.isArchived() || res.isModeration())) {
                 log.warn("Попытка доступа к недоступному посту hashId: {} пользователем без прав", hashId);
@@ -105,7 +106,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
 
             Long resId = res.getId();
 
-            // 3. Повторная проверка аутентификации (дублирование для безопасности)
+            // Повторная проверка аутентификации (дублирование для безопасности)
             if (authentication == null || !authentication.isAuthenticated()) {
                 log.warn("Аутентификация потеряна при загрузке комментариев для hashId: {}", hashId);
                 Map<String, Object> errorResponse = new HashMap<>();
@@ -118,10 +119,10 @@ public class LoadPaginationCommentPostRes extends BasePostController {
             boolean hasSuperAccess = hasSuperAccess(authentication);
             boolean hasOnlySuperAccess = hasOnlySuperAccess(authentication);
 
-            // 4. Создание пагинации (сортировка по дате создания DESC)
+            // Создание пагинации (сортировка по дате создания DESC)
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-            // 5. Получение среза корневых комментариев в зависимости от прав
+            //Получение среза корневых комментариев в зависимости от прав
             Slice<CommentPersonalRes> commentsSlice;
 
             if (hasSuperAccess) {
@@ -138,7 +139,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
                 log.debug("Обычный пользователь загружает только свои комментарии для резюме id: {}", resId);
             }
 
-            // 6. Преобразование комментариев в DTO для ответа
+            // Преобразование комментариев в DTO для ответа
             List<Map<String, Object>> commentsData = new ArrayList<>();
             for (CommentPersonalRes comment : commentsSlice.getContent()) {
                 Map<String, Object> commentData = convertPersonalCommentResToMap(comment, currentUser, authentication);
@@ -148,7 +149,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
                 }
             }
 
-            // 7. Формирование успешного ответа
+            //Формирование успешного ответа
             Map<String, Object> response = new HashMap<>();
             response.put("status", "success");
             response.put("message", "Комментарии успешно загружены");
@@ -161,7 +162,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Ошибка при загрузке комментариев для hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
+            log.info("Ошибка при загрузке комментариев для hashId: {}, errorType: {}", hashId, e.getClass().getSimpleName(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
             errorResponse.put("message", "Ошибка при загрузке комментариев: " + e.getMessage());
@@ -185,8 +186,6 @@ public class LoadPaginationCommentPostRes extends BasePostController {
         boolean hasOnlySuperAccess = hasOnlySuperAccess(authentication);
         boolean hasSuperAccess = hasSuperAccess(authentication);
 
-        Map<String, Object> commentData = new HashMap<>();
-
         // Проверяем, может ли текущий пользователь видеть этот комментарий
         // Владелец поста видит ВСЕ комментарии к своему посту
         boolean canSeeComment = hasSuperAccess || // SUPER и ADMIN
@@ -199,6 +198,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
             return null;
         }
 
+        Map<String, Object> commentData = new HashMap<>();
         // Основная информация о комментарии
         commentData.put("id", comment.getId());
 
@@ -216,13 +216,19 @@ public class LoadPaginationCommentPostRes extends BasePostController {
         commentData.put("formattedDate", formatDate(comment.getCreatedAt()));
         commentData.put("parentId", comment.getParentComment() != null ? comment.getParentComment().getId() : null);
 
-        // Добавляем информацию о получателе (если есть)
+        // Информация о получателе комментария
         if (comment.getRecipient() != null) {
             commentData.put("hasRecipient", true);
             commentData.put("recipientId", comment.getRecipient().getHashId());
             commentData.put("recipientName", comment.getRecipient().getNameuse());
+        } else if (comment.getParentComment() != null && comment.getParentComment().getUser() != null) {
+            // Fallback: адресат — автор родительского комментария
+            commentData.put("hasRecipient", true);
+            commentData.put("recipientId", comment.getParentComment().getUser().getHashId());
+            commentData.put("recipientName", comment.getParentComment().getUser().getNameuse());
         } else {
             commentData.put("hasRecipient", false);
+            commentData.put("recipientName", null);
         }
 
         // Добавляем информацию о посте для отладки
@@ -256,64 +262,13 @@ public class LoadPaginationCommentPostRes extends BasePostController {
         commentData.put("isSuperAdminUser", hasSuperAccess);
         commentData.put("isResOwner", currentUser.getId().equals(comment.getResume().getUser().getId()));
 
-        // 8. Обработка ответов (replies) на этот комментарий
+        // Рекурсивная загрузка ответов на комментарий (replies)
         List<Map<String, Object>> repliesData = new ArrayList<>();
         List<CommentPersonalRes> replies = commentRepoResPersonal.findByParentCommentIdOrderByCreatedAtAsc(comment.getId());
 
         for (CommentPersonalRes reply : replies) {
-            // Проверяем видимость ответа для текущего пользователя
-            boolean canSeeReply = hasSuperAccess ||
-                    currentUser.getId().equals(comment.getResume().getUser().getId()) || // Владелец поста видит все
-                    currentUser.getId().equals(reply.getUser().getId()) || // Автор ответа
-                    (reply.getRecipient() != null && currentUser.getId().equals(reply.getRecipient().getId())); // Получатель ответа
-
-            if (canSeeReply) {
-                Map<String, Object> replyData = new HashMap<>();
-                replyData.put("id", reply.getId());
-
-                // Текст ответа не кодируется
-                String replyOriginalText = reply.getText();
-                replyData.put("text", replyOriginalText);
-                replyData.put("textEncoded", false);
-
-                // Для SUPER-пользователя добавляем оригинальный текст ответа
-                if (hasSuperAccess) {
-                    replyData.put("originalText", replyOriginalText);
-                }
-
-                replyData.put("createdAt", reply.getCreatedAt().toString());
-                replyData.put("formattedDate", formatDate(reply.getCreatedAt()));
-                replyData.put("parentId", reply.getParentComment() != null ? reply.getParentComment().getId() : null);
-
-                // Информация о получателе ответа
-                if (reply.getRecipient() != null) {
-                    replyData.put("hasRecipient", true);
-                    replyData.put("recipientId", reply.getRecipient().getHashId());
-                    replyData.put("recipientName", reply.getRecipient().getNameuse());
-                }
-
-                // Данные автора ответа
-                Map<String, Object> replyAuthorData = new HashMap<>();
-                if (reply.getUser() != null) {
-                    if (hasOnlySuperAccess) {
-                        replyAuthorData.put("id", reply.getUser().getId());
-                        replyAuthorData.put("username", reply.getUser().getUsername());
-                        replyAuthorData.put("nameuse", reply.getUser().getNameuse());
-                    } else {
-                        replyAuthorData.put("id", 0);
-                        replyAuthorData.put("username", "Пользователь");
-                        replyAuthorData.put("nameuse", reply.getUser().getNameuse());
-                    }
-                    replyAuthorData.put("online", reply.getUser().isOnline());
-                } else {
-                    replyAuthorData.put("id", null);
-                    replyAuthorData.put("username", "Удаленный пользователь");
-                    replyAuthorData.put("nameuse", "Удаленный пользователь");
-                    replyAuthorData.put("online", false);
-                }
-                replyData.put("author", replyAuthorData);
-                replyData.put("isSuperUser", hasOnlySuperAccess);
-
+            Map<String, Object> replyData = convertPersonalCommentResToMap(reply, currentUser, authentication);
+            if (replyData != null) {
                 repliesData.add(replyData);
             }
         }
@@ -349,7 +304,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
         String clientIp = getClientIp(request);
         log.debug("Попытка добавления комментария к резюме hashId: {}, parentCommentId: {}", hashId, parentCommentId);
 
-        // 1. Проверка аутентификации
+        // Проверка аутентификации
         if (authentication == null || !authentication.isAuthenticated()) {
             log.warn("Неавторизованная попытка добавления комментария к резюме hashId: {}", hashId);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
@@ -358,7 +313,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
             ));
         }
 
-        // 2. Валидация комментария с использованием сервисов лимитирования (для персональных комментариев)
+        // Валидация комментария с использованием сервисов лимитирования (для персональных комментариев)
         if (!validateComment(text, clientIp, enhancedRateLimitService, rateLimitService, "personal")) {
             log.warn("Комментарий отклонен валидацией: слишком короткий текст или превышен лимит запросов для IP: {}", clientIp);
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(Map.of(
@@ -368,11 +323,11 @@ public class LoadPaginationCommentPostRes extends BasePostController {
         }
 
         try {
-            // 3. Поиск резюме
+            // Поиск резюме
             Resume res = postResumeRepository.findByHashId(hashId)
                     .orElseThrow(() -> new RuntimeException("Пост не найден"));
 
-            // 4. Проверка доступности поста
+            // Проверка доступности поста
             if (res.isBlocked() || res.isArchived() || res.isModeration()) {
                 log.warn("Попытка добавления комментария к недоступному посту hashId: {}", hashId);
                 Map<String, Object> errorResponse = new HashMap<>();
@@ -384,7 +339,7 @@ public class LoadPaginationCommentPostRes extends BasePostController {
 
             User user = (User) authentication.getPrincipal();
 
-            // 5. Создание и заполнение нового комментария
+            // Создание и заполнение нового комментария
             CommentPersonalRes commentPersonalRes = new CommentPersonalRes();
             commentPersonalRes.setText(text);
             commentPersonalRes.setResume(res);
@@ -398,24 +353,25 @@ public class LoadPaginationCommentPostRes extends BasePostController {
                 }
             }
 
-            // 6. Определение получателя комментария
-            if (user.getId().equals(res.getUser().getId())) {
-                // Если автор поста пишет комментарий к своему посту, получатель — автор родительского комментария (если есть)
-                if (commentPersonalRes.getParentComment() != null) {
-                    commentPersonalRes.setRecipient(commentPersonalRes.getParentComment().getUser());
-                } else {
-                    commentPersonalRes.setRecipient(null);
-                }
+            // Установка получателя комментария (recipient)
+            if (commentPersonalRes.getParentComment() != null) {
+                // Ответ в ветке — получатель = автор родительского комментария
+                commentPersonalRes.setRecipient(commentPersonalRes.getParentComment().getUser());
             } else {
-                // Обычный пользователь пишет автору поста
-                commentPersonalRes.setRecipient(res.getUser());
+                // Корневой комментарий — получатель = владелец поста
+                // (если сам владелец пишет корневой комментарий — recipient = null)
+                if (user.getId().equals(res.getUser().getId())) {
+                    commentPersonalRes.setRecipient(null);
+                } else {
+                    commentPersonalRes.setRecipient(res.getUser());
+                }
             }
 
-            // 7. Сохранение комментария
+            // Сохранение комментария
             commentRepoResPersonal.save(commentPersonalRes);
             log.debug("Комментарий успешно добавлен к резюме hashId: {}", hashId);
 
-            // 8. Формирование ответа в зависимости от типа запроса
+            //Формирование ответа в зависимости от типа запроса
             if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
                 return ResponseEntity.ok(Map.of(
                         "status", "success",

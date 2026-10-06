@@ -1,6 +1,8 @@
 package jobforsite.sitejob.module.product.repository;
 
 import jobforsite.sitejob.module.product.model.Comment;
+import jobforsite.sitejob.module.product.model.CommentPersonal;
+import jobforsite.sitejob.module.vacancy.model.CommentVacancy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +17,13 @@ import java.util.List;
  * а также рекурсивного поиска ответов.
  */
 public interface CommentRepository extends JpaRepository<Comment, Long> {
+
+
+    /**
+     * Загружает ВСЕ комментарии товаров (и корневые, и все уровни вложенности).
+     * Используется для построения полного дерева комментариев на клиенте.
+     */
+    List<Comment> findAllByPostIdOrderByCreatedAtAsc(Long postId);
 
     // ========== Slice-методы для пагинации ==========
 

@@ -303,26 +303,27 @@ public class RefController extends BasePostController {
         return "postidviews";
     }
 
-    /**
-     * Отмечает сообщения в переписке как прочитанные.
-     * Используется для уведомлений о непрочитанных сообщениях.
-     *
-     * @param postId         ID поста (не hashId!)
-     * @param authentication данные аутентификации
-     * @return ResponseEntity с результатом операции
-     */
-    @Transactional
-    @PostMapping("/api/messages/{postId}/markAsRead")
-    @ResponseBody
-    public ResponseEntity<?> markMessagesAsRead(@PathVariable Long postId, Authentication authentication) {
-        try {
-            User currentUser = (User) authentication.getPrincipal();
-            commentRepoPersonal.markMessagesAsRead(postId, currentUser.getId());
-            log.debug("Отмечены сообщения как прочитанные, postId: {}", postId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            log.error("Ошибка при отметке сообщений как прочитанных, postId: {}, errorType: {}", postId, e.getClass().getSimpleName(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//    /**
+//     * Отмечает сообщения в переписке как прочитанные.
+//     * Используется для уведомлений о непрочитанных сообщениях.
+//     *
+//     * @param postId         ID поста (не hashId!)
+//     * @param authentication данные аутентификации
+//     * @return ResponseEntity с результатом операции
+//     */
+//    @Transactional
+//    @PostMapping("/api/messages/{postId}/markAsRead")
+//    @ResponseBody
+//    public ResponseEntity<?> markMessagesAsRead(@PathVariable Long postId, Authentication authentication) {
+//        try {
+//            User currentUser = (User) authentication.getPrincipal();
+//            commentRepoPersonal.markMessagesAsRead(postId, currentUser.getId());
+//            log.debug("Отмечены сообщения как прочитанные, postId: {}", postId);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            log.error("Ошибка при отметке сообщений как прочитанных, postId: {}, errorType: {}", postId, e.getClass().getSimpleName(), e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
 }

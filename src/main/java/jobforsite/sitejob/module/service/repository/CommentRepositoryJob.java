@@ -1,6 +1,7 @@
 package jobforsite.sitejob.module.service.repository;
 
 import jobforsite.sitejob.module.service.model.CommentJob;
+import jobforsite.sitejob.module.vacancy.model.CommentVacancy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,12 @@ import java.util.List;
  * а также подсчет количества комментариев у объявления.
  */
 public interface CommentRepositoryJob extends JpaRepository<CommentJob, Long> {
+
+    /**
+     * Загружает ВСЕ комментарии вакансии (и корневые, и все уровни вложенности).
+     * Используется для построения полного дерева комментариев на клиенте.
+     */
+    List<CommentJob> findAllByPostjobIdOrderByCreatedAtAsc(Long postId);
 
     /**
      * Находит все комментарии к объявлению с пагинацией.

@@ -329,7 +329,7 @@ class AllPostUserControllerLoadTest {
         // Проверяем, что других вызовов не было
         verifyNoMoreInteractions(userCacheService);
 
-        // Если вы хотите проверить, что счетчики были получены из mockData,
+        // Если проверить, что счетчики были получены из mockData,
         // то можно проверить, что методы получения счетчиков у mockData были вызваны
         verify(mockData, atLeastOnce()).getTotalProducts();
         verify(mockData, atLeastOnce()).getTotalServices();

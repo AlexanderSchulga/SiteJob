@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * Контроллер для управления отзывами пользователей.
  * Обеспечивает CRUD операции над отзывами, поиск пользователей, пагинацию и rate limiting.
  */
-@Slf4j // Добавлен логгер
+@Slf4j
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/page_one/reviews")
@@ -505,9 +505,12 @@ public class ReviewsController extends BaseController {
             Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
             Slice<Reviews> reviewsSlice = reviewsRepo.findByReviewedUserIdAndParentReviewIsNull(userId, pageable);
 
+            // Загружаем ВСЕ отзывы пользователя (и корни, и ответы) для построения дерева в памяти
+            List<Reviews> allReviews = reviewsRepo.findByReviewedUserIdOrderByCreatedAtDesc(userId);
+
             List<Map<String, Object>> reviewsData = new ArrayList<>();
             for (Reviews review : reviewsSlice.getContent()) {
-                Map<String, Object> reviewData = convertReviewToMap(review, currentUser, isSuperUser);
+                Map<String, Object> reviewData = convertReviewToMap(review, allReviews, currentUser, isSuperUser);
                 reviewsData.add(reviewData);
             }
 
@@ -592,55 +595,37 @@ public class ReviewsController extends BaseController {
      * @param isSuperUser флаг, является ли текущий пользователь SUPER
      * @return карта с данными отзыва для JSON ответа
      */
-    private Map<String, Object> convertReviewToMap(Reviews review, User currentUser, boolean isSuperUser) {
+    private Map<String, Object> convertReviewToMap(Reviews review,
+                                                   List<Reviews> allReviews,
+                                                   User currentUser,
+                                                   boolean isSuperUser) {
         Map<String, Object> reviewData = new HashMap<>();
 
-        // Основная информация об отзыве
         reviewData.put("id", review.getId());
         reviewData.put("text", review.getText());
         reviewData.put("createdAt", review.getCreatedAt().toString());
-        reviewData.put("formattedDate", this.formatDate(review.getCreatedAt()));
+        reviewData.put("formattedDate", formatDate(review.getCreatedAt()));
 
-        // Безопасное получение автора (заглушка для удаленных)
-        User author = review.getAuthor();
-        if (author == null) {
-            // Создаем заглушку для удаленного автора
-            author = new User();
-            author.setId(-1L);
-            author.setUsername("deleted");
-            author.setNameuse("Удаленный пользователь");
-        }
-
-        // ID пользователя, о котором отзыв - СКРЫВАЕМ для всех, кроме SUPER
         if (isSuperUser) {
             reviewData.put("reviewedUserId", review.getReviewedUserId());
         } else {
-            reviewData.put("reviewedUserId", null); // Скрываем для обычных пользователей и админа
+            reviewData.put("reviewedUserId", null);
         }
 
-        // Информация об авторе
+        // --- Автор ---
         Map<String, Object> authorData = new HashMap<>();
-
-        // ТОЛЬКО для SUPER пользователя показываем полную информацию
         if (isSuperUser) {
-            // Показываем ID только для SUPER
-            if (review.getAuthor() != null) {
-                authorData.put("id", review.getAuthor().getId());
-            } else {
-                authorData.put("id", null);
-            }
+            authorData.put("id", review.getAuthor() != null ? review.getAuthor().getId() : null);
             authorData.put("username", review.getAuthorUsername());
             authorData.put("nameuse", review.getAuthorNameuse());
             authorData.put("isDeleted", review.isAuthorDeleted());
             authorData.put("displayName", review.getDisplayAuthorNameuse());
         } else {
-            // Для обычных пользователей и админа скрываем чувствительную информацию
-            authorData.put("id", null); // Скрываем ID
-            authorData.put("username", null); // Скрываем логин
+            authorData.put("id", null);
+            authorData.put("username", null);
             authorData.put("nameuse", review.getAuthorNameuse());
             authorData.put("isDeleted", review.isAuthorDeleted());
 
-            // Отображаем только имя пользователя, не показывая логин
             String displayName = review.getAuthorNameuse();
             if (displayName == null || displayName.trim().isEmpty()) {
                 displayName = "Анонимный пользователь";
@@ -652,71 +637,40 @@ public class ReviewsController extends BaseController {
         }
         reviewData.put("author", authorData);
 
-        // Можно ли отвечать на этот отзыв (нельзя отвечать самому себе)
+        // --- Кому адресован (для ответов) ---
+        if (review.getParentReview() != null) {
+            Reviews parent = review.getParentReview();
+            reviewData.put("parentId", parent.getId());
+            reviewData.put("recipientName", parent.getAuthorNameuse());
+            reviewData.put("recipientId", parent.getAuthor() != null ? parent.getAuthor().getId() : null);
+        } else {
+            reviewData.put("parentId", null);
+            reviewData.put("recipientName", null);
+            reviewData.put("recipientId", null);
+        }
+
+        // --- Флаги ---
         boolean canReply = currentUser != null &&
                 review.getAuthor() != null &&
                 !currentUser.getId().equals(review.getAuthor().getId());
         reviewData.put("canReply", canReply);
 
-        // Информация о текущем пользователе
         reviewData.put("isCurrentUserAuthor",
                 currentUser != null &&
                         review.getAuthor() != null &&
                         currentUser.getId().equals(review.getAuthor().getId()));
 
-        // Ответы на этот отзыв
+        // --- Рекурсивно собираем ответы из in-memory списка ---
         List<Map<String, Object>> repliesData = new ArrayList<>();
-        for (Reviews reply : review.getReplies()) {
-            Map<String, Object> replyData = new HashMap<>();
-            replyData.put("id", reply.getId());
-            replyData.put("text", reply.getText());
-            replyData.put("createdAt", reply.getCreatedAt().toString());
-            replyData.put("formattedDate", formatDate(reply.getCreatedAt()));
-
-            Map<String, Object> replyAuthorData = new HashMap<>();
-
-            // ТОЛЬКО для SUPER пользователя
-            if (isSuperUser) {
-                if (reply.getAuthor() != null) {
-                    replyAuthorData.put("id", reply.getAuthor().getId());
-                } else {
-                    replyAuthorData.put("id", null);
-                }
-                replyAuthorData.put("username", reply.getAuthorUsername());
-                replyAuthorData.put("nameuse", reply.getAuthorNameuse());
-                replyAuthorData.put("isDeleted", reply.isAuthorDeleted());
-                replyAuthorData.put("displayName", reply.getDisplayAuthorNameuse());
-            } else {
-                // Для обычных пользователей и админа
-                replyAuthorData.put("id", null);
-                replyAuthorData.put("username", null);
-                replyAuthorData.put("nameuse", reply.getAuthorNameuse());
-                replyAuthorData.put("isDeleted", reply.isAuthorDeleted());
-
-                String displayName = reply.getAuthorNameuse();
-                if (displayName == null || displayName.trim().isEmpty()) {
-                    displayName = "Анонимный пользователь";
-                }
-                if (reply.isAuthorDeleted()) {
-                    displayName = "Удаленный пользователь";
-                }
-                replyAuthorData.put("displayName", displayName);
+        for (Reviews candidate : allReviews) {
+            if (candidate.getParentReview() != null
+                    && candidate.getParentReview().getId().equals(review.getId())) {
+                repliesData.add(convertReviewToMap(candidate, allReviews, currentUser, isSuperUser));
             }
-            replyData.put("author", replyAuthorData);
-
-            // Можно ли отвечать на ответ
-            boolean canReplyToReply = currentUser != null &&
-                    reply.getAuthor() != null &&
-                    !currentUser.getId().equals(reply.getAuthor().getId());
-            replyData.put("canReply", canReplyToReply);
-
-            repliesData.add(replyData);
         }
         reviewData.put("replies", repliesData);
 
-        // Добавляем флаг, является ли текущий пользователь SUPER
         reviewData.put("isSuperUser", isSuperUser);
-
         return reviewData;
     }
 
