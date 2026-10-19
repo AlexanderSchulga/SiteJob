@@ -143,8 +143,65 @@
         </div>
 
         <!-- ГРУППА 4: ОПИСАНИЕ -->
+
+        <div class="info-group-description" id="place1-dates">
+            <strong class="desc-heading">Дата предыдущего места работы 1:</strong>
+            <p class="post-full-text">
+                <span th:text="${el.place1Start != null ? #temporals.format(el.place1Start, 'dd.MM.yyyy') : '—'}"></span>
+                &nbsp;—&nbsp;
+                <span th:if="${el.place1End != null}"
+                      th:text="${#temporals.format(el.place1End, 'dd.MM.yyyy')}"></span>
+                <span th:if="${el.place1End == null}" class="current-job-label">по настоящее время</span>
+            </p>
+        </div>
+
         <div class="info-group-description">
-            <strong>Обо мне:</strong>
+            <strong class="desc-heading">Место предыдущей работы 1 (Наименование организации):</strong>
+            <p class="post-full-text" th:text="${el.place1}"></p>
+        </div>
+
+        <div class="info-group-description">
+            <strong class="desc-heading">Обязанности и достижения на месте предыдущей работы 1:</strong>
+            <p class="post-full-text" th:text="${el.placeofwork1}"></p>
+        </div>
+
+        <div class="info-group-description" id="place2-dates">
+            <strong class="desc-heading">Дата предыдущего места работы 2:</strong>
+            <p class="post-full-text">
+                <span th:text="${el.place2Start != null ? #temporals.format(el.place2Start, 'dd.MM.yyyy') : '—'}"></span>
+                &nbsp;—&nbsp;
+                <span th:if="${el.place2End != null}"
+                      th:text="${#temporals.format(el.place2End, 'dd.MM.yyyy')}"></span>
+                <span th:if="${el.place2End == null}" class="current-job-label">по настоящее время</span>
+            </p>
+        </div>
+
+        <div class="info-group-description">
+            <strong class="desc-heading">Место предыдущей работы 2 (Наименование организации):</strong>
+            <p class="post-full-text" th:text="${el.place2}"></p>
+        </div>
+
+        <div class="info-group-description">
+            <strong class="desc-heading">Обязанности и достижения на месте предыдущей работы 2:</strong>
+            <p class="post-full-text" th:text="${el.placeofwork2}"></p>
+        </div>
+
+
+        <div class="divider-section">
+            <hr>
+            <span class="divider-label">
+        <i class="fas fa-plus-circle"></i>Дополнительно
+    </span>
+            <hr>
+        </div>
+
+        <div class="info-group-description">
+            <strong class="desc-heading">Навыки и достижения:</strong>
+            <p class="post-full-text" th:text="${el.skills}"></p>
+        </div>
+
+        <div class="info-group-description">
+            <strong class="desc-heading">Обо мне:</strong>
             <p class="post-full-text" th:text="${el.full_text}"></p>
         </div>
     </div>

@@ -112,9 +112,92 @@
                                 </select>
                             </div>
 
+                            <!-- ================= МЕСТО РАБОТЫ 1 ================= -->
+                            <div class="mb-4">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-briefcase me-1"></i>Предыдущее место работы 1
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="resume_place1Start" class="form-label">Дата начала</label>
+                                        <input type="date" id="resume_place1Start" name="place1Start" class="form-control"
+                                               th:value="${el.place1Start != null ? #temporals.format(el.place1Start, 'yyyy-MM-dd') : ''}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="resume_place1End" class="form-label">Дата окончания</label>
+                                        <input type="date" id="resume_place1End" name="place1End" class="form-control"
+                                               th:value="${el.place1End != null ? #temporals.format(el.place1End, 'yyyy-MM-dd') : ''}">
+                                        <div class="form-text">Оставьте пустым, если работаете по настоящее время</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="resume_place1" class="form-label">Наименование организации</label>
+                                    <input type="text" id="resume_place1" name="place1" class="form-control"
+                                           placeholder="Например: ООО «Ромашка»"
+                                           th:value="${el.place1 != null ? el.place1 : ''}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="resume_placeofwork1" class="form-label">Обязанности и достижения</label>
+                                    <textarea id="resume_placeofwork1" name="placeofwork1" class="form-control" rows="4"
+                                              placeholder="Опишите обязанности и достижения на этом месте работы"
+                                              th:text="${el.placeofwork1 != null ? el.placeofwork1 : ''}"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- ================= МЕСТО РАБОТЫ 2 ================= -->
+                            <div class="mb-4">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-briefcase me-1"></i>Предыдущее место работы 2
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="resume_place2Start" class="form-label">Дата начала</label>
+                                        <input type="date" id="resume_place2Start" name="place2Start" class="form-control"
+                                               th:value="${el.place2Start != null ? #temporals.format(el.place2Start, 'yyyy-MM-dd') : ''}">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="resume_place2End" class="form-label">Дата окончания</label>
+                                        <input type="date" id="resume_place2End" name="place2End" class="form-control"
+                                               th:value="${el.place2End != null ? #temporals.format(el.place2End, 'yyyy-MM-dd') : ''}">
+                                        <div class="form-text">Оставьте пустым, если работаете по настоящее время</div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="resume_place2" class="form-label">Наименование организации</label>
+                                    <input type="text" id="resume_place2" name="place2" class="form-control"
+                                           placeholder="Например: ООО «Василёк»"
+                                           th:value="${el.place2 != null ? el.place2 : ''}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="resume_placeofwork2" class="form-label">Обязанности и достижения</label>
+                                    <textarea id="resume_placeofwork2" name="placeofwork2" class="form-control" rows="4"
+                                              placeholder="Опишите обязанности и достижения на этом месте работы"
+                                              th:text="${el.placeofwork2 != null ? el.placeofwork2 : ''}"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center my-4">
+                                <hr class="flex-grow-1 m-0" style="border: none; border-top: 1px solid #dee2e6; opacity: 1;">
+                                <span class="px-3 text-muted small text-uppercase fw-semibold" style="letter-spacing: .08em;">
+        <i class="fas fa-plus-circle me-1"></i>Дополнительно
+    </span>
+                                <hr class="flex-grow-1 m-0" style="border: none; border-top: 1px solid #dee2e6; opacity: 1;">
+                            </div>
+
+                            <!-- ================= НАВЫКИ ================= -->
+                            <div class="mb-4">
+                                <h6 class="text-muted mb-3">
+                                    <i class="fas fa-star me-1"></i>Навыки и достижения
+                                </h6>
+                                <textarea id="resume_skills" name="skills" class="form-control" rows="4"
+                                          placeholder="Перечислите ключевые навыки и достижения"
+                                          th:text="${el.skills != null ? el.skills : ''}"></textarea>
+                            </div>
+
+                            <!-- ================= О СЕБЕ ================= -->
                             <div class="mb-4">
                                 <label for="resume_full_text" class="form-label">
-                                    <i class="fas fa-align-left me-1 text-muted"></i>Описание
+                                    <i class="fas fa-align-left me-1 text-muted"></i>О себе
                                 </label>
                                 <textarea id="resume_full_text" name="full_text" placeholder="Полное описание" class="form-control" rows="5" th:text="${el.full_text != null ? el.full_text : ''}"></textarea>
                                 <div class="form-text">Опишите ваши навыки, обязанности и достижения.</div>

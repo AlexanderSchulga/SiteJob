@@ -2,6 +2,7 @@ package jobforsite.sitejob.module.resume.dto;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -28,8 +29,25 @@ public class ResumeDTO {
     private String experienceDisplayName;
     private String firstImagePath;
     private String fullText;
-    private LocalDateTime createdAt;
 
+    private String skills;
+
+    private String placeofwork1;
+    private String placeofwork2;
+
+    private String place1;
+
+    private LocalDate place1Start;
+
+    private LocalDate place1End;
+
+    private String place2;
+
+    private LocalDate place2Start;
+
+    private LocalDate place2End;
+
+    private LocalDateTime createdAt;
     private LocalDateTime moderatedAt;
     private LocalDateTime updatedAt;
     private boolean blocked;

@@ -28,6 +28,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -904,6 +906,8 @@ public class UpdateUserPost {
      */
     private String updatePostResume(String hashId,
                                     Long id, String title, Integer cash, String full_text,
+                                    String placeofwork1, String placeofwork2, String place1, String place2,
+                                    LocalDate place1Start, LocalDate place2Start, LocalDate place1End, LocalDate place2End, String skills,
                                     String category, String experience, String workformat,
                                     List<Long> deleteImageIds, MultipartFile[] files, String userHashId,
                                     Model model, Authentication authentication,
@@ -949,6 +953,15 @@ public class UpdateUserPost {
             res.setTitle(title);
             res.setCash(cash);
             res.setFull_text(full_text);  // может быть null
+            res.setPlaceofwork1(placeofwork1);
+            res.setPlaceofwork2(placeofwork2);
+            res.setPlace1(place1);
+            res.setPlace2(place2);
+            res.setPlace1Start(place1Start);
+            res.setPlace2Start(place2Start);
+            res.setPlace1End(place1End);
+            res.setPlace2End(place2End);
+            res.setSkills(skills);
             res.setCategory(category);
             res.setExperience(experience);
             res.setWorkformat(workformat);
@@ -1212,6 +1225,15 @@ public class UpdateUserPost {
                                                   @RequestParam String title,
                                                   @RequestParam Integer cash,
                                                   @RequestParam String full_text,
+                                                  @RequestParam String placeofwork1,
+                                                  @RequestParam String placeofwork2,
+                                                  @RequestParam String place1,
+                                                  @RequestParam String place2,
+                                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate place1Start,
+                                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate place2Start,
+                                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate place1End,
+                                                  @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate place2End,
+                                                  @RequestParam String skills,
                                                   @RequestParam String category,
                                                   @RequestParam String experience,
                                                   @RequestParam String workformat,
@@ -1225,7 +1247,9 @@ public class UpdateUserPost {
             model.addAttribute("error", "Запись не найдена");
             return "error";
         }
-        return updatePostResume(hashId, resumeOptional.get().getId(), title, cash, full_text, category, experience, workformat,
+        return updatePostResume(hashId, resumeOptional.get().getId(), title, cash, full_text,
+                placeofwork1, placeofwork2, place1, place2, place1Start, place2Start,
+                place1End, place2End, skills, category, experience, workformat,
                 deleteImageIds, files, userHashId, model, authentication, redirectAttributes);
     }
 

@@ -1318,3 +1318,19 @@ input[type="number"] {
     z-index: 2147483647 !important;
     position: absolute !important;
 }
+
+
+
+
+.create-form-card h6.text-muted {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #495057 !important;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 6px;
+}
+
+input[type="date"].form-control {
+    min-height: 42px;
+    line-height: 1.5;
+}

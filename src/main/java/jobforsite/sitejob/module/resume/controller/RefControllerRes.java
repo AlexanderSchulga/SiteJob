@@ -20,17 +20,20 @@ import jobforsite.sitejob.module.users.repository.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -220,6 +223,15 @@ public class RefControllerRes extends BasePostController {
             @RequestParam String experience,
             @RequestParam String workformat,
             @RequestParam Boolean moderation,
+            @RequestParam String placeofwork1,
+            @RequestParam String placeofwork2,
+            @RequestParam String place1,
+            @RequestParam String place2,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate place1Start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate place2Start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate place1End,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate place2End,
+            @RequestParam (required = false) String skills,
             @RequestParam("files") MultipartFile[] files,
             Authentication authentication,
             HttpServletRequest request,
@@ -252,7 +264,9 @@ public class RefControllerRes extends BasePostController {
             // ================================================
 
             // Создание и сохранение резюме
-            Resume res = new Resume(title, cash, full_text, category, experience, workformat, moderation);
+            Resume res = new Resume(title, cash, full_text, category,
+                    experience, workformat, moderation, placeofwork1, placeofwork2,
+                    place1, place2, place1Start, place2Start, place1End, place2End, skills);
             User user = (User) authentication.getPrincipal();
             res.setUser(user);
 

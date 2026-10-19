@@ -1,6 +1,5 @@
 package jobforsite.sitejob.module.shared.dto;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 import java.util.List;

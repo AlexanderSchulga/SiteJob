@@ -1453,3 +1453,99 @@ body.has-sticky-header .container-wrapper {
 }
 
 
+
+
+/* Разделяем блоки описания */
+.info-group-description {
+    margin-bottom: 14px;
+}
+
+/* Последний блок перед комментариями — побольше отступ */
+.post-detail > .info-group-description:last-of-type {
+    margin-bottom: 24px;
+}
+
+
+/* «по настоящее время»*/
+.current-job-label {
+    color: #495057;           /* нейтральный тёмно-серый */
+    font-weight: 600;
+    font-style: italic;
+    background: #eef2f6;       /* лёгкая подложка */
+    padding: 1px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* Выделенные заголовки блоков описания */
+.info-group-description .desc-heading {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1f2d3d;
+    padding: 6px 10px;
+    background: #eef4fb;               /* мягкий голубоватый фон */
+
+    border-radius: 6px;
+    border-bottom: none;
+}
+
+
+/* Только блоки дат — без pre-line и без отступа */
+#place1-dates .post-full-text,
+#place2-dates .post-full-text {
+    white-space: normal;
+    margin-bottom: 0;
+}
+
+
+/* Заголовки внутри блоков описания */
+.info-group-description strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2c3e50;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+
+/* ========== РАЗДЕЛИТЕЛЬ "ДОПОЛНИТЕЛЬНО" ========== */
+.divider-section {
+    display: flex;
+    align-items: center;
+    margin: 24px 0;
+}
+
+.divider-section hr {
+    flex-grow: 1;
+    margin: 0;
+    border: none;
+    border-top: 1px solid #dee2e6;
+    opacity: 1;
+}
+
+.divider-section .divider-label {
+    padding: 0 16px;
+    color: #6c757d !important;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: .08em;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.divider-section .divider-label i {
+    font-size: 0.85rem;
+}
+
+
+
+
+
+

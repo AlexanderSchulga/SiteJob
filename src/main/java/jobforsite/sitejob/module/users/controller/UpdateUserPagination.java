@@ -332,6 +332,16 @@ public class UpdateUserPagination extends BaseController {
         dto.setWorkformatDisplayName(workFormatResumeConfig.getWorkformatDisplayName(resume.getWorkformat()));
         dto.setFirstImagePath(resume.getFirstImagePath());
         dto.setFullText(resume.getFull_text());
+
+        dto.setPlaceofwork1(resume.getPlaceofwork1());
+        dto.setPlaceofwork2(resume.getPlaceofwork2());
+        dto.setPlace1(resume.getPlace1());
+        dto.setFullText(resume.getFull_text());
+        dto.setFullText(resume.getFull_text());
+        dto.setFullText(resume.getFull_text());
+        dto.setFullText(resume.getFull_text());
+        dto.setFullText(resume.getFull_text());
+
         dto.setCreatedAt(resume.getCreatedAt());
         dto.setModeratedAt(resume.getModeratedAt());
         dto.setBlocked(resume.isBlocked());

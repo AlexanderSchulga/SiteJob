@@ -1,7 +1,9 @@
 package jobforsite.sitejob.module.resume.dto;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -25,6 +27,26 @@ public class ResumeBlockedDTO {
     private String workformatDisplayName;
     private String firstImagePath;
     private String fullText;
+
+
+    private String placeofwork1;
+
+    private String placeofwork2;
+
+    private String skills;
+
+    private String place1;
+
+    private LocalDate place1Start;
+
+    private LocalDate place1End;
+
+    private String place2;
+
+    private LocalDate place2Start;
+
+    private LocalDate place2End;
+
     private LocalDateTime createdAt;
     private LocalDateTime moderatedAt;
     private LocalDateTime updatedAt;
@@ -98,6 +120,79 @@ public class ResumeBlockedDTO {
 
     public String getFullText() { return fullText; }
     public void setFullText(String fullText) { this.fullText = fullText; }
+
+
+    public String getPlaceofwork1() {
+        return placeofwork1;
+    }
+
+    public void setPlaceofwork1(String placeofwork1) {
+        this.placeofwork1 = placeofwork1;
+    }
+
+    public String getPlaceofwork2() {
+        return placeofwork2;
+    }
+
+    public void setPlaceofwork2(String placeofwork2) {
+        this.placeofwork2 = placeofwork2;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public void setSkills(String skills) {
+        this.skills = skills;
+    }
+
+    public String getPlace1() {
+        return place1;
+    }
+
+    public void setPlace1(String place1) {
+        this.place1 = place1;
+    }
+
+    public LocalDate getPlace1Start() {
+        return place1Start;
+    }
+
+    public void setPlace1Start(LocalDate place1Start) {
+        this.place1Start = place1Start;
+    }
+
+    public LocalDate getPlace1End() {
+        return place1End;
+    }
+
+    public void setPlace1End(LocalDate place1End) {
+        this.place1End = place1End;
+    }
+
+    public String getPlace2() {
+        return place2;
+    }
+
+    public void setPlace2(String place2) {
+        this.place2 = place2;
+    }
+
+    public LocalDate getPlace2Start() {
+        return place2Start;
+    }
+
+    public void setPlace2Start(LocalDate place2Start) {
+        this.place2Start = place2Start;
+    }
+
+    public LocalDate getPlace2End() {
+        return place2End;
+    }
+
+    public void setPlace2End(LocalDate place2End) {
+        this.place2End = place2End;
+    }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

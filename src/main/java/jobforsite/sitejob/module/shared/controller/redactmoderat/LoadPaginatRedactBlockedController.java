@@ -649,6 +649,17 @@ public class LoadPaginatRedactBlockedController {
         dto.setCategoryDisplayName(categoryUtils.getCategoryDisplayName("resume", resume.getCategory()));
         dto.setFirstImagePath(resume.getFirstImagePath());
         dto.setFullText(resume.getFull_text());
+
+        dto.setPlaceofwork1(resume.getPlaceofwork1());
+        dto.setPlaceofwork2(resume.getPlaceofwork2());
+        dto.setPlace1(resume.getPlace1());
+        dto.setPlace2(resume.getPlace2());
+        dto.setPlace1Start(resume.getPlace1Start());
+        dto.setPlace2Start(resume.getPlace2Start());
+        dto.setPlace1End(resume.getPlace1End());
+        dto.setPlace2End(resume.getPlace2End());
+        dto.setSkills(resume.getSkills());
+
         dto.setCreatedAt(resume.getCreatedAt());
         dto.setModeratedAt(resume.getModeratedAt());
         dto.setUpdatedAt(resume.getUpdatedAt());

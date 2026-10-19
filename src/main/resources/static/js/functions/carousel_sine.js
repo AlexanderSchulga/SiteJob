@@ -33,10 +33,10 @@ class SineCarousel {
 
     getDefaultItems() {
         return [
-            { img: '/images/carousel/carusel_product.jpg', alt: 'Товары' },
-            { img: '/images/carousel/carusel_job.jpg', alt: 'Услуги' },
-            { img: '/images/carousel/carusel_vac.jpg', alt: 'Вакансии' },
-            { img: '/images/carousel/carusel_res.jpg', alt: 'Резюме' }
+            { img: '/images/carousel/carusel_product_slog.jpg', alt: 'Товары' },
+            { img: '/images/carousel/carusel_job_slog.jpg', alt: 'Услуги' },
+            { img: '/images/carousel/carusel_vac_slog.jpg', alt: 'Вакансии' },
+            { img: '/images/carousel/carusel_res_slog.jpg', alt: 'Резюме' }
         ];
     }
 
@@ -429,10 +429,10 @@ document.addEventListener('DOMContentLoaded', function() {
         carouselItems = window.carouselPhotos;
     } else {
         carouselItems = [
-            { img: '/images/carousel/carusel_product.jpg', alt: 'Товары' },
-            { img: '/images/carousel/carusel_job.jpg', alt: 'Услуги' },
-            { img: '/images/carousel/carusel_vac.jpg', alt: 'Вакансии' },
-            { img: '/images/carousel/carusel_res.jpg', alt: 'Резюме' }
+            { img: '/images/carousel/carusel_product_slog.jpg', alt: 'Товары' },
+            { img: '/images/carousel/carusel_job_slog.jpg', alt: 'Услуги' },
+            { img: '/images/carousel/carusel_vac_slog.jpg', alt: 'Вакансии' },
+            { img: '/images/carousel/carusel_res_slog.jpg', alt: 'Резюме' }
         ];
     }
 

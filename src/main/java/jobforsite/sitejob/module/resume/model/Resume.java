@@ -5,10 +5,13 @@ import jobforsite.sitejob.module.shared.controller.sharedglobal.BasePostControll
 import jobforsite.sitejob.module.shared.model.Favorites;
 import jobforsite.sitejob.module.shared.model.ImagesFoto;
 import jobforsite.sitejob.module.users.model.User;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Entity
+@Getter
+@Setter
 public class Resume implements BasePostController.PostAccessInfo {
 
     @Id
@@ -76,6 +81,79 @@ public class Resume implements BasePostController.PostAccessInfo {
      */
     @Column(columnDefinition = "TEXT")
     private String full_text;
+
+
+    /**
+     *  Навыки и достижения.
+     */
+    @Column(columnDefinition = "TEXT")
+    private String skills;
+
+    /**
+     *  Описание работы 1.
+     */
+    @Column(columnDefinition = "TEXT")
+    private String placeofwork1;
+
+    /**
+     * Место работы 1
+     */
+    @Column(columnDefinition = "TEXT")
+    private String place1;
+
+    /**
+     * Дата начала на первом месте работы
+     */
+
+    @Column(name = "place1_start")
+    private LocalDate place1Start;
+
+    /**
+     * Дата окончания на первом месте работы
+     */
+
+    @Column(name = "place1_end")
+    private LocalDate place1End;
+
+
+//    /**
+//     * по настоящее время
+//     * */
+//    @Column(name = "place1_current")
+//    private Boolean place1Current = false;
+
+    /**
+     *  Описание работы 2..
+     */
+    @Column(columnDefinition = "TEXT")
+    private String placeofwork2;
+
+    /**
+     *  Место работы 2.
+     */
+    @Column(columnDefinition = "TEXT")
+    private String place2;
+
+
+    /**
+     * Дата начала на втором месте работы
+     */
+
+    @Column(name = "place2_start")
+    private LocalDate place2Start;
+
+    /**
+     * Дата окончания на втором месте работы
+     */
+
+    @Column(name = "place2_end")
+    private LocalDate place2End;
+
+//    /**
+//     * по настоящее время
+//     * */
+//    @Column(name = "place2_current")
+//    private Boolean place2Current = false;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -142,7 +220,6 @@ public class Resume implements BasePostController.PostAccessInfo {
 
 
 
-
     public Resume() {}
 
     /**
@@ -155,8 +232,11 @@ public class Resume implements BasePostController.PostAccessInfo {
      * @param experience опыт
      * @param moderation статус модерации
      */
-    public Resume(String title, Integer cash, String full_text, String category, String experience, String workformat,
-                  Boolean moderation) {
+    public Resume(String title, Integer cash, String full_text, String category, String experience,
+                  String workformat,
+                  Boolean moderation, String placeofwork1, String placeofwork2, String place1,
+                  String place2, LocalDate place1Start, LocalDate place2Start,
+                  LocalDate place1End, LocalDate place2End, String skills) {
         this.title = title;
         this.cash = cash;
         this.category = category;
@@ -164,7 +244,15 @@ public class Resume implements BasePostController.PostAccessInfo {
         this.workformat = workformat;
         this.moderation = moderation;
         this.full_text = full_text;
-
+        this.placeofwork1 = placeofwork1;
+        this.placeofwork2 = placeofwork2;
+        this.place1 = place1;
+        this.place2 = place2;
+        this.place1Start = place1Start;
+        this.place2Start = place2Start;
+        this.place1End = place1End;
+        this.place2End = place2End;
+        this.skills = skills;
     }
 
     /**
@@ -224,69 +312,6 @@ public class Resume implements BasePostController.PostAccessInfo {
 
     // ===== Геттеры и сеттеры =====
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Integer getCash() {
-        return cash;
-    }
-
-    public void setCash(Integer cash) {
-        this.cash = cash;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getExperience() {
-        return experience;
-    }
-
-    public void setExperience(String experience) {
-        this.experience = experience;
-    }
-
-    public String getFull_text() {
-        return full_text;
-    }
-
-    public void setFull_text(String full_text) {
-        this.full_text = full_text;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public List<ImagesFoto> getImages() {
         return imagesresume;
@@ -304,84 +329,12 @@ public class Resume implements BasePostController.PostAccessInfo {
         this.imagesresume = imagesresume;
     }
 
-    public boolean isBlocked() {
-        return blocked;
-    }
-
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
-    }
-
-    public LocalDateTime getBlockedAt() {
-        return blockedAt;
-    }
-
-    public void setBlockedAt(LocalDateTime blockedAt) {
-        this.blockedAt = blockedAt;
-    }
-
-    public boolean isModeration() {
-        return moderation;
-    }
-
-    public void setModeration(boolean moderation) {
-        this.moderation = moderation;
-    }
-
-    public LocalDateTime getModeratedAt() {
-        return moderatedAt;
-    }
-
-    public void setModeratedAt(LocalDateTime moderatedAt) {
-        this.moderatedAt = moderatedAt;
-    }
-
-    public boolean isArchived() {
-        return archived;
-    }
-
-    public void setArchived(boolean archived) {
-        this.archived = archived;
-    }
-
-    public LocalDateTime getArchivedAt() {
-        return archivedAt;
-    }
-
-    public void setArchivedAt(LocalDateTime archivedAt) {
-        this.archivedAt = archivedAt;
-    }
-
     public List<Favorites> getFavorites() {
         return favorites;
     }
 
     public void setFavorites(List<Favorites> favorites) {
         this.favorites = favorites;
-    }
-
-    public String getHashId() {
-        return hashId;
-    }
-
-    public void setHashId(String hashId) {
-        this.hashId = hashId;
-    }
-
-    public int getViewCount() {
-        return viewCount;
-    }
-
-    public void setViewCount(int viewCount) {
-        this.viewCount = viewCount;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public List<CommentPersonalRes> getCommentsPersonaRes() {
@@ -392,11 +345,4 @@ public class Resume implements BasePostController.PostAccessInfo {
         this.commentsPersonaRes = commentsPersonaRes;
     }
 
-    public String getWorkformat() {
-        return workformat;
-    }
-
-    public void setWorkformat(String workformat) {
-        this.workformat = workformat;
-    }
 }
