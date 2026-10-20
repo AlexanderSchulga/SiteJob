@@ -38,7 +38,7 @@ public class AuthController {
     private final VerificationCodeService verificationCodeService;
     private final RateLimitService rateLimitService;
     private final ReviewsRepo reviewsRepo;
-    //private final SmsRuService smsRuService;
+
 
     /**
      * Хранилище временных данных регистрации до подтверждения телефона
@@ -124,19 +124,15 @@ public class AuthController {
         String nameuse;
         String password;
         String email;
-        String phone;
-        String phonePost;
         String region;
         String city;
 
         RegistrationData(String username, String nameuse, String password, String email,
-                         String phone, String phonePost, String region, String city) {
+                         String region, String city) {
             this.username = username;
             this.nameuse = nameuse;
             this.password = password;
             this.email = email;
-            this.phone = phone;
-            this.phonePost = phonePost;
             this.region = region;
             this.city = city;
         }
@@ -268,20 +264,8 @@ public class AuthController {
             rateLimitService.recordFailedAttempt(clientIp);
         }
 
-        // ========== ВАЛИДАЦИЯ ТЕЛЕФОНА (обязательное ==========
-        if (dto.getPhone() == null || dto.getPhone().trim().isEmpty()) {
-            errors.add("Телефон обязателен для регистрации");
-            rateLimitService.recordFailedAttempt(clientIp);
-        } else if (!isValidPhone(dto.getPhone())) {
-            errors.add("Некорректный формат основного телефона. Используйте формат +7 (XXX) XXX-XX-XX");
-            rateLimitService.recordFailedAttempt(clientIp);
-        } else if (userRepository.findByPhone(dto.getPhone()).isPresent()) {
-            errors.add("Пользователь с таким телефоном зарегистрирован");
-            rateLimitService.recordFailedAttempt(clientIp);
-        }
-
         // ========== ОСТАЛЬНЫЕ ПРОВЕРКИ ==========
-        if (blacklistRepository.existsByAnyContact(dto.getEmail(), dto.getPhone(), dto.getPhonePost())) {
+        if (blacklistRepository.existsByAnyContact(dto.getEmail())) {
             errors.add("Контактные данные находятся в черном списке");
             rateLimitService.recordFailedAttempt(clientIp);
         }
@@ -300,21 +284,6 @@ public class AuthController {
             rateLimitService.recordFailedAttempt(clientIp);
         }
 
-        if (reviewsRepo.countByReviewedNameuse(dto.getNameuse()) > 0) {
-            errors.add("Никнейм ранее использовался удаленным пользователем");
-            rateLimitService.recordFailedAttempt(clientIp);
-        }
-
-        if (!isValidPassword(dto.getPassword())) {
-            errors.add("Пароль может содержать только английские буквы и цифры (минимум 6 символов)");
-            rateLimitService.recordFailedAttempt(clientIp);
-        }
-
-        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
-            errors.add("Пароли не совпадают");
-            rateLimitService.recordFailedAttempt(clientIp);
-        }
-
         if (dto.getUsername() == null || !dto.getUsername().matches("^[a-zA-Z0-9]+$")) {
             errors.add("Логин может содержать только английские буквы и цифры");
             rateLimitService.recordFailedAttempt(clientIp);
@@ -325,16 +294,14 @@ public class AuthController {
             rateLimitService.recordFailedAttempt(clientIp);
         }
 
-        boolean isPhonePostValid = true;
-        if (dto.getPhonePost() != null && !dto.getPhonePost().trim().isEmpty()) {
-            String phonePostTrimmed = dto.getPhonePost().trim();
-            if (!phonePostTrimmed.equals("+7 (") && !phonePostTrimmed.equals("+7") && !phonePostTrimmed.equals("+7()")) {
-                isPhonePostValid = isValidPhonePost(phonePostTrimmed);
-            }
+
+        if (reviewsRepo.countByReviewedNameuse(dto.getNameuse()) > 0) {
+            errors.add("Никнейм ранее использовался удаленным пользователем");
+            rateLimitService.recordFailedAttempt(clientIp);
         }
 
-        if (!isPhonePostValid) {
-            errors.add("Некорректный формат телефона для объявлений. Используйте формат +7 (XXX) XXX-XX-XX");
+        if (!isValidPassword(dto.getPassword())) {
+            errors.add("Пароль может содержать только английские буквы и цифры (минимум 6 символов)");
             rateLimitService.recordFailedAttempt(clientIp);
         }
 
@@ -373,7 +340,7 @@ public class AuthController {
             // Сохраняем данные до подтверждения (ключ — email, а не телефон!)
             pendingRegistrations.put(dto.getEmail(), new RegistrationData(
                     dto.getUsername(), dto.getNameuse(), dto.getPassword(),
-                    dto.getEmail(), dto.getPhone(), dto.getPhonePost(),
+                    dto.getEmail(),
                     dto.getRegion(), processedCity));
 
             model.addAttribute("email", dto.getEmail());
@@ -393,6 +360,7 @@ public class AuthController {
             return "register";
         }
     }
+
 
     /**
      * POST /verify-registration - Подтверждение email-кода и создание пользователя
@@ -458,8 +426,8 @@ public class AuthController {
             user.setUsername(data.username);
             user.setNameuse(data.nameuse);
             user.setEmail(data.email);
-            user.setPhone(data.phone);
-            user.setPhonePost(data.phonePost);
+//            user.setPhone(data.phone);
+//            user.setPhonePost(data.phonePost);
             user.setPassword(passwordEncoder.encode(data.password));
             user.setRole("ROLE_USER");
             user.setActive(true);
@@ -490,155 +458,6 @@ public class AuthController {
         }
     }
 
-//    /**
-//     * Обрабатывает подтверждение телефона
-//     * Проверяет код подтверждения и создает нового пользователя
-//     *
-//     * @param phone      Номер телефона для подтверждения
-//     * @param flashCode  Код подтверждения из звонка
-//     * @param request    HTTP-запрос
-//     * @param model      Модель для передачи данных в представление
-//     * @return Перенаправление на страницу входа или возврат к подтверждению с ошибкой
-//     */
-//    @PostMapping("/verify-phone")
-//    @Transactional
-//    public String verifyPhone(
-//            @RequestParam String phone,
-//            @RequestParam String flashCode,
-//            HttpServletRequest request,
-//            Model model
-//    ) {
-//        String clientIp = getClientIp(request);
-//
-//        log.info("Подтверждение телефона: {}, код: {}, IP: {}", phone, flashCode, clientIp);
-//
-//        if (!rateLimitService.tryConsumeVerifyRegistration(clientIp)) {
-//            model.addAttribute("error", "Слишком много попыток. Попробуйте через минуту.");
-//            model.addAttribute("phone", phone);
-//            return "phone-verification";
-//        }
-//
-//        try {
-//            if (!verificationCodeService.verifyFlashCallCode(phone, flashCode)) {
-//                log.warn("Неверный код для номера: {}", phone);
-//                rateLimitService.recordFailedAttempt(clientIp);
-//                model.addAttribute("error", "Неверный код. Введите 4 цифры из звонка.");
-//                model.addAttribute("phone", phone);
-//                return "phone-verification";
-//            }
-//
-//            if (userRepository.findByPhone(phone).isPresent()) {
-//                log.warn("Пользователь с телефоном {} уже существует!", phone);
-//                rateLimitService.recordFailedAttempt(clientIp);
-//                model.addAttribute("error", "Пользователь с таким телефоном уже зарегистрирован");
-//                model.addAttribute("phone", phone);
-//                return "phone-verification";
-//            }
-//
-//            RegistrationData data = pendingRegistrations.get(phone);
-//            if (data == null) {
-//                log.error("Данные регистрации не найдены для номера: {}", phone);
-//                rateLimitService.recordFailedAttempt(clientIp);
-//                model.addAttribute("error", "Время регистрации истекло. Начните заново.");
-//                return "register";
-//            }
-//
-//            log.info("Создание пользователя: никнейм={}, телефон={}", data.nameuse, data.phone);
-//
-//            User user = new User();
-//            user.setUsername(data.username);
-//            user.setNameuse(data.nameuse);
-//            if (data.email != null && !data.email.trim().isEmpty()) {
-//                user.setEmail(data.email);
-//            } else {
-//                user.setEmail(null);
-//            }
-//            user.setPhone(data.phone);
-//            user.setPhonePost(data.phonePost);
-//            user.setPassword(passwordEncoder.encode(data.password));
-//            user.setRole("ROLE_USER");
-//            user.setActive(true);
-//            user.setRegion(data.region);
-//            user.setCity(data.city);
-//
-//            User savedUser = userRepository.save(user);
-//            log.info("Пользователь сохранён в БД: никнейм={}, телефон={}, ID={}",
-//                    savedUser.getNameuse(), savedUser.getPhone(), savedUser.getId());
-//
-//            pendingRegistrations.remove(phone);
-//            verificationCodeService.removeFlashCallCode(phone);
-//
-//            rateLimitService.clearFailedAttempts(clientIp);
-//
-//            log.info("Регистрация успешно завершена для пользователя: {}", savedUser.getNameuse());
-//
-//            return "redirect:/login?success";
-//
-//        } catch (Exception e) {
-//            log.error("КРИТИЧЕСКАЯ ОШИБКА при сохранении пользователя: ", e);
-//            rateLimitService.recordFailedAttempt(clientIp);
-//            model.addAttribute("error", "Критическая ошибка при регистрации: " + e.getMessage());
-//            model.addAttribute("phone", phone);
-//            return "phone-verification";
-//        }
-//    }
-
-//    /**
-//     * Повторная отправка звонка для подтверждения телефона
-//     *
-//     * @param phone   Номер телефона для отправки звонка
-//     * @param request HTTP-запрос
-//     * @return JSON-ответ с результатом операции
-//     */
-//    @PostMapping("/resend-flashcall")
-//    @ResponseBody
-//    public Map<String, Object> resendFlashCall(
-//            @RequestParam String phone,
-//            HttpServletRequest request
-//    ) {
-//        String clientIp = getClientIp(request);
-//        Map<String, Object> response = new HashMap<>();
-//
-//        if (!rateLimitService.tryConsumeVerifyRegistration(clientIp)) {
-//            response.put("success", false);
-//            response.put("message", "Слишком много попыток. Подождите минуту.");
-//            return response;
-//        }
-//
-//        try {
-//            String cleanPhone = phone.replaceAll("[^\\d]", "");
-//            if (cleanPhone.startsWith("8")) {
-//                cleanPhone = "7" + cleanPhone.substring(1);
-//            } else if (!cleanPhone.startsWith("7")) {
-//                cleanPhone = "7" + cleanPhone;
-//            }
-//
-//            String userIp = getClientIp(request);
-//
-//            // Отправляем звонок и получаем новый код
-//            String flashCode = smsRuService.sendFlashCall(cleanPhone, userIp);
-//
-//            if (flashCode == null) {
-//                response.put("success", false);
-//                response.put("message", "Не удалось отправить звонок");
-//                return response;
-//            }
-//
-//            // Сохраняем новый код
-//            verificationCodeService.saveFlashCallCode(phone, flashCode);
-//            log.info("Повторный Flashcall отправлен на номер: {}, код: {}", phone, flashCode);
-//
-//            response.put("success", true);
-//            response.put("message", "Звонок отправлен повторно!");
-//
-//        } catch (Exception e) {
-//            log.error("Ошибка повторной отправки: {}", e.getMessage());
-//            response.put("success", false);
-//            response.put("message", "Ошибка: " + e.getMessage());
-//        }
-//
-//        return response;
-//    }
 
     /**
      * Обновляет капчу на новое число

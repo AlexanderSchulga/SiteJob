@@ -25,8 +25,6 @@ public class RegistrationDto {
     private String password;
     private String confirmPassword;
     private String email;
-    private String phone;
-    private String phonePost;
     private String region;
     private String city;
     private Boolean captcha;

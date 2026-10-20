@@ -29,14 +29,6 @@ public class Blacklist {
     @Column(unique = true)
     private String email;
 
-    /** Заблокированный телефон (уникальный). */
-    @Column(unique = true)
-    private String phone;
-
-    /** Заблокированный постоплатный телефон (уникальный). */
-    @Column(unique = true)
-    private String phonePost;
-
     /** Причина блокировки (обязательное поле). */
     @Column(nullable = false)
     private String reason;
@@ -62,15 +54,15 @@ public class Blacklist {
      * Конструктор для создания записи в чёрном списке.
      *
      * @param email     заблокированный email (может быть null)
-     * @param phone     заблокированный телефон (может быть null)
-     * @param phonePost заблокированный постоплатный телефон (может быть null)
+//     * @param phone     заблокированный телефон (может быть null)
+//     * @param phonePost заблокированный постоплатный телефон (может быть null)
      * @param reason    причина блокировки
      * @param bannedBy  администратор, который заблокировал
      */
-    public Blacklist(String email, String phone, String phonePost, String reason, User bannedBy) {
+    public Blacklist(String email, String reason, User bannedBy) {
         this.email = email;
-        this.phone = phone;
-        this.phonePost = phonePost;
+//        this.phone = phone;
+//        this.phonePost = phonePost;
         this.reason = reason;
         this.bannedBy = bannedBy;
 
@@ -87,17 +79,17 @@ public class Blacklist {
         this.email = email;
     }
 
-    public String getPhone() { return phone; }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getPhonePost() { return phonePost; }
-
-    public void setPhonePost(String phonePost) {
-        this.phonePost = phonePost;
-    }
+//    public String getPhone() { return phone; }
+//
+//    public void setPhone(String phone) {
+//        this.phone = phone;
+//    }
+//
+//    public String getPhonePost() { return phonePost; }
+//
+//    public void setPhonePost(String phonePost) {
+//        this.phonePost = phonePost;
+//    }
 
     public String getReason() { return reason; }
 

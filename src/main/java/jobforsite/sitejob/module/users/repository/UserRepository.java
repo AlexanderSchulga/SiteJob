@@ -65,6 +65,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByPhone(String phone);
 
     /**
+     * Поиск пользователя по публичному телефону.
+     *
+     * @param phonePost номер телефона
+     * @return Optional с пользователем
+     */
+    Optional<User> findByPhonePost(String phonePost);
+
+    /**
      * Поиск пользователя по ID.
      *
      * @param Id идентификатор пользователя

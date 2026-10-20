@@ -38,7 +38,7 @@ public interface BlacklistRepository extends JpaRepository<Blacklist, Long> {
      * @param phone основной номер телефона
      * @return Optional с записью, если найдена
      */
-    Optional<Blacklist> findByPhone(String phone);
+    //Optional<Blacklist> findByPhone(String phone);
 
     /**
      * Поиск записи в чёрном списке по дополнительному телефону.
@@ -46,7 +46,7 @@ public interface BlacklistRepository extends JpaRepository<Blacklist, Long> {
      * @param phonePost дополнительный номер телефона
      * @return Optional с записью, если найдена
      */
-    Optional<Blacklist> findByPhonePost(String phonePost);
+   // Optional<Blacklist> findByPhonePost(String phonePost);
 
     /**
      * Проверяет, содержится ли хотя бы один из переданных контактов в чёрном списке.
@@ -56,13 +56,13 @@ public interface BlacklistRepository extends JpaRepository<Blacklist, Long> {
      * </p>
      *
      * @param email     email для проверки
-     * @param phone     основной телефон для проверки
-     * @param phonePost дополнительный телефон для проверки
+    // * @param phone     основной телефон для проверки
+     //* @param phonePost дополнительный телефон для проверки
      * @return true, если хотя бы один контакт найден в чёрном списке
      */
-    @Query("SELECT COUNT(b) > 0 FROM Blacklist b WHERE b.email = :email OR b.phone = :phone OR b.phonePost = :phonePost")
-    boolean existsByAnyContact(@Param("email") String email,
-                               @Param("phone") String phone,
-                               @Param("phonePost") String phonePost);
+    @Query("SELECT COUNT(b) > 0 FROM Blacklist b WHERE b.email = :email")
+    boolean existsByAnyContact(@Param("email") String email);
+    //                               @Param("phone") String phone,
+    //                               @Param("phonePost") String phonePost);
 
 }

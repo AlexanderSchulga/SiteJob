@@ -88,25 +88,23 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="phoneInput" class="form-label">Телефон (Для регистрации) *</label>
+                            <label for="phoneInput" class="form-label">Телефон связи с вами администрацией</label>
                             <input type="tel"
                                    name="phone"
                                    id="phoneInput"
                                    th:value="${user.phone}"
                                    class="form-control"
-                                   placeholder="Введите номер"
-                                   required>
+                                   placeholder="Введите номер">
                         </div>
 
                         <div class="mb-3">
-                            <label for="phonePostInput" class="form-label">Телефон (Для отображения в объявлениях) *</label>
+                            <label for="phonePostInput" class="form-label">Телефон (Для отображения в объявлениях)</label>
                             <input type="tel"
                                    name="phonePost"
                                    id="phonePostInput"
                                    th:value="${user.phonePost}"
                                    class="form-control"
-                                   placeholder="Введите номер"
-                                   required>
+                                   placeholder="Введите номер">
                         </div>
                     </div>
                 </div>

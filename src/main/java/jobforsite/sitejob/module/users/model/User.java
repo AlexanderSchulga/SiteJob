@@ -55,7 +55,8 @@ public class User implements UserDetails {
     private String username;
 
     /** Отображаемое имя пользователя. */
-    @Column(nullable = false)
+    //@Column(nullable = false)  было до рефакторинга
+    @Column(unique = true, nullable = false)
     private String nameuse;
 
     /** email пользователя. */
@@ -63,7 +64,8 @@ public class User implements UserDetails {
     private String email;
 
     /** Уникальный номер телефона. */
-    @Column(unique = true, nullable = false)
+    //@Column(unique = true, nullable = false)  было до рефакторинга
+    @Column(unique = true)
     private String phone;
 
     /** Дополнительный номер телефона */

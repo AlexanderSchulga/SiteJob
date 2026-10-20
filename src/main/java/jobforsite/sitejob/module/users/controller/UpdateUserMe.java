@@ -12,6 +12,7 @@ import jobforsite.sitejob.module.shared.repository.ReviewsRepo;
 import jobforsite.sitejob.module.shared.repository.SupportCommentRepo;
 import jobforsite.sitejob.module.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -41,9 +43,8 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Controller
+@Slf4j
 public class UpdateUserMe extends BaseController {
-
-    private static final Logger log = LoggerFactory.getLogger(UpdateUserMe.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -196,20 +197,40 @@ public class UpdateUserMe extends BaseController {
             // --- Обновление описания ---
             user.setDescript(descript);
 
-            // --- Изменение телефона (доступно всем) ---
-            if (!user.getPhone().equals(phone)) {
-                Optional<User> existingUser = userRepository.findByPhone(phone);
-                if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
-                    log.warn("Попытка установить уже занятый телефон");
-                    redirectAttributes.addFlashAttribute("error", "Телефон уже занят");
-                    return "redirect:/page_two/user_edit";
+            // нормализация: "+7 (", "+7", "", пробелы -> null
+            phone = normalizePhone(phone);
+
+            if (!Objects.equals(user.getPhone(), phone)) {
+                if (phone != null) {
+                    Optional<User> existingUser = userRepository.findByPhone(phone);
+                    if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                        log.warn("Попытка установить уже занятый телефон");
+                        redirectAttributes.addFlashAttribute("error", "Телефон уже занят");
+                        return "redirect:/page_two/user_edit";
+                    }
                 }
                 user.setPhone(phone);
                 log.debug("Телефон успешно изменен");
             }
 
+            // нормализация: "+7 (", "+7", "", пробелы -> null
+            phonePost = normalizePhone(phonePost);
+
             // --- Обновление телефона для объявлений ---
-            user.setPhonePost(phonePost);
+            //user.setPhonePost(phonePost);
+
+            if (!Objects.equals(user.getPhonePost(), phonePost)) {
+                if (phonePost != null) {
+                    Optional<User> existingUser = userRepository.findByPhonePost(phonePost);
+                    if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                        log.warn("Попытка установить уже занятый телефон");
+                        redirectAttributes.addFlashAttribute("error", "Телефон уже занят");
+                        return "redirect:/page_two/user_edit";
+                    }
+                }
+                user.setPhonePost(phonePost);
+                log.debug("Телефон успешно изменен");
+            }
 
             // --- Смена пароля (доступно всем, если заполнены все поля) ---
             if (currentPassword != null && !currentPassword.isEmpty() &&
@@ -249,6 +270,14 @@ public class UpdateUserMe extends BaseController {
             redirectAttributes.addFlashAttribute("error", "Ошибка при обновлении данных: " + e.getMessage());
             return "redirect:/page_two/user_edit";
         }
+    }
+
+    private String normalizePhone(String phon) {
+        if (phon == null) return null;
+        String digits = phon.replaceAll("\\D", ""); // только цифры
+        // если осталась только ведущая 7 (или ничего) — считаем пустым
+        if (digits.isEmpty() || digits.equals("7")) return null;
+        return phon.trim();
     }
 
     /**

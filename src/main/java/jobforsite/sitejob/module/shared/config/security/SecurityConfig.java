@@ -136,9 +136,6 @@ public class SecurityConfig {
                                 "/api/paid-carousel",
                                 "/robots.txt",
                                 "/sitemap.xml"
-                               // "/phone-verification",
-                              //  "/verify-phone",
-                               // "/resend-flashcall"
 
                         ).permitAll()
 

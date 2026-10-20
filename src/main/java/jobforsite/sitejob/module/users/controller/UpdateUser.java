@@ -4,6 +4,7 @@ import jobforsite.sitejob.module.shared.config.globalconfig.RegionsConfig;
 import jobforsite.sitejob.module.users.model.User;
 import jobforsite.sitejob.module.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -30,9 +32,9 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Controller
+@Slf4j
 public class UpdateUser {
 
-    private static final Logger logger = LoggerFactory.getLogger(UpdateUser.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -56,18 +58,18 @@ public class UpdateUser {
     public String editUser(@PathVariable(value = "hashId") String hashId,
                            Model model,
                            Authentication authentication) {
-        logger.info("Accessing user edit page - target user hash: {}", hashId);
+        log.info("Accessing user edit page - target user hash: {}", hashId);
 
         try {
             if (!hasSuperAccess(authentication)) {
-                logger.warn("Access denied to edit user page - insufficient privileges");
+                log.warn("Access denied to edit user page - insufficient privileges");
                 model.addAttribute("error", "Доступ запрещен");
                 return "redirect:/users";
             }
 
             Optional<User> userOptional = userRepository.findByHashId(hashId);
             if (userOptional.isEmpty()) {
-                logger.warn("User not found for edit - hash: {}", hashId);
+                log.warn("User not found for edit - hash: {}", hashId);
                 model.addAttribute("error", "Пользователь не найден");
                 return "redirect:/users";
             }
@@ -86,7 +88,7 @@ public class UpdateUser {
             return "page_two/admin_edit_user";
 
         } catch (Exception e) {
-            logger.error("Error loading user edit page: ", e);
+            log.error("Error loading user edit page: ", e);
             model.addAttribute("error", "Ошибка при загрузке пользователя: " + e.getMessage());
             return "redirect:/users";
         }
@@ -114,18 +116,18 @@ public class UpdateUser {
                              @RequestParam(required = false) Boolean resetPassword,
                              Model model,
                              Authentication authentication) {
-        logger.info("Updating user - target hash: {}", hashId);
+        log.info("Updating user - target hash: {}", hashId);
 
         try {
             if (!hasSuperAccess(authentication)) {
-                logger.warn("Access denied to update user - insufficient privileges");
+                log.warn("Access denied to update user - insufficient privileges");
                 model.addAttribute("error", "Доступ запрещен");
                 return "redirect:/users";
             }
 
             Optional<User> optionalUser = userRepository.findByHashId(hashId);
             if (optionalUser.isEmpty()) {
-                logger.warn("User not found for update - hash: {}", hashId);
+                log.warn("User not found for update - hash: {}", hashId);
                 model.addAttribute("error", "Пользователь не найден");
                 return "redirect:/users";
             }
@@ -140,16 +142,16 @@ public class UpdateUser {
                 if (!user.getUsername().equals(username)) {
                     Optional<User> existingUser = userRepository.findByUsername(username);
                     if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
-                        logger.warn("Username already taken - update blocked");
+                        log.warn("Username already taken - update blocked");
                         model.addAttribute("error", "Имя пользователя уже занято");
                         return "redirect:/users/" + hashId + "/page_two/admin_edit_user";
                     }
                     user.setUsername(username);
-                    logger.debug("Username updated by superadmin");
+                    log.debug("Username updated by superadmin");
                 }
             } else if (isAdmin) {
                 if (!user.getUsername().equals(username)) {
-                    logger.debug("Admin attempted to change username - ignored");
+                    log.debug("Admin attempted to change username - ignored");
                 }
             }
 
@@ -157,28 +159,54 @@ public class UpdateUser {
             if (!user.getEmail().equals(email)) {
                 Optional<User> existingUser = userRepository.findByEmail(email);
                 if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
-                    logger.warn("Email already taken - update blocked");
+                    log.warn("Email already taken - update blocked");
                     model.addAttribute("error", "Email уже занят");
                     return "redirect:/users/" + hashId + "/page_two/admin_edit_user";
                 }
                 user.setEmail(email);
-                logger.debug("Email updated");
+                log.debug("Email updated");
             }
 
             // Проверяем уникальность телефона
-            if (!user.getPhone().equals(phone)) {
-                Optional<User> existingUser = userRepository.findByPhone(phone);
-                if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
-                    logger.warn("Phone already taken - update blocked");
-                    model.addAttribute("error", "Телефон уже занят");
-                    return "redirect:/users/" + hashId + "/page_two/admin_edit_user";
+
+            // нормализация: "+7 (", "+7", "", пробелы -> null
+            phone = normalizePhone(phone);
+
+            if (!Objects.equals(user.getPhone(), phone)) {
+                if (phone != null) {
+                    Optional<User> existingUser = userRepository.findByPhone(phone);
+                    if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                        log.warn("Phone already taken - update blocked");
+                        model.addAttribute("error", "Телефон 1 уже занят");
+                        return "redirect:/users/" + hashId + "/page_two/admin_edit_user";
+                    }
                 }
                 user.setPhone(phone);
-                logger.debug("Phone updated");
+                log.debug("Телефон успешно изменен");
             }
 
+            // нормализация: "+7 (", "+7", "", пробелы -> null
+            phonePost = normalizePhone(phonePost);
+
+            // --- Обновление телефона для объявлений ---
+            //user.setPhonePost(phonePost);
+
+            if (!Objects.equals(user.getPhonePost(), phonePost)) {
+                if (phonePost != null) {
+                    Optional<User> existingUser = userRepository.findByPhonePost(phonePost);
+                    if (existingUser.isPresent() && !existingUser.get().getId().equals(user.getId())) {
+                        log.warn("Phone already taken - update blocked");
+                        model.addAttribute("error", "Телефон 2 уже занят");
+                        return "redirect:/users/" + hashId + "/page_two/admin_edit_user";
+                    }
+                }
+                user.setPhonePost(phonePost);
+                log.debug("Телефон успешно изменен");
+            }
+
+
             user.setNameuse(nameuse);
-            user.setPhonePost(phonePost);
+            //user.setPhonePost(phonePost);
             user.setRegion(region);
 
             String processedCity = (city != null && !city.trim().isEmpty()) ? city.trim() : null;
@@ -187,27 +215,35 @@ public class UpdateUser {
             // Управление ролью - только суперадмин может менять роли
             if (isSuperAdmin && !user.getRole().equals(role)) {
                 user.setRole(role);
-                logger.debug("Role updated by superadmin");
+                log.debug("Role updated by superadmin");
             }
 
             user.setActive(active);
 
             if (resetPassword != null && resetPassword) {
                 user.setPassword(passwordEncoder.encode("123456"));
-                logger.info("Password reset requested");
+                log.info("Password reset requested");
             }
 
             userRepository.save(user);
-            logger.info("User successfully updated");
+            log.info("User successfully updated");
 
             model.addAttribute("success", "Данные пользователя успешно обновлены");
             return "redirect:/users/" + hashId + "/page_two/admin_edit_user?success";
 
         } catch (Exception e) {
-            logger.error("Error updating user: ", e);
+            log.error("Error updating user: ", e);
             model.addAttribute("error", "Ошибка при обновлении пользователя: " + e.getMessage());
             return "redirect:/users/" + hashId + "/page_two/admin_edit_user";
         }
+    }
+
+    private String normalizePhone(String phon) {
+        if (phon == null) return null;
+        String digits = phon.replaceAll("\\D", ""); // только цифры
+        // если осталась только ведущая 7 (или ничего) — считаем пустым
+        if (digits.isEmpty() || digits.equals("7")) return null;
+        return phon.trim();
     }
 
     // ======================================================================

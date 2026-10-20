@@ -774,9 +774,9 @@ public class UserController extends BaseController {
      * @return true, если email, телефон или телефон для объявлений есть в черном списке
      */
     public boolean isUserInBlacklist(User user) {
-        return blacklistRepository.findByEmail(user.getEmail()).isPresent() ||
-                blacklistRepository.findByPhone(user.getPhone()).isPresent() ||
-                blacklistRepository.findByPhonePost(user.getPhonePost()).isPresent();
+        return blacklistRepository.findByEmail(user.getEmail()).isPresent();
+        //                blacklistRepository.findByPhone(user.getPhone()).isPresent() ||
+        //                blacklistRepository.findByPhonePost(user.getPhonePost()).isPresent()
     }
 
     /**
@@ -789,8 +789,6 @@ public class UserController extends BaseController {
     private void addUserToBlacklist(User user, String reason, User admin) {
         Blacklist blacklistEntry = new Blacklist(
                 user.getEmail(),
-                user.getPhone(),
-                user.getPhonePost(),
                 reason,
                 admin
         );
@@ -807,8 +805,6 @@ public class UserController extends BaseController {
         List<Blacklist> entriesToDelete = new ArrayList<>();
 
         blacklistRepository.findByEmail(user.getEmail()).ifPresent(entriesToDelete::add);
-        blacklistRepository.findByPhone(user.getPhone()).ifPresent(entriesToDelete::add);
-        blacklistRepository.findByPhonePost(user.getPhonePost()).ifPresent(entriesToDelete::add);
 
         blacklistRepository.deleteAll(entriesToDelete);
         log.debug("Записи из черного списка удалены");

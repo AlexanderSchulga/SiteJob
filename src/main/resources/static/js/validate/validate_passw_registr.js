@@ -2,8 +2,7 @@ document.getElementById('registrationForm').addEventListener('submit', function(
     const username = document.getElementById('username').value;
     const nameuse = document.getElementById('nameuse').value;
     const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    const passwordError = document.getElementById('passwordError');
+
     const passwordField = document.getElementById('password');
 
     // Убираем старые ошибки
@@ -63,17 +62,8 @@ document.getElementById('registrationForm').addEventListener('submit', function(
         errorDiv.textContent = 'Пароль может содержать только английские буквы и цифры';
         passwordField.parentNode.insertAdjacentElement('afterend', errorDiv);
         passwordField.focus();
-        return;
     }
 
-    // Проверка совпадения паролей
-    if (password !== confirmPassword) {
-        e.preventDefault();
-        passwordError.style.display = 'block';
-        document.getElementById('confirmPassword').focus();
-    } else {
-        passwordError.style.display = 'none';
-    }
 });
 
 // ========== ПРОВЕРКА ПРИ ВВОДЕ (реального времени) ==========
@@ -155,13 +145,5 @@ if (passwordInput) {
             this.classList.remove('is-invalid');
         }
 
-        // Также проверяем совпадение, если confirmPassword уже заполнен
-        const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
-        const passwordError = document.getElementById('passwordError');
-        if (confirmPassword && this.value !== confirmPassword) {
-            passwordError.style.display = 'block';
-        } else if (confirmPassword && this.value === confirmPassword) {
-            passwordError.style.display = 'none';
-        }
     });
 }

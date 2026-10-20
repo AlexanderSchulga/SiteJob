@@ -197,8 +197,10 @@ function initPhoneInput(input) {
     // Обработка потери фокуса - проверяем корректность
     input.addEventListener('blur', function() {
         const digits = this.value.replace(/\D/g, '');
+        if (digits.length <= 1) {   // только "7" или пусто
+            this.value = '';
+        }
         if (digits.length < 11 && digits.length > 1) {
-            // Можно добавить валидацию или предупреждение
             console.log('Номер неполный');
         }
     });
